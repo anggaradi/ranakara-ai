@@ -89,9 +89,21 @@ export default async (req) => {
       })
     });
     if (!api.ok) {
-      if(api.status===429) return reply({error:'Kuota atau rate limit API AI tercapai. Coba kembali setelah kuota tersedia.'},503);
-      if(api.status===401||api.status===403) return reply({error:'Konfigurasi API AI ditolak. Periksa API key dan akses model.'},503);
-      return reply({error:`Layanan AI mengalami masalah (HTTP ${api.status}).`},502);
+      // Only show a sanitized upstream status/code. Never log or expose API keys,
+      // request headers, customer orders or the upstream free-text error message.
+      let upstreamCode = 'unknown';
+      try {
+        const diagnostic = await api.json();
+        const rawCode = String(diagnostic?.error?.code || diagnostic?.error?.type || 'unknown');
+        upstreamCode = rawCode.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 64) || 'unknown';
+      } catch { /* Some proxy failures do not return JSON. */ }
+      console.warn('ranakara_ai_upstream_error', {httpStatus: api.status, errorCode: upstreamCode});
+      const suffix = `HTTP ${api.status}; kode ${upstreamCode}`;
+      if (api.status === 401) return reply({error: `OpenAI menolak API key (${suffix}). Periksa OPENAI_API_KEY di Netlify; lalu deploy ulang.`}, 503);
+      if (api.status === 403) return reply({error: `OpenAI menolak izin project atau model (${suffix}). Periksa akses project dan izin model API.`}, 503);
+      if (api.status === 429) return reply({error: `OpenAI membatasi akses atau kuota (${suffix}). Periksa Billing, saldo kredit, serta usage limits API.`}, 503);
+      if (api.status === 400) return reply({error: `OpenAI menolak format permintaan/model (${suffix}). Kode backend perlu diperiksa.`}, 502);
+      return reply({error: `Layanan OpenAI gagal (${suffix}). Periksa Functions logs Netlify.`}, 502);
     }
     const raw=await api.json();
     const outputText=raw.output_text || raw.output?.flatMap(x=>x.content||[]).filter(x=>x.type==='output_text').map(x=>x.text).join('');
