@@ -1,10 +1,12 @@
 import { makeId, makeSeed, computePlan, rounded, isPositive, isISODate, validateOrder, normalizeAIOutput } from './engine.mjs';
+import { extractLocalOrder, LOCAL_MODEL_NAME } from './ranakara-nlp.mjs';
 
 const config=window.RANAKARA_CONFIG||{};
-const CLOUD=Boolean(config.supabaseUrl && config.supabaseAnonKey);
+// Guard against placeholder strings: non-empty placeholders are NOT a valid connection.
+const CLOUD=/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(config.supabaseUrl||'') && /^(sb_publishable_|eyJ)/.test(config.supabaseAnonKey||'');
 const base=(config.supabaseUrl||'').replace(/\/$/,'');
 const KEY='ranakara_demo_v1', SESSION_KEY='ranakara_cloud_session';
-let data, session=null, draft=null, currentPage='dashboard', working=false;
+let data, session=null, draft=null, currentPage='dashboard', working=false, booting=false, cloudReady=false, cloudError='';
 try { data=JSON.parse(localStorage.getItem(KEY))||makeSeed(); } catch {data=makeSeed();}
 if(!data || !Array.isArray(data.products)||!Array.isArray(data.orders)||!Array.isArray(data.materials))data=makeSeed();
 const $=sel=>document.querySelector(sel);
@@ -15,11 +17,18 @@ const badge=s=>({new:'Baru',in_progress:'Diproses',completed:'Selesai',cancelled
 const toast=(message,error=false)=>{const t=$('#toast');t.textContent=message;t.className=`toast show ${error?'error':''}`;clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),4800);};
 const persistLocal=()=>{localStorage.setItem(KEY,JSON.stringify(data));};
 
-async function authFetch(path,{method='GET',body,token=session?.access_token}={}){
-  const res=await fetch(`${base}${path}`,{method,headers:{apikey:config.supabaseAnonKey,'Content-Type':'application/json',...(token?{'Authorization':`Bearer ${token}`}:{})},...(body!==undefined?{body:JSON.stringify(body)}:{})});
-  const content=await res.text();let parsed;try{parsed=content?JSON.parse(content):null;}catch{parsed={message:content};}
-  if(!res.ok)throw new Error(parsed?.msg||parsed?.message||parsed?.error_description||parsed?.error||`HTTP ${res.status}`);
-  return parsed;
+async function authFetch(path,{method='GET',body,token=session?.access_token,timeoutMs=12000}={}){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    const res=await fetch(`${base}${path}`,{method,signal:controller.signal,headers:{apikey:config.supabaseAnonKey,'Content-Type':'application/json',...(token?{'Authorization':`Bearer ${token}`}:{})},...(body!==undefined?{body:JSON.stringify(body)}:{})});
+    const content=await res.text();let parsed;try{parsed=content?JSON.parse(content):null;}catch{parsed={message:content};}
+    if(!res.ok)throw new Error(parsed?.msg||parsed?.message||parsed?.error_description||parsed?.error||`HTTP ${res.status}`);
+    return parsed;
+  }catch(err){
+    if(err?.name==='AbortError')throw new Error('Koneksi Supabase melewati batas waktu 12 detik. Periksa jaringan, Project URL, dan API key.');
+    throw err;
+  }finally{clearTimeout(timer);}
 }
 async function tryRefresh(){
   if(!session?.refresh_token)return false;
@@ -39,12 +48,20 @@ async function saveCloud(){
   const payload={user_id:session.user.id,data,updated_at:new Date().toISOString()};
   const endpoint=`/rest/v1/workspaces?on_conflict=user_id`;
   const headers={apikey:config.supabaseAnonKey,'Authorization':`Bearer ${session.access_token}`,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'};
-  const send=()=>fetch(`${base}${endpoint}`,{method:'POST',headers,body:JSON.stringify(payload)});
-  let response=await send();
-  if(response.status===401 && await tryRefresh()){headers.Authorization=`Bearer ${session.access_token}`;response=await send();}
+  // A failed network request must not leave the app indefinitely waiting.
+  const timedSend=async()=>{
+    const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),12000);
+    try{return await fetch(`${base}${endpoint}`,{method:'POST',headers,body:JSON.stringify(payload),signal:controller.signal});}
+    catch(err){if(err?.name==='AbortError')throw new Error('Penyimpanan Supabase melewati batas waktu 12 detik.');throw err;}
+    finally{clearTimeout(timer);}
+  };
+  let response=await timedSend();
+  if(response.status===401 && await tryRefresh()){headers.Authorization=`Bearer ${session.access_token}`;response=await timedSend();}
   if(!response.ok)throw new Error(`Cloud save gagal (HTTP ${response.status}). Jalankan schema.sql dan periksa RLS.`);
 }
 async function mutate(modifier){
+  if(booting){toast('Sinkronisasi akun masih berlangsung. Coba lagi sebentar.',true);return false;}
+  if(session&&!cloudReady){toast('Workspace cloud belum berhasil disinkronkan. Muat ulang setelah memeriksa koneksi.',true);return false;}
   if(working)return;
   const backup=structuredClone(data);
   try {working=true;modifier();render();if(session)await saveCloud();else persistLocal();toast(session?'Perubahan tersimpan di cloud.':'Perubahan tersimpan di browser demo.');return true;}
@@ -73,20 +90,28 @@ function catalogView(){
  <div class="section-header"><h2>Produk & resep produksi</h2><span class="badge">${data.products.length} produk</span></div><div class="card">${data.products.length?data.products.map(p=>`<div class="recipe-block"><div class="flex-between"><div><h3 style="margin:0">${esc(p.name)}</h3><div class="hint">Alias: ${esc((p.aliases||[]).join(', ')||'—')}</div></div><button class="button danger small" data-action="delete-product" data-id="${esc(p.id)}">Hapus produk</button></div><div style="margin:12px 0">${p.recipe.length?p.recipe.map(r=>{const m=data.materials.find(x=>x.id===r.materialId);return `<span class="recipe-pill">${printNum(r.amount)} ${esc(m?.unit||'?')} ${esc(m?.name||'Bahan hilang')} <button class="button secondary small" data-action="delete-recipe" data-id="${esc(p.id)}" data-material="${esc(r.materialId)}" title="Hapus bahan dari resep">×</button></span>`;}).join(''):'<span class="muted">Belum ada komposisi bahan</span>'}</div><form class="recipe-form field-row three" data-product="${esc(p.id)}"><label>Bahan<select name="materialId" required>${choices}</select></label><label>Jumlah / 1 produk<input type="number" step="0.001" min="0.001" name="amount" required placeholder="Contoh: 2" /></label><label>Aksi<button type="submit" class="button secondary">+ Tambah ke resep</button></label></form><hr class="divider" /></div>`).join(''):tableEmpty('Tambahkan produk lebih dulu.')}</div>`;
 }
 function draftItem(row,i){return `<div class="draft-item" data-index="${i}"><label>Produk<select class="draft-product"><option value="">Pilih produk...</option>${data.products.map(p=>`<option value="${esc(p.id)}" ${p.id===row.productId?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label><label>Jumlah<input class="draft-qty" type="number" min="1" max="100000" step="1" value="${esc(row.quantity)}" /></label><div><div class="label-caption">Kepercayaan AI</div><span class="badge">${esc(row.confidence||'manual')}</span></div><button class="button danger small" data-action="remove-draft" data-index="${i}">Hapus</button>${row.rawName?`<div class="hint" style="grid-column:1/-1">Teks produk dari AI: <strong>${esc(row.rawName)}</strong>${row.sourceText?' · '+esc(row.sourceText):''}</div>`:''}</div>`;}
-function studio(){return `<div class="two-col"><div class="card"><div class="flex-between"><h3>01 / Pesan pelanggan</h3><span class="badge">NLP · Structured AI</span></div><p class="hint">Tempel pesan tanpa nomor telepon, alamat, atau identitas pribadi. Untuk chat pelanggan nyata, minta izin dan minimalkan data.</p><label>Isi pesan<textarea id="order-text" maxlength="2500" placeholder="Bu, pesan 30 canang sama 12 pejati untuk Jumat pagi. Tolong konfirmasi jam pengambilan."></textarea></label><div class="button-row" style="margin-top:14px"><button class="button primary" id="ai-button" data-action="extract" ${!session?'disabled':''}>✦ Analisis dengan AI</button><button class="button secondary" data-action="manual-draft">+ Buat draf manual</button></div>${!session?`<div class="notice" style="margin-top:15px">AI belum aktif: ${CLOUD?'masuk akun Supabase terlebih dahulu.':'isi Supabase public config, jalankan SQL, lalu masukkan server environment variables di Netlify.'} Tombol draf manual tetap bisa diuji.</div>`:''}<div class="test-box"><b>Kenapa harus verifikasi?</b><p class="hint">AI tidak otomatis menyimpan pesanan, mengubah stok, atau menentukan tanggal yang tidak pasti. Setiap hasil diperiksa oleh pengguna.</p></div></div>
+function studio(){return `<div class="two-col"><div class="card"><div class="flex-between"><h3>01 / Pesan pelanggan</h3><span class="badge">NLP lokal · TF-IDF kNN</span></div><p class="hint">Tempel pesan tanpa nomor telepon, alamat, atau identitas pribadi. Untuk chat pelanggan nyata, minta izin dan minimalkan data.</p><label>Isi pesan<textarea id="order-text" maxlength="2500" placeholder="Bu, pesan 30 canang sama 12 pejati untuk Jumat pagi. Tolong konfirmasi jam pengambilan."></textarea></label><div class="button-row" style="margin-top:14px"><button class="button primary" id="ai-button" data-action="extract" ${!session?'disabled':''}>✦ Analisis dengan AI</button><button class="button secondary" data-action="manual-draft">+ Buat draf manual</button></div>${!session?`<div class="notice" style="margin-top:15px">Mode cloud belum aktif: ${CLOUD?'masuk akun Supabase terlebih dahulu.':'isi konfigurasi Supabase di public/config.js dan jalankan SQL.'} Tombol draf manual tetap bisa diuji.</div>`:''}<div class="test-box"><b>Kenapa harus verifikasi?</b><p class="hint">AI tidak otomatis menyimpan pesanan, mengubah stok, atau menentukan tanggal yang tidak pasti. Setiap hasil diperiksa oleh pengguna.</p></div></div>
  <div class="card"><div class="flex-between"><h3>02 / Hasil ekstraksi & konfirmasi</h3><span class="badge">Human-in-the-loop</span></div>${draft?`${draft.questions.length?`<div class="notice"><strong>Perlu klarifikasi</strong><div style="margin-top:8px">${draft.questions.map(q=>`<p class="question">• ${esc(q)}</p>`).join('')}</div></div>`:''}<div id="draft-list" class="draft-list">${draft.items.map(draftItem).join('')}</div><div style="margin-top:10px"><button class="button secondary small" data-action="add-draft-item">+ Tambah produk</button></div><div class="field-row" style="margin-top:16px"><label>Nama pesanan (opsional)<input id="draft-customer" maxlength="90" placeholder="Contoh: Pesanan pelanggan A" /></label><label>Tanggal selesai<input id="draft-date" type="date" value="${esc(draft.delivery.date_iso)}" required /></label></div><div class="field-row" style="margin-top:13px"><label>Waktu / catatan jam<input id="draft-time" maxlength="80" value="${esc(draft.delivery.time_text)}" placeholder="Misalnya pagi; belum dikonfirmasi" /></label><label>Catatan produksi<input id="draft-notes" maxlength="500" value="${esc(draft.notes)}" placeholder="Catatan produksi" /></label></div><div class="button-row" style="margin-top:18px"><button class="button primary" data-action="confirm-order">✓ Konfirmasi & simpan pesanan</button><button class="button secondary" data-action="clear-draft">Batal</button></div><p class="hint">Tanggal wajib dipastikan oleh pengguna sebelum pesanan disimpan. Jika pilihan produk belum ditemukan, pilih produk katalog secara manual.</p>`:tableEmpty('Belum ada draf. Masukkan chat dan jalankan AI, atau buat draf manual untuk pengujian.')} </div></div>`;}
 function planner(){const p=plan();const orderList=[...data.orders].sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));return `${banner()}<div class="stats"><div class="stat"><small>Pesanan aktif</small><strong>${p.activeCount}</strong><em>Status baru & diproses</em></div><div class="stat"><small>Material tercatat</small><strong>${p.rows.length}</strong><em>Dari katalog bahan</em></div><div class="stat"><small>Bahan perlu dibeli</small><strong>${p.rows.filter(x=>x.shortage>0).length}</strong><em>Jenis bahan kekurangan stok</em></div><div class="stat"><small>Resep belum lengkap</small><strong>${p.missingRecipes.length}</strong><em>Produk tanpa komposisi</em></div></div>
  <div class="section-header"><h2>Material requirement planning</h2><button class="button secondary small" data-action="download-csv">↓ Ekspor CSV</button></div><div class="card"><p class="hint">Perhitungan: Σ(jumlah produk × penggunaan bahan per unit). Kekurangan = max(0, kebutuhan − stok). Hanya pesanan Baru dan Diproses yang dihitung. Stok tidak otomatis berkurang.</p>${p.missingRecipes.length?`<div class="notice error">Perencanaan belum lengkap karena resep belum tersedia untuk: ${esc(p.missingRecipes.join(', '))}</div>`:''}${p.rows.length?`<div class="table-wrap"><table><thead><tr><th>Bahan</th><th>Kebutuhan</th><th>Stok</th><th>Kekurangan</th><th>Status</th></tr></thead><tbody>${p.rows.map(r=>`<tr><td><strong>${esc(r.name)}</strong></td><td>${printNum(r.required)} ${esc(r.unit)}</td><td>${printNum(r.stock)} ${esc(r.unit)}</td><td class="${r.shortage>0?'error-text':''}">${printNum(r.shortage)} ${esc(r.unit)}</td><td><span class="status-chip ${r.shortage>0?'in_progress':'completed'}">${r.shortage>0?'Beli / siapkan':'Cukup'}</span></td></tr>`).join('')}</tbody></table></div>`:tableEmpty('Belum ada bahan.')}</div>
  <div class="section-header"><h2>Manajemen pesanan</h2><span class="badge">${data.orders.length} tercatat</span></div><div class="card">${orderList.length?`<div class="table-wrap"><table><thead><tr><th>Pesanan</th><th>Tenggat</th><th>Item</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${orderList.map(o=>`<tr><td><strong>${esc(o.customer||'Tanpa nama')}</strong><br><span class="muted">${esc(o.id.slice(0,18))}</span></td><td>${dateLabel(o.dueDate)}<br><span class="muted">${esc(o.dueTime||'—')}</span></td><td>${o.items.map(i=>`${esc(data.products.find(p=>p.id===i.productId)?.name||'Produk dihapus')} × ${i.quantity}`).join('<br>')}</td><td><select data-status-id="${esc(o.id)}"><option value="new" ${o.status==='new'?'selected':''}>Baru</option><option value="in_progress" ${o.status==='in_progress'?'selected':''}>Diproses</option><option value="completed" ${o.status==='completed'?'selected':''}>Selesai</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Dibatalkan</option></select></td><td><button class="button danger small" data-action="delete-order" data-id="${esc(o.id)}">Hapus</button></td></tr>`).join('')}</tbody></table></div>`:tableEmpty('Belum ada pesanan. Buat pesanan dari AI Order Studio.')}</div>`;}
-function guide(){return `<div class="two-col"><div class="card"><h3>Status kesiapan teknis</h3><div class="metric-row"><span>Mode data</span><strong>${session?'Supabase + RLS':CLOUD?'Demo lokal (belum login)':'Demo lokal browser'}</strong></div><div class="metric-row"><span>AI online</span><strong class="${session?'success-text':'error-text'}">${session?'Dapat dipanggil (jika key server aktif)':'Belum aktif'}</strong></div><div class="metric-row"><span>Katalog dan stok</span><strong>Fungsional</strong></div><div class="metric-row"><span>Perhitungan bahan</span><strong>Deterministik</strong></div><div class="metric-row"><span>URL hosting</span><strong>${esc(location.hostname)}</strong></div><div class="notice info" style="margin-top:20px">Sukses login tidak membuktikan API AI sudah siap. Jalankan pengujian ekstraksi dengan input baru dan catat hasilnya sebelum mengisi formulir lomba.</div><div class="button-row"><button class="button secondary" data-action="download-json">↓ Backup data JSON</button>${!session?'<button class="button danger" data-action="reset-demo">Reset data demo</button>':''}</div></div><div class="card"><h3>Checklist technical gate</h3><p class="hint">Mengikuti Panduan Peserta AI Web Innovation Challenge Bali DigiFest 2026.</p><div class="mini-list"><div><span>Website aktif & dapat diuji</span><span>Periksa URL Netlify</span></div><div><span>AI benar-benar dipanggil</span><span>Uji input baru</span></div><div><span>Data pesanan tersimpan</span><span>Uji reload</span></div><div><span>Repository & README</span><span>Lampirkan GitHub</span></div><div><span>AI / Technology Disclosure</span><span>Dokumen tersedia</span></div><div><span>Proposal PDF maks. 5 halaman isi</span><span>Susun setelah MVP valid</span></div></div><hr class="divider" /><p class="hint">Data contoh bahan hanya ilustrasi. Tidak ada integrasi WhatsApp langsung, OCR screenshot, forecasting permintaan, atau pemotongan stok otomatis pada versi ini.</p></div></div>`;}
+function guide(){return `<div class="two-col"><div class="card"><h3>Status kesiapan teknis</h3><div class="metric-row"><span>Mode data</span><strong>${session?'Supabase + RLS':CLOUD?'Demo lokal (belum login)':'Demo lokal browser'}</strong></div><div class="metric-row"><span>AI NLP lokal</span><strong class="success-text">Model TF-IDF kNN tersedia di browser</strong></div><div class="metric-row"><span>Katalog dan stok</span><strong>Fungsional</strong></div><div class="metric-row"><span>Perhitungan bahan</span><strong>Deterministik</strong></div><div class="metric-row"><span>URL hosting</span><strong>${esc(location.hostname)}</strong></div><div class="notice info" style="margin-top:20px">Model NLP lokal tidak memakai OpenAI API, tetapi kemampuannya terbatas pada pencocokan produk ke katalog dan parser jumlah/tanggal. Jalankan evaluasi berlabel pada pesan baru dan catat hasilnya sebelum mengisi formulir lomba.</div><div class="button-row"><button class="button secondary" data-action="download-json">↓ Backup data JSON</button>${!session?'<button class="button danger" data-action="reset-demo">Reset data demo</button>':''}</div></div><div class="card"><h3>Checklist technical gate</h3><p class="hint">Mengikuti Panduan Peserta AI Web Innovation Challenge Bali DigiFest 2026.</p><div class="mini-list"><div><span>Website aktif & dapat diuji</span><span>Periksa URL Netlify</span></div><div><span>Model NLP lokal benar-benar berjalan</span><span>Uji input baru</span></div><div><span>Data pesanan tersimpan</span><span>Uji reload</span></div><div><span>Repository & README</span><span>Lampirkan GitHub</span></div><div><span>AI / Technology Disclosure</span><span>Dokumen tersedia</span></div><div><span>Proposal PDF maks. 5 halaman isi</span><span>Susun setelah MVP valid</span></div></div><hr class="divider" /><p class="hint">Data contoh bahan hanya ilustrasi. Tidak ada integrasi WhatsApp langsung, OCR screenshot, forecasting permintaan, atau pemotongan stok otomatis pada versi ini.</p></div></div>`;}
 function render(){
  const titles={dashboard:'Ringkasan Operasional',studio:'AI Order Studio',catalog:'Katalog Produk & Bahan',planner:'Rencana Produksi',guide:'Panduan & Verifikasi'};
  $('#page-title').textContent=titles[currentPage];
- $('#connection-status').textContent=session?'Cloud terhubung':CLOUD?'Demo lokal · belum login':'Mode demo lokal';
- $('#connection-status').className=`pill ${session?'good':'warn'}`;
+ $('#connection-status').textContent=booting?'Menyambungkan cloud…':session?(cloudReady?'Cloud terhubung':'Cloud perlu diperiksa'):CLOUD?'Demo lokal · belum login':'Mode demo lokal · periksa config.js';
+ $('#connection-status').className=`pill ${session&&cloudReady?'good':'warn'}`;
  $('#auth-button').textContent=session?'Keluar':'Masuk / Daftar';
  document.querySelectorAll('[data-nav]').forEach(e=>e.classList.toggle('selected',e.dataset.nav===currentPage));
  $('#app-content').innerHTML=({dashboard,studio,catalog:catalogView,planner,guide}[currentPage])();
+}
+function safeRender(){
+  try{render();}
+  catch(err){
+    console.error('RANAKARA rendering error:',err);
+    const main=$('#app-content');
+    if(main)main.innerHTML='<div class="notice error"><strong>Halaman tidak dapat ditampilkan.</strong> Silakan muat ulang. Jika masih gagal, buka Developer Tools → Console dan catat pesan error.</div>';
+  }
 }
 function readDraftFromUI(){
  if(!draft)return;
@@ -100,20 +125,20 @@ function readDraftFromUI(){
  draft.customer=$('#draft-customer')?.value||'';
 }
 async function extract(){
- if(!session){toast('Masuk ke akun cloud untuk menggunakan AI.',true);return;}
+ if(booting||!cloudReady){toast('Koneksi cloud belum siap. Periksa status akun.',true);return;}
+ if(!session){toast('Masuk ke akun cloud untuk menyimpan hasil AI.',true);return;}
  const text=$('#order-text')?.value?.trim();if(!text||text.length<4){toast('Masukkan teks pesanan minimal 4 karakter.',true);return;}
  if(!data.products.length){toast('Tambahkan produk di katalog terlebih dahulu.',true);return;}
- const button=$('#ai-button');button.disabled=true;button.textContent='Memproses AI…';
+ const button=$('#ai-button');button.disabled=true;button.textContent='Memproses NLP lokal…';
  try{
-   if(!await ensureSession()){render();throw new Error('Sesi habis. Silakan masuk kembali.');}
-   const response=await fetch('/.netlify/functions/extract-order',{
-     method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
-     body:JSON.stringify({text,catalog:data.products.map(p=>({id:p.id,name:p.name,aliases:p.aliases})),referenceDate:new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Makassar'})})
-   });
-   const result=await response.json();if(!response.ok)throw new Error(result.error||`HTTP ${response.status}`);
-   draft=normalizeAIOutput(result.result,data.products);draft.customer='';render();toast(`Analisis AI selesai (${result.model}). Mohon periksa semua bidang.`);
- }catch(err){toast(err.message||'Gagal menjalankan AI.',true);button.disabled=false;button.textContent='✦ Analisis dengan AI';}
+   // True local machine-learning inference: no external OpenAI/API call.
+   // TF-IDF char-n-gram nearest neighbor fitted from user catalogue and aliases.
+   const result=extractLocalOrder({text,catalog:data.products.map(p=>({id:p.id,name:p.name,aliases:p.aliases})),referenceDate:new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Makassar'})});
+   draft=normalizeAIOutput(result,data.products);draft.customer='';render();
+   toast(`Analisis NLP lokal selesai. Mohon verifikasi hasil (${LOCAL_MODEL_NAME}).`);
+ }catch(err){toast(err.message||'Model lokal gagal memproses teks.',true);button.disabled=false;button.textContent='✦ Analisis dengan AI';}
 }
+
 async function clickAction(button){
  const a=button.dataset.action,id=button.dataset.id;
  if(a==='extract')return extract();
@@ -172,14 +197,19 @@ async function handleForm(form){
 async function signIn(email,password){
  const result=await authFetch('/auth/v1/token?grant_type=password',{method:'POST',body:{email,password},token:null});
  session=result;sessionStorage.setItem(SESSION_KEY,JSON.stringify(result));
- await loadCloud();$('#auth-dialog').close();draft=null;currentPage='dashboard';render();toast('Berhasil masuk. Workspace tersimpan di Supabase.');
+ booting=true;cloudReady=false;cloudError='';safeRender();
+ try{
+   await loadCloud();cloudReady=true;
+   $('#auth-dialog').close();draft=null;currentPage='dashboard';toast('Berhasil masuk. Workspace tersimpan di Supabase.');
+ }catch(err){cloudError=err.message||'Sinkronisasi gagal';console.error('Cloud sync:',err);toast('Login berhasil, tetapi data cloud belum terhubung: '+cloudError,true);}
+ finally{booting=false;safeRender();}
 }
 async function signUp(email,password){
  const response=await authFetch('/auth/v1/signup',{method:'POST',body:{email,password},token:null});
  $('#auth-message').textContent=response.session?'Pendaftaran berhasil. Silakan masuk.':'Pendaftaran dikirim. Jika konfirmasi email diaktifkan, periksa inbox sebelum login.';
 }
 $('#auth-button').addEventListener('click',async()=>{
- if(session){if(!confirm('Keluar dari workspace cloud?'))return;try{await authFetch('/auth/v1/logout',{method:'POST'});}catch{}session=null;sessionStorage.removeItem(SESSION_KEY);data=JSON.parse(localStorage.getItem(KEY)||'null')||makeSeed();draft=null;render();toast('Keluar dari akun cloud.');return;}
+ if(session){if(!confirm('Keluar dari workspace cloud?'))return;try{await authFetch('/auth/v1/logout',{method:'POST'});}catch{}session=null;cloudReady=false;booting=false;sessionStorage.removeItem(SESSION_KEY);data=JSON.parse(localStorage.getItem(KEY)||'null')||makeSeed();draft=null;safeRender();toast('Keluar dari akun cloud.');return;}
  if(!CLOUD){toast('Isi public/config.js terlebih dahulu dengan Supabase URL dan anon key.',true);return;}
  $('#auth-message').textContent='';$('#auth-dialog').showModal();
 });
@@ -193,7 +223,20 @@ document.addEventListener('submit',async ev=>{const form=ev.target;if(form.match
 document.addEventListener('change',async ev=>{
  if(ev.target.matches('[data-status-id]')){const {statusId}=ev.target.dataset;const value=ev.target.value;await mutate(()=>{const order=data.orders.find(x=>x.id===statusId);if(order)order.status=value;});}
 });
+// CRITICAL: Paint the app immediately. Never block the initial render on Supabase.
+safeRender();
 (async()=>{
- if(CLOUD){try{session=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');if(session){if(await ensureSession())await loadCloud();else toast('Sesi login kedaluwarsa. Masuk kembali.',true);}}catch(err){session=null;sessionStorage.removeItem(SESSION_KEY);toast('Cloud belum dapat diakses: '+err.message,true);}}
- render();
+ if(!CLOUD)return;
+ try{session=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');}
+ catch{session=null;sessionStorage.removeItem(SESSION_KEY);}
+ if(!session)return;
+ booting=true;safeRender();
+ try{
+   if(await ensureSession()){await loadCloud();cloudReady=true;cloudError='';}
+   else{toast('Sesi login kedaluwarsa. Silakan masuk kembali.',true);}
+ }catch(err){
+   cloudReady=false;cloudError=err.message||'Kesalahan tidak dikenal';
+   console.error('RANAKARA cloud bootstrap failed:',err);
+   toast('Koneksi cloud bermasalah: '+cloudError,true);
+ }finally{booting=false;safeRender();}
 })();
