@@ -86,7 +86,7 @@ function render(){
  $('#connection-status').className=`pill ${session?'good':'warn'}`;
  $('#auth-button').textContent=session?'Keluar':'Masuk / Daftar';
  document.querySelectorAll('[data-nav]').forEach(e=>e.classList.toggle('selected',e.dataset.nav===currentPage));
- $('#app-content').innerHTML=({dashboard,studio,catalog,planner,guide}[currentPage])();
+ $('#app-content').innerHTML=({dashboard,studio,catalog:catalogView,planner,guide}[currentPage])();
 }
 function readDraftFromUI(){
  if(!draft)return;
