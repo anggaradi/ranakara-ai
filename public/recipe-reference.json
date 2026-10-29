@@ -1,0 +1,1790 @@
+{
+  "version": 1,
+  "notice": "Hubungan bahan dari referensi, bukan resep numerik terverifikasi. Bahan produk komposit perlu diturunkan secara terpisah oleh UMKM.",
+  "products": [
+    {
+      "productId": "p_canang_sari",
+      "productName": "Canang Sari",
+      "ingredients": [
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_beras",
+          "name": "Beras putih",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_sirih",
+          "name": "Daun sirih",
+          "unit": "lembar",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pinang",
+          "name": "Pinang / jambe",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_kapur",
+          "name": "Kapur sirih / pamor",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_tebu",
+          "name": "Tebu",
+          "unit": "potong",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_uras",
+          "name": "Sampian uras",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_minyak_wangi",
+          "name": "Minyak wangi / lenga wangi",
+          "unit": "ml",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_canang_genten",
+      "productName": "Canang Genten",
+      "ingredients": [
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pelawa",
+          "name": "Pelawa / plawa",
+          "unit": "ikat",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_sirih",
+          "name": "Daun sirih",
+          "unit": "lembar",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pinang",
+          "name": "Pinang / jambe",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_kapur",
+          "name": "Kapur sirih / pamor",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pandan_harum",
+          "name": "Daun pandan harum",
+          "unit": "ikat",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_canang_lenga",
+      "productName": "Canang Lenga Wangi",
+      "ingredients": [
+        {
+          "id": "m_minyak_wangi",
+          "name": "Minyak wangi / lenga wangi",
+          "unit": "ml",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": "Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan."
+        },
+        {
+          "id": "m_burat",
+          "name": "Burat wangi",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": "Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan."
+        },
+        {
+          "id": "m_menyan",
+          "name": "Menyan",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": "Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan."
+        },
+        {
+          "id": "m_cendana",
+          "name": "Cendana",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": "Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan."
+        },
+        {
+          "id": "m_majegau",
+          "name": "Majegau",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": "Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan."
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_canang_nyahnyah",
+      "productName": "Canang Nyahnyah Gringsing",
+      "ingredients": [
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_jaja_kakiping",
+          "name": "Jaja kakiping",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_beras_hitam",
+          "name": "Beras hitam / injin",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_daun_keraras",
+          "name": "Daun pisang kering / keraras",
+          "unit": "lembar",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_porosan",
+          "name": "Porosan siap pakai",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_uras",
+          "name": "Sampian uras",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_canang_gantal",
+      "productName": "Canang Gantal",
+      "ingredients": [
+        {
+          "id": "m_lekesan",
+          "name": "Lekesan",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": "Dua lekesan disebutkan pada sumber; takaran produksi perlu validasi serati."
+        }
+      ],
+      "components": [
+        {
+          "id": "p_canang_genten",
+          "name": "Canang Genten",
+          "unit": "tanding",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "productId": "p_canang_tubungan",
+      "productName": "Canang Tubungan",
+      "ingredients": [
+        {
+          "id": "m_base_tubungan",
+          "name": "Base tubungan",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_canang_genten",
+          "name": "Canang Genten",
+          "unit": "tanding",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": "Komponen dasar mengikuti genten, porosan berbeda. Hindari menggandakan resep genten langsung."
+        }
+      ]
+    },
+    {
+      "productId": "p_canang_pangeresikan",
+      "productName": "Canang Pangeresikan",
+      "ingredients": [
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_tangkih",
+          "name": "Tangkih / tri kona",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_tepung_beras",
+          "name": "Tepung beras",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_kunyit",
+          "name": "Kunyit / kunir",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_minyak_wangi",
+          "name": "Minyak wangi / lenga wangi",
+          "unit": "ml",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_kapas",
+          "name": "Kapas",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_daun_waru",
+          "name": "Daun waru / pucuk",
+          "unit": "lembar",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_canang_payasan",
+      "productName": "Canang Payasan",
+      "ingredients": [
+        {
+          "id": "m_tangkih",
+          "name": "Tangkih / tri kona",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pelawa",
+          "name": "Pelawa / plawa",
+          "unit": "ikat",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_porosan",
+          "name": "Porosan siap pakai",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_uras",
+          "name": "Sampian uras",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_canang_meraka",
+      "productName": "Canang Meraka",
+      "ingredients": [
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/",
+          "notes": ""
+        },
+        {
+          "id": "m_tamas",
+          "name": "Tamas",
+          "unit": "buah",
+          "source": "https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/",
+          "notes": ""
+        },
+        {
+          "id": "m_tebu",
+          "name": "Tebu",
+          "unit": "potong",
+          "source": "https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/",
+          "notes": ""
+        },
+        {
+          "id": "m_buah",
+          "name": "Buah-buahan campur",
+          "unit": "buah",
+          "source": "https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/",
+          "notes": ""
+        },
+        {
+          "id": "m_jajan",
+          "name": "Jajan/kue upakara",
+          "unit": "buah",
+          "source": "https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/",
+          "notes": ""
+        },
+        {
+          "id": "m_pelawa",
+          "name": "Pelawa / plawa",
+          "unit": "ikat",
+          "source": "https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/",
+          "notes": ""
+        },
+        {
+          "id": "m_porosan",
+          "name": "Porosan siap pakai",
+          "unit": "buah",
+          "source": "https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_canang_raka",
+      "productName": "Canang Raka",
+      "ingredients": [
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_buah",
+          "name": "Buah-buahan campur",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_jajan_uli",
+          "name": "Jajan uli / begina",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_plaus",
+          "name": "Sampian plaus / petangas",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_canang_sari",
+          "name": "Canang Sari",
+          "unit": "tanding",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": "Dalam studi pelatihan canang raka dilengkapi canang sari; validasi ke pengrajin."
+        }
+      ]
+    },
+    {
+      "productId": "p_daksina",
+      "productName": "Daksina",
+      "ingredients": [
+        {
+          "id": "m_bedogan",
+          "name": "Serembeng daksina / bedogan",
+          "unit": "buah",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_tapak_dara",
+          "name": "Tampak dara",
+          "unit": "buah",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_benang",
+          "name": "Benang tetebus",
+          "unit": "meter",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_beras",
+          "name": "Beras putih",
+          "unit": "gram",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_base_tampel",
+          "name": "Base tampel",
+          "unit": "buah",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_kelapa",
+          "name": "Kelapa kupas",
+          "unit": "buah",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_telur_itik",
+          "name": "Telur itik mentah",
+          "unit": "butir",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_bijiratus",
+          "name": "Bijaratus",
+          "unit": "porsi",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_pelawa",
+          "name": "Pelawa / plawa",
+          "unit": "ikat",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_kemiri",
+          "name": "Kemiri / tingkih",
+          "unit": "butir",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_pangi",
+          "name": "Pangi / kluwek",
+          "unit": "butir",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_tebu",
+          "name": "Tebu",
+          "unit": "potong",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        },
+        {
+          "id": "m_uang_kepeng",
+          "name": "Uang kepeng / pis bolong",
+          "unit": "keping",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_canang_genten",
+          "name": "Canang Genten",
+          "unit": "tanding",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": "Sumber menyebut pilihan jenis canang; pilih sesuai praktik penjual."
+        },
+        {
+          "id": "p_canang_sari",
+          "name": "Canang Sari",
+          "unit": "tanding",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": "Sumber menyebut pilihan jenis canang; pilih sesuai praktik penjual."
+        },
+        {
+          "id": "p_canang_raka",
+          "name": "Canang Raka",
+          "unit": "tanding",
+          "source": "https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483",
+          "notes": "Sumber menyebut pilihan jenis canang; pilih sesuai praktik penjual."
+        }
+      ]
+    },
+    {
+      "productId": "p_daksina_alit",
+      "productName": "Daksina Alit",
+      "ingredients": [],
+      "components": []
+    },
+    {
+      "productId": "p_pejati",
+      "productName": "Pejati",
+      "ingredients": [],
+      "components": [
+        {
+          "id": "p_daksina",
+          "name": "Daksina",
+          "unit": "tanding",
+          "source": "https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati",
+          "notes": "Sumber menyebut segehan, tidak menetapkan hanya segehan kepel; baris ini kandidat yang wajib dikonfirmasi."
+        },
+        {
+          "id": "p_peras",
+          "name": "Banten Peras",
+          "unit": "tanding",
+          "source": "https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati",
+          "notes": "Sumber menyebut segehan, tidak menetapkan hanya segehan kepel; baris ini kandidat yang wajib dikonfirmasi."
+        },
+        {
+          "id": "p_ajuman",
+          "name": "Banten Ajuman / Sodaan",
+          "unit": "tanding",
+          "source": "https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati",
+          "notes": "Sumber menyebut segehan, tidak menetapkan hanya segehan kepel; baris ini kandidat yang wajib dikonfirmasi."
+        },
+        {
+          "id": "p_tipat_kelanan",
+          "name": "Tipat Kelanan",
+          "unit": "tanding",
+          "source": "https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati",
+          "notes": "Sumber menyebut segehan, tidak menetapkan hanya segehan kepel; baris ini kandidat yang wajib dikonfirmasi."
+        },
+        {
+          "id": "p_penyeneng",
+          "name": "Penyeneng / Pebuat / Tehenan",
+          "unit": "tanding",
+          "source": "https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati",
+          "notes": "Sumber menyebut segehan, tidak menetapkan hanya segehan kepel; baris ini kandidat yang wajib dikonfirmasi."
+        },
+        {
+          "id": "p_pesucian",
+          "name": "Banten Pesucian / Pabersihan",
+          "unit": "tanding",
+          "source": "https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati",
+          "notes": "Sumber menyebut segehan, tidak menetapkan hanya segehan kepel; baris ini kandidat yang wajib dikonfirmasi."
+        },
+        {
+          "id": "p_segehan_kepel",
+          "name": "Segehan Kepel",
+          "unit": "tanding",
+          "source": "https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati",
+          "notes": "Pejati mencakup segehan; jenis segehan yang digunakan harus ditentukan serati."
+        },
+        {
+          "id": "p_canang_raka",
+          "name": "Canang Raka",
+          "unit": "tanding",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": "Komponen tambahan pada contoh praktik Desa Les; tidak dipaksakan universal."
+        }
+      ]
+    },
+    {
+      "productId": "p_peras",
+      "productName": "Banten Peras",
+      "ingredients": [
+        {
+          "id": "m_tamas",
+          "name": "Tamas",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_taledan",
+          "name": "Taledan",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_aled_peras",
+          "name": "Aled / kulit peras",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_beras",
+          "name": "Beras putih",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_benang",
+          "name": "Benang tetebus",
+          "unit": "meter",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_base_tampel",
+          "name": "Base tampel",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_uang_kepeng",
+          "name": "Uang kepeng / pis bolong",
+          "unit": "keping",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_buah",
+          "name": "Buah-buahan campur",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_jajan",
+          "name": "Jajan/kue upakara",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_nasi_tumpeng",
+          "name": "Nasi tumpeng kecil",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_rerasmen",
+          "name": "Rerasmen / lauk pauk",
+          "unit": "porsi",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_peras",
+          "name": "Sampian peras",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_canang_sari",
+          "name": "Canang Sari",
+          "unit": "tanding",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "productId": "p_ajuman",
+      "productName": "Banten Ajuman / Sodaan",
+      "ingredients": [
+        {
+          "id": "m_tamas",
+          "name": "Tamas",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_taledan",
+          "name": "Taledan",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_buah",
+          "name": "Buah-buahan campur",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_jajan",
+          "name": "Jajan/kue upakara",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_nasi_penek",
+          "name": "Nasi penek / telompokan",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": "PHDI/DJKN menyebut dua nasi penek dalam contoh susunan; nilai numerik harus diverifikasi ke produsen."
+        },
+        {
+          "id": "m_rerasmen",
+          "name": "Rerasmen / lauk pauk",
+          "unit": "porsi",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_tangkih",
+          "name": "Tangkih / tri kona",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_plaus",
+          "name": "Sampian plaus / petangas",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_canang_sari",
+          "name": "Canang Sari",
+          "unit": "tanding",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "productId": "p_penyeneng",
+      "productName": "Penyeneng / Pebuat / Tehenan",
+      "ingredients": [
+        {
+          "id": "m_beras",
+          "name": "Beras putih",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_benang",
+          "name": "Benang tetebus",
+          "unit": "meter",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_uang_kepeng",
+          "name": "Uang kepeng / pis bolong",
+          "unit": "keping",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_nasi_aon",
+          "name": "Nasi aon",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_porosan",
+          "name": "Porosan siap pakai",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_daun_dadap",
+          "name": "Daun dadap",
+          "unit": "lembar",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_kunyit",
+          "name": "Kunyit / kunir",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_tipat_kelanan",
+      "productName": "Tipat Kelanan",
+      "ingredients": [
+        {
+          "id": "m_tipat_nasi",
+          "name": "Tipat nasi / ketupat matang",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_buah",
+          "name": "Buah-buahan campur",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_jajan_uli",
+          "name": "Jajan uli / begina",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_kacang_saur",
+          "name": "Kacang saur",
+          "unit": "porsi",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_plaus",
+          "name": "Sampian plaus / petangas",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_canang_genten",
+          "name": "Canang Genten",
+          "unit": "tanding",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "productId": "p_pesucian",
+      "productName": "Banten Pesucian / Pabersihan",
+      "ingredients": [
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_tangkih",
+          "name": "Tangkih / tri kona",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_tepung_beras",
+          "name": "Tepung beras",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_kunyit",
+          "name": "Kunyit / kunir",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_kapas",
+          "name": "Kapas",
+          "unit": "gram",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_daun_waru",
+          "name": "Daun waru / pucuk",
+          "unit": "lembar",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_dapetan",
+      "productName": "Banten Dapetan",
+      "ingredients": [
+        {
+          "id": "m_tamas",
+          "name": "Tamas",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_taledan",
+          "name": "Taledan",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_buah",
+          "name": "Buah-buahan campur",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_jajan",
+          "name": "Jajan/kue upakara",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_nasi_tumpeng",
+          "name": "Nasi tumpeng kecil",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_rerasmen",
+          "name": "Rerasmen / lauk pauk",
+          "unit": "porsi",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_jaet",
+          "name": "Sampian jaet guak",
+          "unit": "buah",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_penyeneng",
+          "name": "Penyeneng / Pebuat / Tehenan",
+          "unit": "tanding",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        },
+        {
+          "id": "p_canang_sari",
+          "name": "Canang Sari",
+          "unit": "tanding",
+          "source": "https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "productId": "p_segehan_kepel",
+      "productName": "Segehan Kepel",
+      "ingredients": [
+        {
+          "id": "m_daun_pisang",
+          "name": "Daun pisang",
+          "unit": "lembar",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        },
+        {
+          "id": "m_nasi_putih",
+          "name": "Nasi putih siap",
+          "unit": "gram",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        },
+        {
+          "id": "m_bawang",
+          "name": "Bawang merah",
+          "unit": "butir",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        },
+        {
+          "id": "m_jahe",
+          "name": "Jahe",
+          "unit": "gram",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        },
+        {
+          "id": "m_garam",
+          "name": "Garam",
+          "unit": "gram",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_segehan_cacahan",
+      "productName": "Segehan Cacahan",
+      "ingredients": [
+        {
+          "id": "m_daun_pisang",
+          "name": "Daun pisang",
+          "unit": "lembar",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        },
+        {
+          "id": "m_nasi_putih",
+          "name": "Nasi putih siap",
+          "unit": "gram",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        },
+        {
+          "id": "m_bawang",
+          "name": "Bawang merah",
+          "unit": "butir",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        },
+        {
+          "id": "m_jahe",
+          "name": "Jahe",
+          "unit": "gram",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        },
+        {
+          "id": "m_garam",
+          "name": "Garam",
+          "unit": "gram",
+          "source": "https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_segehan_manca",
+      "productName": "Segehan Manca Warna",
+      "ingredients": [
+        {
+          "id": "m_daun_pisang",
+          "name": "Daun pisang",
+          "unit": "lembar",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": ""
+        },
+        {
+          "id": "m_nasi_warna",
+          "name": "Nasi warna / panca warna",
+          "unit": "gram",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": ""
+        },
+        {
+          "id": "m_bawang",
+          "name": "Bawang merah",
+          "unit": "butir",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": ""
+        },
+        {
+          "id": "m_jahe",
+          "name": "Jahe",
+          "unit": "gram",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": ""
+        },
+        {
+          "id": "m_garam",
+          "name": "Garam",
+          "unit": "gram",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_segehan_agung",
+      "productName": "Segehan Agung",
+      "ingredients": [
+        {
+          "id": "m_kelapa",
+          "name": "Kelapa kupas",
+          "unit": "buah",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": ""
+        },
+        {
+          "id": "m_telur_itik",
+          "name": "Telur itik mentah",
+          "unit": "butir",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_segehan_cacahan",
+          "name": "Segehan Cacahan",
+          "unit": "tanding",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": "Varian segehan agung dalam literatur piodalan; perlu adaptasi praktik lokal."
+        },
+        {
+          "id": "p_peras",
+          "name": "Banten Peras",
+          "unit": "tanding",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": "Varian segehan agung dalam literatur piodalan; perlu adaptasi praktik lokal."
+        },
+        {
+          "id": "p_ajuman",
+          "name": "Banten Ajuman / Sodaan",
+          "unit": "tanding",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": "Varian segehan agung dalam literatur piodalan; perlu adaptasi praktik lokal."
+        },
+        {
+          "id": "p_tipat_kelanan",
+          "name": "Tipat Kelanan",
+          "unit": "tanding",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": "Varian segehan agung dalam literatur piodalan; perlu adaptasi praktik lokal."
+        },
+        {
+          "id": "p_daksina",
+          "name": "Daksina",
+          "unit": "tanding",
+          "source": "https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf",
+          "notes": "Varian segehan agung dalam literatur piodalan; perlu adaptasi praktik lokal."
+        }
+      ]
+    },
+    {
+      "productId": "p_kwangen",
+      "productName": "Kwangen / Kawangen",
+      "ingredients": [
+        {
+          "id": "m_daun_pisang",
+          "name": "Daun pisang",
+          "unit": "lembar",
+          "source": "https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen",
+          "notes": ""
+        },
+        {
+          "id": "m_uang_kepeng",
+          "name": "Uang kepeng / pis bolong",
+          "unit": "keping",
+          "source": "https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen",
+          "notes": ""
+        },
+        {
+          "id": "m_cilinaya",
+          "name": "Cilinaya",
+          "unit": "buah",
+          "source": "https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen",
+          "notes": ""
+        },
+        {
+          "id": "m_porosan",
+          "name": "Porosan siap pakai",
+          "unit": "buah",
+          "source": "https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen",
+          "notes": ""
+        },
+        {
+          "id": "m_pelawa",
+          "name": "Pelawa / plawa",
+          "unit": "ikat",
+          "source": "https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_prayascita",
+      "productName": "Banten Prayascita",
+      "ingredients": [
+        {
+          "id": "m_janur_gading",
+          "name": "Janur kelapa gading",
+          "unit": "lembar",
+          "source": "https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_padma",
+          "name": "Sampian padma",
+          "unit": "buah",
+          "source": "https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_nagasari",
+          "name": "Sampian nagasari",
+          "unit": "buah",
+          "source": "https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238",
+          "notes": ""
+        },
+        {
+          "id": "m_lis",
+          "name": "Lis / lis sanjata",
+          "unit": "buah",
+          "source": "https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238",
+          "notes": ""
+        },
+        {
+          "id": "m_bungkak",
+          "name": "Kelapa gading muda / bungkak",
+          "unit": "buah",
+          "source": "https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238",
+          "notes": ""
+        },
+        {
+          "id": "m_tirta",
+          "name": "Tirta / air suci",
+          "unit": "ml",
+          "source": "https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238",
+          "notes": ""
+        },
+        {
+          "id": "m_beras_kuning",
+          "name": "Beras kuning",
+          "unit": "gram",
+          "source": "https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_sorohan_alit",
+          "name": "Sorohan Alit",
+          "unit": "tanding",
+          "source": "https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238",
+          "notes": ""
+        },
+        {
+          "id": "p_penyeneng",
+          "name": "Penyeneng / Pebuat / Tehenan",
+          "unit": "tanding",
+          "source": "https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "productId": "p_byakala",
+      "productName": "Banten Byakala",
+      "ingredients": [
+        {
+          "id": "m_ceper",
+          "name": "Ceper",
+          "unit": "buah",
+          "source": "https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf",
+          "notes": "Komposisi berbeda antartipe byakala, wajib konfirmasi serati."
+        },
+        {
+          "id": "m_pandan_berduri",
+          "name": "Daun pandan berduri",
+          "unit": "lembar",
+          "source": "https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf",
+          "notes": "Komposisi berbeda antartipe byakala, wajib konfirmasi serati."
+        },
+        {
+          "id": "m_beras_kuning",
+          "name": "Beras kuning",
+          "unit": "gram",
+          "source": "https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf",
+          "notes": "Komposisi berbeda antartipe byakala, wajib konfirmasi serati."
+        },
+        {
+          "id": "m_telur_ayam",
+          "name": "Telur ayam mentah",
+          "unit": "butir",
+          "source": "https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf",
+          "notes": "Komposisi berbeda antartipe byakala, wajib konfirmasi serati."
+        },
+        {
+          "id": "m_sabut_kelapa",
+          "name": "Sabut kelapa",
+          "unit": "buah",
+          "source": "https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf",
+          "notes": "Komposisi berbeda antartipe byakala, wajib konfirmasi serati."
+        },
+        {
+          "id": "m_lidi",
+          "name": "Lidi",
+          "unit": "batang",
+          "source": "https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf",
+          "notes": "Komposisi berbeda antartipe byakala, wajib konfirmasi serati."
+        },
+        {
+          "id": "m_bawang",
+          "name": "Bawang merah",
+          "unit": "butir",
+          "source": "https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf",
+          "notes": "Komposisi berbeda antartipe byakala, wajib konfirmasi serati."
+        }
+      ],
+      "components": [
+        {
+          "id": "p_penyeneng",
+          "name": "Penyeneng / Pebuat / Tehenan",
+          "unit": "tanding",
+          "source": "https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf",
+          "notes": "Bukan daftar universal untuk seluruh tipe byakala."
+        },
+        {
+          "id": "p_pesucian",
+          "name": "Banten Pesucian / Pabersihan",
+          "unit": "tanding",
+          "source": "https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf",
+          "notes": "Bukan daftar universal untuk seluruh tipe byakala."
+        }
+      ]
+    },
+    {
+      "productId": "p_gebogan",
+      "productName": "Gebogan / Pajegan",
+      "ingredients": [
+        {
+          "id": "m_dulang",
+          "name": "Dulang",
+          "unit": "buah",
+          "source": "https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/",
+          "notes": ""
+        },
+        {
+          "id": "m_batang_pisang",
+          "name": "Batang pisang",
+          "unit": "batang",
+          "source": "https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/",
+          "notes": ""
+        },
+        {
+          "id": "m_buah",
+          "name": "Buah-buahan campur",
+          "unit": "buah",
+          "source": "https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/",
+          "notes": ""
+        },
+        {
+          "id": "m_jajan",
+          "name": "Jajan/kue upakara",
+          "unit": "buah",
+          "source": "https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/",
+          "notes": ""
+        },
+        {
+          "id": "m_janur",
+          "name": "Janur kelapa",
+          "unit": "lembar",
+          "source": "https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/",
+          "notes": ""
+        },
+        {
+          "id": "m_semat",
+          "name": "Semat / pengikat janur",
+          "unit": "buah",
+          "source": "https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/",
+          "notes": ""
+        }
+      ],
+      "components": [
+        {
+          "id": "p_canang_sari",
+          "name": "Canang Sari",
+          "unit": "tanding",
+          "source": "https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/",
+          "notes": "Sumber menyebut canang, jenis canang ditentukan pembuat."
+        }
+      ]
+    },
+    {
+      "productId": "p_penjor",
+      "productName": "Penjor Galungan",
+      "ingredients": [
+        {
+          "id": "m_bambu",
+          "name": "Bambu penjor",
+          "unit": "batang",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_janur",
+          "name": "Janur kelapa",
+          "unit": "lembar",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_pelawa",
+          "name": "Pelawa / plawa",
+          "unit": "ikat",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_umbi",
+          "name": "Umbi-umbian / pala bungkah",
+          "unit": "buah",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_buah",
+          "name": "Buah-buahan campur",
+          "unit": "buah",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_jagung",
+          "name": "Jagung",
+          "unit": "tongkol",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_padi",
+          "name": "Padi",
+          "unit": "ikat",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_jajan",
+          "name": "Jajan/kue upakara",
+          "unit": "buah",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_sanggah_penjor",
+          "name": "Sanggah penjor",
+          "unit": "buah",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_penjor",
+          "name": "Sampian penjor",
+          "unit": "buah",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        },
+        {
+          "id": "m_porosan",
+          "name": "Porosan siap pakai",
+          "unit": "buah",
+          "source": "https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_suci",
+      "productName": "Banten Suci",
+      "ingredients": [],
+      "components": []
+    },
+    {
+      "productId": "p_pengambean",
+      "productName": "Banten Pengambean",
+      "ingredients": [],
+      "components": []
+    },
+    {
+      "productId": "p_pulogembal",
+      "productName": "Banten Pulogembal",
+      "ingredients": [],
+      "components": []
+    },
+    {
+      "productId": "p_tumpeng_peras",
+      "productName": "Tumpeng Peras",
+      "ingredients": [
+        {
+          "id": "m_tamas",
+          "name": "Tamas",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_taledan",
+          "name": "Taledan",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_nasi_tumpeng",
+          "name": "Nasi tumpeng kecil",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_kacang_saur",
+          "name": "Kacang saur",
+          "unit": "porsi",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_telur_rebus",
+          "name": "Telur rebus",
+          "unit": "butir",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_pisang",
+          "name": "Pisang",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_buah",
+          "name": "Buah-buahan campur",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_jajan_uli",
+          "name": "Jajan uli / begina",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_sampian_peras",
+          "name": "Sampian peras",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_porosan",
+          "name": "Porosan siap pakai",
+          "unit": "buah",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        },
+        {
+          "id": "m_bunga",
+          "name": "Bunga persembahan campur",
+          "unit": "gram",
+          "source": "https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659",
+          "notes": ""
+        }
+      ],
+      "components": []
+    },
+    {
+      "productId": "p_sorohan_alit",
+      "productName": "Sorohan Alit",
+      "ingredients": [],
+      "components": []
+    },
+    {
+      "productId": "p_sesayut",
+      "productName": "Banten Sesayut",
+      "ingredients": [],
+      "components": []
+    }
+  ]
+}

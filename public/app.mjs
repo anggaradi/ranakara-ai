@@ -8,6 +8,7 @@ const config=window.RANAKARA_CONFIG||{};
 const CLOUD=/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(config.supabaseUrl||'') && /^(sb_publishable_|eyJ)/.test(config.supabaseAnonKey||'');
 const base=(config.supabaseUrl||'').replace(/\/$/,'');
 const KEY='ranakara_demo_v1', SESSION_KEY='ranakara_cloud_session';
+let recipeReference=null, recipeReferenceError='';
 let data, session=null, draft=null, currentPage='dashboard', working=false, booting=false, cloudReady=false, cloudError='', globalCatalogError='';
 const uiState={plannerQuery:'',plannerStatus:'all',catalogQuery:'',catalogFilter:'all',materialQuery:'',orderText:''};
 try { data=JSON.parse(localStorage.getItem(KEY))||makeSeed(); } catch {data=makeSeed();}
@@ -182,9 +183,27 @@ function dashboard(){
   <div class="section-header"><h2>Aktivitas terakhir</h2><button class="button secondary small" data-nav="planner">Semua pesanan</button></div>
   <div class="card">${recent.length?`<div class="table-wrap"><table><thead><tr><th>Pelanggan / Pesanan</th><th>Tenggat</th><th>Status</th></tr></thead><tbody>${recent.map(o=>`<tr><td><strong>${esc(o.customer||'Tanpa nama')}</strong><br><span class="muted">${o.items.map(i=>`${esc(data.products.find(p=>p.id===i.productId)?.name||'Produk')} × ${Number(i.quantity)}`).join(', ')}</span></td><td>${dateLabel(o.dueDate)}</td><td><span class="status-chip ${esc(o.status)}">${badge(o.status)}</span></td></tr>`).join('')}</tbody></table></div>`:tableEmpty('Belum ada pesanan. Mulai dari AI Order Studio.')}</div>`;
 }
+function recipeReferencePanel(){
+ const list=recipeReference?.products||[];
+ if(!list.length)return `<div class="card"><h3>Referensi resep belum dimuat</h3><p class="hint">${esc(recipeReferenceError||'Klik tombol Lengkapi 34 resep untuk membuka daftar bahan.')}</p><button class="button secondary" data-action="open-recipe-reference">Coba muat kembali</button></div>`;
+ const productOptions=list.map(x=>`<option value="${esc(x.productId)}" ${x.productId===uiState.recipeProductId?'selected':''}>${esc(x.productName)} (${x.ingredients.length} bahan, ${x.components.length} komponen)</option>`).join('');
+ const selected=uiState.recipeProductId||list[0].productId;
+ const item=list.find(x=>x.productId===selected)||list[0];
+ const current=data.products.find(p=>p.id===item.productId)||data.products.find(p=>p.name.toLocaleLowerCase('id')===item.productName.toLocaleLowerCase('id'));
+ const actual=(id,name)=>data.materials.find(m=>m.id===id)||data.materials.find(m=>m.name.toLocaleLowerCase('id')===name.toLocaleLowerCase('id'));
+ const configured=item.ingredients.filter(x=>{let m=actual(x.id,x.name);return current?.recipe?.some(r=>r.materialId===m?.id);}).length;
+ return `<div class="card" id="bulk-recipe-card" style="margin-bottom:18px;border:2px solid #a9c3a5"><div class="flex-between"><div><h2 style="margin:0">Pustaka resep — 34 jenis upakara</h2><p class="hint">${list.filter(x=>x.ingredients.length).length} produk memiliki daftar bahan langsung dalam referensi; produk lain memerlukan pengkajian. Semua takaran harus diisi sesuai resep UMKM.</p></div><button class="button secondary" data-action="close-recipe-reference">Tutup</button></div>
+ <label style="display:block;margin:12px 0">Pilih produk<select id="recipe-reference-product">${productOptions}</select></label><div class="notice"><b>${esc(item.productName)}</b> · ${configured}/${item.ingredients.length} bahan memiliki takaran di workspace. Jumlah kosong tidak dihitung oleh Material Planner.</div>
+ ${item.components.length?`<div class="notice"><b>Komponen banten bertingkat (belum dihitung otomatis):</b><ul>${item.components.map(x=>`<li>${esc(x.name)}</li>`).join('')}</ul><small>Jangan menambahkan takaran komponen dan bahan turunannya sekaligus tanpa metode penghitungan yang jelas.</small></div>`:''}
+ ${item.ingredients.length?`<form id="bulk-recipe-form" data-product="${esc(item.productId)}"><div class="table-wrap"><table><thead><tr><th>Bahan referensi</th><th>Jumlah / 1 produk</th><th>Status</th></tr></thead><tbody>${item.ingredients.map(x=>{const m=actual(x.id,x.name);const old=current?.recipe?.find(r=>r.materialId===m?.id);return `<tr><td><strong>${esc(x.name)}</strong><br><small>${esc(m?.unit||x.unit||'satuan belum tersedia')}</small>${x.source?`<br><small><a href="${esc(x.source)}" target="_blank" rel="noopener noreferrer">Sumber</a></small>`:''}</td><td>${m?`<input class="small-input" type="number" step="0.001" min="0" max="100000" data-recipe-mat="${esc(m.id)}" value="${old?.amount??''}" placeholder="Isi takaran aktual" aria-label="Takaran ${esc(x.name)}" />`:'<span class="muted">Bahan belum ada di katalog</span>'}</td><td>${old?'Sudah ada':'Belum diisi'}</td></tr>`;}).join('')}</tbody></table></div><p class="hint">Kosong = takaran belum diketahui; isi 0 hanya jika bahan memang tidak digunakan pada varian UMKM. Angka 0 tidak disimpan sebagai kebutuhan.</p><button class="button primary" type="submit">Simpan takaran produk ini</button></form>`:'<div class="notice">Rincian bahan langsung belum tersedia dari sumber yang dipakai. Tambahkan resep manual setelah konfirmasi pengrajin.</div>'}</div>`;
+}
+async function openRecipeReference(){
+ try{if(!recipeReference){const res=await fetch('/recipe-reference.json',{cache:'no-store'});if(!res.ok)throw Error(`HTTP ${res.status}`);recipeReference=await res.json();if(!Array.isArray(recipeReference.products)||recipeReference.products.length!==34)throw Error('Data referensi tidak lengkap');}uiState.recipePanel=true;uiState.recipeProductId??=recipeReference.products[0].productId;render();document.querySelector('#bulk-recipe-card')?.scrollIntoView({block:'start',behavior:'smooth'});}
+ catch(e){recipeReferenceError=e.message;uiState.recipePanel=true;render();toast('Referensi resep gagal dimuat: '+e.message,true);}
+}
 function catalogView(){
  const choices=data.materials.map(m=>`<option value="${esc(m.id)}">${esc(m.name)} (${esc(m.unit)})</option>`).join('');
- return `${banner()}<div class="card" style="margin-bottom:16px"><div class="flex-between"><div><h3 style="margin:0">Katalog referensi upakara Bali</h3><p class="hint">Gabungkan produk dan bahan dari JSON. Pesanan, resep yang sudah ada, dan stok tidak dihapus. Takaran per produk belum diisi dan harus divalidasi UMKM.</p></div><div class="button-row"><button type="button" class="button secondary" data-action="download-json">Backup data</button><button type="button" class="button primary" data-action="import-reference">Impor katalog JSON</button></div></div><input id="catalog-import-file" type="file" accept=".json,application/json" style="display:none" /></div><div class="col-2-equal"><div class="card"><h3>Tambah material</h3><form id="material-form" class="stacked-form"><label>Nama bahan<input name="name" required maxlength="100" placeholder="Misalnya janur" /></label><div class="field-row"><label>Satuan<input name="unit" required maxlength="20" placeholder="lembar / gram / pcs" /></label><label>Stok tersedia<input type="number" min="0" step="0.001" name="stock" value="0" required /></label></div><button class="button primary" type="submit">+ Simpan material</button></form></div>
+ return `${banner()}${uiState.recipePanel?recipeReferencePanel():''}<div class="card" style="margin-bottom:16px"><div class="flex-between"><div><h3 style="margin:0">Katalog referensi upakara Bali</h3><p class="hint">Gabungkan produk dan bahan dari JSON. Pesanan, resep yang sudah ada, dan stok tidak dihapus. Takaran per produk belum diisi dan harus divalidasi UMKM.</p></div><div class="button-row"><button type="button" class="button secondary" data-action="open-recipe-reference">📋 Lengkapi 34 resep</button><button type="button" class="button secondary" data-action="download-json">Backup data</button><button type="button" class="button primary" data-action="import-reference">Impor katalog JSON</button></div></div><input id="catalog-import-file" type="file" accept=".json,application/json" style="display:none" /></div><div class="col-2-equal"><div class="card"><h3>Tambah material</h3><form id="material-form" class="stacked-form"><label>Nama bahan<input name="name" required maxlength="100" placeholder="Misalnya janur" /></label><div class="field-row"><label>Satuan<input name="unit" required maxlength="20" placeholder="lembar / gram / pcs" /></label><label>Stok tersedia<input type="number" min="0" step="0.001" name="stock" value="0" required /></label></div><button class="button primary" type="submit">+ Simpan material</button></form></div>
  <div class="card"><h3>Tambah produk</h3><form id="product-form" class="stacked-form"><label>Nama produk<input name="name" maxlength="100" required placeholder="Misalnya canang sari" /></label><label>Alias / singkatan (pisahkan koma)<input name="aliases" maxlength="350" placeholder="canang, cnng" /></label><button class="button primary" type="submit">+ Simpan produk</button></form></div></div>
  <div class="section-header"><h2>Produk & resep produksi</h2><span class="badge">${data.products.length} produk</span></div>
  <div class="card catalog-browser"><div class="toolbar"><label class="search-field">Cari jenis upakara atau alias<input id="catalog-search" type="search" value="${esc(uiState.catalogQuery)}" placeholder="Cari kwangen, daksina, segehan..." autocomplete="off" /></label><label class="filter-field">Status resep<select id="catalog-filter"><option value="all" ${uiState.catalogFilter==='all'?'selected':''}>Semua produk</option><option value="ready" ${uiState.catalogFilter==='ready'?'selected':''}>Ada komposisi</option><option value="missing" ${uiState.catalogFilter==='missing'?'selected':''}>Perlu dilengkapi</option></select></label></div><p id="catalog-result-count" class="hint" role="status"></p>
@@ -250,6 +269,8 @@ async function extract(){
 
 async function clickAction(button){
  const a=button.dataset.action,id=button.dataset.id;
+ if(a==='open-recipe-reference')return openRecipeReference();
+ if(a==='close-recipe-reference'){uiState.recipePanel=false;render();return;}
  if(a==='extract')return extract();
  if(a==='sample-message'){uiState.orderText='Pesan 10 pejati, eh tambah 5 lagi. Untuk besok pagi.';const field=$('#order-text');if(field){field.value=uiState.orderText;field.focus();}return;}
  if(a==='manual-draft'){draft={items:[{productId:'',quantity:1,rawName:'',confidence:'manual'}],delivery:{date_iso:'',time_text:'',raw_text:''},notes:'',questions:[],customer:''};render();toast('Draf manual dibuat; ini bukan keluaran AI.');return;}
@@ -293,6 +314,20 @@ async function clickAction(button){
 function download(name,content,mime){const file=new Blob([content],{type:mime});const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 async function handleForm(form){
  const obj=Object.fromEntries(new FormData(form));
+ if(form.id==='bulk-recipe-form'){
+   const reference=recipeReference?.products?.find(x=>x.productId===form.dataset.product);
+   const p=data.products.find(x=>x.id===form.dataset.product)||data.products.find(x=>x.name.toLocaleLowerCase('id')===reference?.productName.toLocaleLowerCase('id'));
+   if(!reference||!p){toast('Produk referensi tidak ditemukan di workspace.',true);return;}
+   const changes=[];for(const input of form.querySelectorAll('[data-recipe-mat]')){
+     const raw=input.value.trim();if(!raw)continue;
+     const amount=Number(raw);if(!Number.isFinite(amount)||amount<0||amount>100000){toast('Takaran harus antara 0 dan 100000.',true);return;}
+     changes.push({id:input.dataset.recipeMat,amount:rounded(amount)});
+   }
+   if(!changes.length){toast('Belum ada takaran yang diisi untuk produk ini.',true);return;}
+   if(!confirm(`Simpan ${changes.length} takaran untuk ${p.name}? Takaran lama pada bahan yang sama akan diperbarui.`))return;
+   await mutate(()=>{for(const ch of changes){const i=p.recipe.findIndex(r=>r.materialId===ch.id);if(ch.amount===0){if(i>=0)p.recipe.splice(i,1);}else if(i>=0)p.recipe[i].amount=ch.amount;else p.recipe.push({materialId:ch.id,amount:ch.amount});}});
+   return;
+ }
  if(form.id==='material-form'){
    const stock=Number(obj.stock);if(!Number.isFinite(stock)||stock<0){toast('Stok tidak valid.',true);return;}
    await mutate(()=>{data.materials.push({id:makeId('m'),name:obj.name.trim(),unit:obj.unit.trim(),stock:rounded(stock)});});return;
@@ -356,6 +391,7 @@ document.addEventListener('change',async ev=>{
    finally{ev.target.value='';}
    return;
  }
+ if(ev.target.id==='recipe-reference-product'){uiState.recipeProductId=ev.target.value;render();return;}
  if(ev.target.matches('[data-status-id]')){const {statusId}=ev.target.dataset;const value=ev.target.value;await mutate(()=>{const order=data.orders.find(x=>x.id===statusId);if(order)order.status=value;});}
 });
 // CRITICAL: Paint the app immediately. Never block the initial render on Supabase.
