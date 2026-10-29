@@ -1,0 +1,255 @@
+﻿jenis,id_produk,nama_produk,id_item,nama_item,satuan,takaran,status,umkm,pengrajin,tanggal,varian,catatan,sumber
+material,p_canang_sari,Canang Sari,m_ceper,Ceper,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_sari,Canang Sari,m_beras,Beras putih,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_sari,Canang Sari,m_sirih,Daun sirih,lembar,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_sari,Canang Sari,m_pinang,Pinang / jambe,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_sari,Canang Sari,m_kapur,Kapur sirih / pamor,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_sari,Canang Sari,m_tebu,Tebu,potong,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_sari,Canang Sari,m_pisang,Pisang,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_sari,Canang Sari,m_sampian_uras,Sampian uras,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_sari,Canang Sari,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_sari,Canang Sari,m_minyak_wangi,Minyak wangi / lenga wangi,ml,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_canang_sari,Canang Sari,,,,,belum,,,,,,
+material,p_canang_genten,Canang Genten,m_ceper,Ceper,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_genten,Canang Genten,m_pelawa,Pelawa / plawa,ikat,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_genten,Canang Genten,m_sirih,Daun sirih,lembar,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_genten,Canang Genten,m_pinang,Pinang / jambe,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_genten,Canang Genten,m_kapur,Kapur sirih / pamor,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_genten,Canang Genten,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_genten,Canang Genten,m_pandan_harum,Daun pandan harum,ikat,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_canang_genten,Canang Genten,,,,,belum,,,,,,
+material,p_canang_lenga,Canang Lenga Wangi,m_minyak_wangi,Minyak wangi / lenga wangi,ml,,belum,,,,,Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan.,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_lenga,Canang Lenga Wangi,m_burat,Burat wangi,gram,,belum,,,,,Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan.,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_lenga,Canang Lenga Wangi,m_menyan,Menyan,gram,,belum,,,,,Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan.,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_lenga,Canang Lenga Wangi,m_cendana,Cendana,gram,,belum,,,,,Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan.,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_lenga,Canang Lenga Wangi,m_majegau,Majegau,gram,,belum,,,,,Pilihan bahan mengikuti formulasi lenga wangi lokal; jangan artikan semua wajib bersamaan.,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_canang_lenga,Canang Lenga Wangi,,,,,belum,,,,,,
+material,p_canang_nyahnyah,Canang Nyahnyah Gringsing,m_ceper,Ceper,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_nyahnyah,Canang Nyahnyah Gringsing,m_jaja_kakiping,Jaja kakiping,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_nyahnyah,Canang Nyahnyah Gringsing,m_pisang,Pisang,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_nyahnyah,Canang Nyahnyah Gringsing,m_beras_hitam,Beras hitam / injin,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_nyahnyah,Canang Nyahnyah Gringsing,m_daun_keraras,Daun pisang kering / keraras,lembar,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_nyahnyah,Canang Nyahnyah Gringsing,m_porosan,Porosan siap pakai,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_nyahnyah,Canang Nyahnyah Gringsing,m_sampian_uras,Sampian uras,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_nyahnyah,Canang Nyahnyah Gringsing,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_canang_nyahnyah,Canang Nyahnyah Gringsing,,,,,belum,,,,,,
+material,p_canang_gantal,Canang Gantal,m_lekesan,Lekesan,buah,,belum,,,,,Dua lekesan disebutkan pada sumber; takaran produksi perlu validasi serati.,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+komponen,p_canang_gantal,Canang Gantal,p_canang_genten,Canang Genten,tanding,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_canang_gantal,Canang Gantal,,,,,belum,,,,,,
+material,p_canang_tubungan,Canang Tubungan,m_base_tubungan,Base tubungan,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+komponen,p_canang_tubungan,Canang Tubungan,p_canang_genten,Canang Genten,tanding,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_canang_tubungan,Canang Tubungan,,,,,belum,,,,,,
+material,p_canang_pangeresikan,Canang Pangeresikan,m_ceper,Ceper,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_pangeresikan,Canang Pangeresikan,m_tangkih,Tangkih / tri kona,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_pangeresikan,Canang Pangeresikan,m_tepung_beras,Tepung beras,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_pangeresikan,Canang Pangeresikan,m_kunyit,Kunyit / kunir,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_pangeresikan,Canang Pangeresikan,m_minyak_wangi,Minyak wangi / lenga wangi,ml,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_pangeresikan,Canang Pangeresikan,m_kapas,Kapas,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_pangeresikan,Canang Pangeresikan,m_daun_waru,Daun waru / pucuk,lembar,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_canang_pangeresikan,Canang Pangeresikan,,,,,belum,,,,,,
+material,p_canang_payasan,Canang Payasan,m_tangkih,Tangkih / tri kona,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_payasan,Canang Payasan,m_pelawa,Pelawa / plawa,ikat,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_payasan,Canang Payasan,m_porosan,Porosan siap pakai,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_payasan,Canang Payasan,m_sampian_uras,Sampian uras,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_canang_payasan,Canang Payasan,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_canang_payasan,Canang Payasan,,,,,belum,,,,,,
+material,p_canang_meraka,Canang Meraka,m_ceper,Ceper,buah,,belum,,,,,,https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/
+material,p_canang_meraka,Canang Meraka,m_tamas,Tamas,buah,,belum,,,,,,https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/
+material,p_canang_meraka,Canang Meraka,m_tebu,Tebu,potong,,belum,,,,,,https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/
+material,p_canang_meraka,Canang Meraka,m_pisang,Pisang,buah,,belum,,,,,,https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/
+material,p_canang_meraka,Canang Meraka,m_buah,Buah-buahan campur,buah,,belum,,,,,,https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/
+material,p_canang_meraka,Canang Meraka,m_jajan,Jajan/kue upakara,buah,,belum,,,,,,https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/
+material,p_canang_meraka,Canang Meraka,m_pelawa,Pelawa / plawa,ikat,,belum,,,,,,https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/
+material,p_canang_meraka,Canang Meraka,m_porosan,Porosan siap pakai,buah,,belum,,,,,,https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/
+material,p_canang_meraka,Canang Meraka,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://fliphtml5.com/sermn/fael/BUKU_PEDOMAN_UPAKARA_%28BANTEN%29_UPACARA_YAJNA/
+persetujuan,p_canang_meraka,Canang Meraka,,,,,belum,,,,,,
+material,p_canang_raka,Canang Raka,m_ceper,Ceper,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_canang_raka,Canang Raka,m_pisang,Pisang,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_canang_raka,Canang Raka,m_buah,Buah-buahan campur,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_canang_raka,Canang Raka,m_jajan_uli,Jajan uli / begina,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_canang_raka,Canang Raka,m_sampian_plaus,Sampian plaus / petangas,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+komponen,p_canang_raka,Canang Raka,p_canang_sari,Canang Sari,tanding,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+persetujuan,p_canang_raka,Canang Raka,,,,,belum,,,,,,
+material,p_daksina,Daksina,m_bedogan,Serembeng daksina / bedogan,buah,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_tapak_dara,Tampak dara,buah,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_benang,Benang tetebus,meter,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_beras,Beras putih,gram,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_base_tampel,Base tampel,buah,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_kelapa,Kelapa kupas,buah,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_telur_itik,Telur itik mentah,butir,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_bijiratus,Bijaratus,porsi,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_pelawa,Pelawa / plawa,ikat,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_kemiri,Kemiri / tingkih,butir,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_pangi,Pangi / kluwek,butir,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_pisang,Pisang,buah,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_tebu,Tebu,potong,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+material,p_daksina,Daksina,m_uang_kepeng,Uang kepeng / pis bolong,keping,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+komponen,p_daksina,Daksina,p_canang_genten,Canang Genten,tanding,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+komponen,p_daksina,Daksina,p_canang_sari,Canang Sari,tanding,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+komponen,p_daksina,Daksina,p_canang_raka,Canang Raka,tanding,,belum,,,,,,https://journal.mpukuturan.ac.id/index.php/widyadana/article/view/483
+persetujuan,p_daksina,Daksina,,,,,belum,,,,,,
+persetujuan,p_daksina_alit,Daksina Alit,,,,,belum,,,,,,
+komponen,p_pejati,Pejati,p_daksina,Daksina,tanding,,belum,,,,,,https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati
+komponen,p_pejati,Pejati,p_peras,Banten Peras,tanding,,belum,,,,,,https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati
+komponen,p_pejati,Pejati,p_ajuman,Banten Ajuman / Sodaan,tanding,,belum,,,,,,https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati
+komponen,p_pejati,Pejati,p_tipat_kelanan,Tipat Kelanan,tanding,,belum,,,,,,https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati
+komponen,p_pejati,Pejati,p_penyeneng,Penyeneng / Pebuat / Tehenan,tanding,,belum,,,,,,https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati
+komponen,p_pejati,Pejati,p_pesucian,Banten Pesucian / Pabersihan,tanding,,belum,,,,,,https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati
+komponen,p_pejati,Pejati,p_segehan_kepel,Segehan Kepel,tanding,,belum,,,,,,https://agama.denpasarkota.go.id/berita/makna-banten-otonan-dan-banten-pejati
+komponen,p_pejati,Pejati,p_canang_raka,Canang Raka,tanding,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+persetujuan,p_pejati,Pejati,,,,,belum,,,,,,
+material,p_peras,Banten Peras,m_tamas,Tamas,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_taledan,Taledan,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_ceper,Ceper,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_aled_peras,Aled / kulit peras,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_beras,Beras putih,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_benang,Benang tetebus,meter,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_base_tampel,Base tampel,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_uang_kepeng,Uang kepeng / pis bolong,keping,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_buah,Buah-buahan campur,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_pisang,Pisang,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_jajan,Jajan/kue upakara,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_nasi_tumpeng,Nasi tumpeng kecil,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_rerasmen,Rerasmen / lauk pauk,porsi,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_peras,Banten Peras,m_sampian_peras,Sampian peras,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+komponen,p_peras,Banten Peras,p_canang_sari,Canang Sari,tanding,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_peras,Banten Peras,,,,,belum,,,,,,
+material,p_ajuman,Banten Ajuman / Sodaan,m_tamas,Tamas,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_ajuman,Banten Ajuman / Sodaan,m_taledan,Taledan,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_ajuman,Banten Ajuman / Sodaan,m_ceper,Ceper,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_ajuman,Banten Ajuman / Sodaan,m_buah,Buah-buahan campur,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_ajuman,Banten Ajuman / Sodaan,m_pisang,Pisang,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_ajuman,Banten Ajuman / Sodaan,m_jajan,Jajan/kue upakara,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_ajuman,Banten Ajuman / Sodaan,m_nasi_penek,Nasi penek / telompokan,buah,,belum,,,,,PHDI/DJKN menyebut dua nasi penek dalam contoh susunan; nilai numerik harus diverifikasi ke produsen.,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_ajuman,Banten Ajuman / Sodaan,m_rerasmen,Rerasmen / lauk pauk,porsi,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_ajuman,Banten Ajuman / Sodaan,m_tangkih,Tangkih / tri kona,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_ajuman,Banten Ajuman / Sodaan,m_sampian_plaus,Sampian plaus / petangas,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+komponen,p_ajuman,Banten Ajuman / Sodaan,p_canang_sari,Canang Sari,tanding,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_ajuman,Banten Ajuman / Sodaan,,,,,belum,,,,,,
+material,p_penyeneng,Penyeneng / Pebuat / Tehenan,m_beras,Beras putih,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_penyeneng,Penyeneng / Pebuat / Tehenan,m_benang,Benang tetebus,meter,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_penyeneng,Penyeneng / Pebuat / Tehenan,m_uang_kepeng,Uang kepeng / pis bolong,keping,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_penyeneng,Penyeneng / Pebuat / Tehenan,m_nasi_aon,Nasi aon,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_penyeneng,Penyeneng / Pebuat / Tehenan,m_porosan,Porosan siap pakai,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_penyeneng,Penyeneng / Pebuat / Tehenan,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_penyeneng,Penyeneng / Pebuat / Tehenan,m_daun_dadap,Daun dadap,lembar,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_penyeneng,Penyeneng / Pebuat / Tehenan,m_kunyit,Kunyit / kunir,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_penyeneng,Penyeneng / Pebuat / Tehenan,,,,,belum,,,,,,
+material,p_tipat_kelanan,Tipat Kelanan,m_tipat_nasi,Tipat nasi / ketupat matang,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tipat_kelanan,Tipat Kelanan,m_pisang,Pisang,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tipat_kelanan,Tipat Kelanan,m_buah,Buah-buahan campur,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tipat_kelanan,Tipat Kelanan,m_jajan_uli,Jajan uli / begina,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tipat_kelanan,Tipat Kelanan,m_kacang_saur,Kacang saur,porsi,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tipat_kelanan,Tipat Kelanan,m_sampian_plaus,Sampian plaus / petangas,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+komponen,p_tipat_kelanan,Tipat Kelanan,p_canang_genten,Canang Genten,tanding,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+persetujuan,p_tipat_kelanan,Tipat Kelanan,,,,,belum,,,,,,
+material,p_pesucian,Banten Pesucian / Pabersihan,m_ceper,Ceper,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_pesucian,Banten Pesucian / Pabersihan,m_tangkih,Tangkih / tri kona,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_pesucian,Banten Pesucian / Pabersihan,m_tepung_beras,Tepung beras,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_pesucian,Banten Pesucian / Pabersihan,m_kunyit,Kunyit / kunir,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_pesucian,Banten Pesucian / Pabersihan,m_kapas,Kapas,gram,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_pesucian,Banten Pesucian / Pabersihan,m_daun_waru,Daun waru / pucuk,lembar,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_pesucian,Banten Pesucian / Pabersihan,,,,,belum,,,,,,
+material,p_dapetan,Banten Dapetan,m_tamas,Tamas,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_dapetan,Banten Dapetan,m_taledan,Taledan,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_dapetan,Banten Dapetan,m_buah,Buah-buahan campur,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_dapetan,Banten Dapetan,m_pisang,Pisang,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_dapetan,Banten Dapetan,m_jajan,Jajan/kue upakara,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_dapetan,Banten Dapetan,m_nasi_tumpeng,Nasi tumpeng kecil,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_dapetan,Banten Dapetan,m_rerasmen,Rerasmen / lauk pauk,porsi,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+material,p_dapetan,Banten Dapetan,m_sampian_jaet,Sampian jaet guak,buah,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+komponen,p_dapetan,Banten Dapetan,p_penyeneng,Penyeneng / Pebuat / Tehenan,tanding,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+komponen,p_dapetan,Banten Dapetan,p_canang_sari,Canang Sari,tanding,,belum,,,,,,https://www.phdi.parisada.or.id/artikel.php?id=upacra-dan-upakra-sebuah-kajian-filosofis
+persetujuan,p_dapetan,Banten Dapetan,,,,,belum,,,,,,
+material,p_segehan_kepel,Segehan Kepel,m_daun_pisang,Daun pisang,lembar,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+material,p_segehan_kepel,Segehan Kepel,m_nasi_putih,Nasi putih siap,gram,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+material,p_segehan_kepel,Segehan Kepel,m_bawang,Bawang merah,butir,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+material,p_segehan_kepel,Segehan Kepel,m_jahe,Jahe,gram,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+material,p_segehan_kepel,Segehan Kepel,m_garam,Garam,gram,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+persetujuan,p_segehan_kepel,Segehan Kepel,,,,,belum,,,,,,
+material,p_segehan_cacahan,Segehan Cacahan,m_daun_pisang,Daun pisang,lembar,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+material,p_segehan_cacahan,Segehan Cacahan,m_nasi_putih,Nasi putih siap,gram,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+material,p_segehan_cacahan,Segehan Cacahan,m_bawang,Bawang merah,butir,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+material,p_segehan_cacahan,Segehan Cacahan,m_jahe,Jahe,gram,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+material,p_segehan_cacahan,Segehan Cacahan,m_garam,Garam,gram,,belum,,,,,,https://desacanggu.badungkab.go.id/artikel/29427-mengetahui-lebih-dalam-makna-dari-segehan
+persetujuan,p_segehan_cacahan,Segehan Cacahan,,,,,belum,,,,,,
+material,p_segehan_manca,Segehan Manca Warna,m_daun_pisang,Daun pisang,lembar,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+material,p_segehan_manca,Segehan Manca Warna,m_nasi_warna,Nasi warna / panca warna,gram,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+material,p_segehan_manca,Segehan Manca Warna,m_bawang,Bawang merah,butir,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+material,p_segehan_manca,Segehan Manca Warna,m_jahe,Jahe,gram,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+material,p_segehan_manca,Segehan Manca Warna,m_garam,Garam,gram,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+persetujuan,p_segehan_manca,Segehan Manca Warna,,,,,belum,,,,,,
+material,p_segehan_agung,Segehan Agung,m_kelapa,Kelapa kupas,buah,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+material,p_segehan_agung,Segehan Agung,m_telur_itik,Telur itik mentah,butir,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+komponen,p_segehan_agung,Segehan Agung,p_segehan_cacahan,Segehan Cacahan,tanding,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+komponen,p_segehan_agung,Segehan Agung,p_peras,Banten Peras,tanding,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+komponen,p_segehan_agung,Segehan Agung,p_ajuman,Banten Ajuman / Sodaan,tanding,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+komponen,p_segehan_agung,Segehan Agung,p_tipat_kelanan,Tipat Kelanan,tanding,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+komponen,p_segehan_agung,Segehan Agung,p_daksina,Daksina,tanding,,belum,,,,,,https://repositori.kemendikdasmen.go.id/30355/1/UPACARA%20TRADISIONAL%20PIODALAN%20ALIT%20DI%20SANGGAH-MERAJAN%20%28%20SUATU%20KAJIAN%20NILAI%20%29.pdf
+persetujuan,p_segehan_agung,Segehan Agung,,,,,belum,,,,,,
+material,p_kwangen,Kwangen / Kawangen,m_daun_pisang,Daun pisang,lembar,,belum,,,,,,https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen
+material,p_kwangen,Kwangen / Kawangen,m_uang_kepeng,Uang kepeng / pis bolong,keping,,belum,,,,,,https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen
+material,p_kwangen,Kwangen / Kawangen,m_cilinaya,Cilinaya,buah,,belum,,,,,,https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen
+material,p_kwangen,Kwangen / Kawangen,m_porosan,Porosan siap pakai,buah,,belum,,,,,,https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen
+material,p_kwangen,Kwangen / Kawangen,m_pelawa,Pelawa / plawa,ikat,,belum,,,,,,https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen
+material,p_kwangen,Kwangen / Kawangen,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://www.kebudayaan.denpasarkota.go.id/artikel/pelatihan-kilat-pembuatan-kwangen
+persetujuan,p_kwangen,Kwangen / Kawangen,,,,,belum,,,,,,
+material,p_prayascita,Banten Prayascita,m_janur_gading,Janur kelapa gading,lembar,,belum,,,,,,https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238
+material,p_prayascita,Banten Prayascita,m_sampian_padma,Sampian padma,buah,,belum,,,,,,https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238
+material,p_prayascita,Banten Prayascita,m_sampian_nagasari,Sampian nagasari,buah,,belum,,,,,,https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238
+material,p_prayascita,Banten Prayascita,m_lis,Lis / lis sanjata,buah,,belum,,,,,,https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238
+material,p_prayascita,Banten Prayascita,m_bungkak,Kelapa gading muda / bungkak,buah,,belum,,,,,,https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238
+material,p_prayascita,Banten Prayascita,m_tirta,Tirta / air suci,ml,,belum,,,,,,https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238
+material,p_prayascita,Banten Prayascita,m_beras_kuning,Beras kuning,gram,,belum,,,,,,https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238
+komponen,p_prayascita,Banten Prayascita,p_sorohan_alit,Sorohan Alit,tanding,,belum,,,,,,https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238
+komponen,p_prayascita,Banten Prayascita,p_penyeneng,Penyeneng / Pebuat / Tehenan,tanding,,belum,,,,,,https://ejournal.iahntp.ac.id/index.php/belom-bahadat/article/view/238
+persetujuan,p_prayascita,Banten Prayascita,,,,,belum,,,,,,
+material,p_byakala,Banten Byakala,m_ceper,Ceper,buah,,belum,,,,,"Komposisi berbeda antartipe byakala, wajib konfirmasi serati.",https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf
+material,p_byakala,Banten Byakala,m_pandan_berduri,Daun pandan berduri,lembar,,belum,,,,,"Komposisi berbeda antartipe byakala, wajib konfirmasi serati.",https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf
+material,p_byakala,Banten Byakala,m_beras_kuning,Beras kuning,gram,,belum,,,,,"Komposisi berbeda antartipe byakala, wajib konfirmasi serati.",https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf
+material,p_byakala,Banten Byakala,m_telur_ayam,Telur ayam mentah,butir,,belum,,,,,"Komposisi berbeda antartipe byakala, wajib konfirmasi serati.",https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf
+material,p_byakala,Banten Byakala,m_sabut_kelapa,Sabut kelapa,buah,,belum,,,,,"Komposisi berbeda antartipe byakala, wajib konfirmasi serati.",https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf
+material,p_byakala,Banten Byakala,m_lidi,Lidi,batang,,belum,,,,,"Komposisi berbeda antartipe byakala, wajib konfirmasi serati.",https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf
+material,p_byakala,Banten Byakala,m_bawang,Bawang merah,butir,,belum,,,,,"Komposisi berbeda antartipe byakala, wajib konfirmasi serati.",https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf
+komponen,p_byakala,Banten Byakala,p_penyeneng,Penyeneng / Pebuat / Tehenan,tanding,,belum,,,,,,https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf
+komponen,p_byakala,Banten Byakala,p_pesucian,Banten Pesucian / Pabersihan,tanding,,belum,,,,,,https://journal.ummat.ac.id/journals/9/articles/6325/public/6325-20900-3-PB.pdf
+persetujuan,p_byakala,Banten Byakala,,,,,belum,,,,,,
+material,p_gebogan,Gebogan / Pajegan,m_dulang,Dulang,buah,,belum,,,,,,https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/
+material,p_gebogan,Gebogan / Pajegan,m_batang_pisang,Batang pisang,batang,,belum,,,,,,https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/
+material,p_gebogan,Gebogan / Pajegan,m_buah,Buah-buahan campur,buah,,belum,,,,,,https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/
+material,p_gebogan,Gebogan / Pajegan,m_jajan,Jajan/kue upakara,buah,,belum,,,,,,https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/
+material,p_gebogan,Gebogan / Pajegan,m_janur,Janur kelapa,lembar,,belum,,,,,,https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/
+material,p_gebogan,Gebogan / Pajegan,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/
+material,p_gebogan,Gebogan / Pajegan,m_semat,Semat / pengikat janur,buah,,belum,,,,,,https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/
+komponen,p_gebogan,Gebogan / Pajegan,p_canang_sari,Canang Sari,tanding,,belum,,,,,,https://itn.ac.id/seputar-kampus/ukm/mahasiswa-hindu-malang-raya-adu-kreativitas-membuat-gebogan-di-pura-itn-malang/
+persetujuan,p_gebogan,Gebogan / Pajegan,,,,,belum,,,,,,
+material,p_penjor,Penjor Galungan,m_bambu,Bambu penjor,batang,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_janur,Janur kelapa,lembar,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_pelawa,Pelawa / plawa,ikat,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_umbi,Umbi-umbian / pala bungkah,buah,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_buah,Buah-buahan campur,buah,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_jagung,Jagung,tongkol,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_padi,Padi,ikat,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_jajan,Jajan/kue upakara,buah,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_sanggah_penjor,Sanggah penjor,buah,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_sampian_penjor,Sampian penjor,buah,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+material,p_penjor,Penjor Galungan,m_porosan,Porosan siap pakai,buah,,belum,,,,,,https://banjar.bulelengkab.go.id/informasi/detail/artikel/makna-penjor-upacara-38
+persetujuan,p_penjor,Penjor Galungan,,,,,belum,,,,,,
+persetujuan,p_suci,Banten Suci,,,,,belum,,,,,,
+persetujuan,p_pengambean,Banten Pengambean,,,,,belum,,,,,,
+persetujuan,p_pulogembal,Banten Pulogembal,,,,,belum,,,,,,
+material,p_tumpeng_peras,Tumpeng Peras,m_tamas,Tamas,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_taledan,Taledan,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_nasi_tumpeng,Nasi tumpeng kecil,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_kacang_saur,Kacang saur,porsi,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_telur_rebus,Telur rebus,butir,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_pisang,Pisang,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_buah,Buah-buahan campur,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_jajan_uli,Jajan uli / begina,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_sampian_peras,Sampian peras,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_porosan,Porosan siap pakai,buah,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+material,p_tumpeng_peras,Tumpeng Peras,m_bunga,Bunga persembahan campur,gram,,belum,,,,,,https://eproceeding.undiksha.ac.id/index.php/SENADIMAS/article/download/684/382/3659
+persetujuan,p_tumpeng_peras,Tumpeng Peras,,,,,belum,,,,,,
+persetujuan,p_sorohan_alit,Sorohan Alit,,,,,belum,,,,,,
+persetujuan,p_sesayut,Banten Sesayut,,,,,belum,,,,,,
