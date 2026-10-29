@@ -1,0 +1,65 @@
+/* RANAKARA v8.2 — Recipe Center. Only catalog hub; no changes to auth/NLP/MRP. */
+.ran-hub{--ran-deep:#103b31;--ran-gold:#b18b51;--ran-ink:#233c32;--ran-muted:#637c6f;--ran-cream:#fffaf0;margin:0 0 24px;color:var(--ran-ink)}
+.ran-hub-hero{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(180px,.7fr);gap:18px;padding:35px 40px;border-radius:34px;background:linear-gradient(106deg,rgba(252,247,234,.97),rgba(243,239,225,.86)),url('/gapura-bali-hero.webp') center/cover;box-shadow:0 12px 28px rgba(34,54,36,.08);border:1px solid rgba(181,152,106,.3)}
+.ran-hub-eyebrow{display:block;letter-spacing:.2em;color:#956f35;font-size:11px;font-weight:800;margin-bottom:12px}
+.ran-hub h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(29px,3vw,44px);line-height:1.13;letter-spacing:-.03em;margin:0 0 13px;color:#174236}
+.ran-hub h2 em{font-weight:400;font-style:normal;color:#8e6e3c}
+.ran-hub-hero p{max-width:590px;font-size:14px;color:#566c60;line-height:1.7;margin:0}
+.ran-hub-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:21px}
+.ran-hub-art{min-height:190px;display:flex;justify-content:center;align-items:center;flex-direction:column;color:#8e713f;position:relative;isolation:isolate}
+.ran-hub-art:before{content:'';display:block;position:absolute;inset:0;border-radius:50%;background:url('/canang-bali-detail.webp') center/cover;opacity:.9;filter:drop-shadow(0 9px 20px rgba(60,57,30,.1));z-index:-1}
+.ran-hub-art span{font-size:60px;text-shadow:0 1px 4px #fff;opacity:.24}
+.ran-hub-art small{font-size:10px;text-transform:uppercase;letter-spacing:.12em;background:#fff7e5cc;border-radius:100px;padding:7px 12px;margin-top:70px}
+.ran-hub-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:15px}
+.ran-hub-stats>div{background:#fffdfa;border:1px solid #e9deca;padding:20px 22px;border-radius:22px;min-width:0;box-shadow:0 5px 20px rgba(45,60,40,.035)}
+.ran-hub-stats small{font-size:12px;color:#687b6f;font-weight:650;display:block}
+.ran-hub-stats strong{font-family:Georgia,serif;font-size:36px;display:block;color:#184538;margin:9px 0 5px;line-height:1}
+.ran-hub-stats strong span{font-family:inherit;color:#8c968d;font-size:19px}
+.ran-hub-stats>div>span{font-size:11px;color:#75857a}
+.ran-hub-progress{padding:21px 25px;margin-top:14px;background:#fcfaf4;border:1px solid #e7decd;border-radius:22px}
+.ran-hub-progress-head{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px}
+.ran-hub-progress-head strong{color:#2d634e}
+.ran-hub-progress-track{height:10px;border-radius:100px;background:#dfe7da;overflow:hidden;margin:13px 0}
+.ran-hub-progress-track>span{display:block;background:#39755b;height:100%;border-radius:100px;transition:width .35s ease}
+.ran-hub-progress p{font-size:12px;line-height:1.6;color:#5a7163;margin:0}
+.ran-hub-guide{display:flex;align-items:flex-start;gap:12px;padding:17px 20px;margin:14px 0;background:#ecf4e9;border:1px solid #cadaC4;border-radius:19px;color:#2b553f}
+.ran-hub-guide-icon{font-size:23px;line-height:1}
+.ran-hub-guide strong{font-size:14px}
+.ran-hub-guide p{margin:5px 0 0;font-size:12px;line-height:1.65}
+.ran-hub-directory{padding:26px 25px;background:#fffdfa;border:1px solid #e9dfce;border-radius:26px}
+.ran-hub-directory-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
+.ran-hub-directory-title h3{font-family:Georgia,serif;margin:0 0 4px;color:#163e33;font-size:25px}
+.ran-hub-directory-title p{font-size:12px;margin:0;color:#68796c}
+.ran-hub-count{font-size:12px;border-radius:100px;padding:7px 12px;background:#eaf2e8;color:#286044;white-space:nowrap}
+.ran-hub-toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,220px);gap:12px;margin-bottom:17px}
+.ran-hub-toolbar label{font-size:11px;font-weight:700;color:#5f7669}
+.ran-hub-toolbar input,.ran-hub-toolbar select{display:block;width:100%;margin-top:6px;border:1px solid #d9e1d6;border-radius:13px;padding:12px 14px;background:#fff;color:#173d32;font-size:14px}
+.ran-hub-toolbar input:focus,.ran-hub-toolbar select:focus{outline:2px solid #639b7a;outline-offset:1px}
+.ran-recipe-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ran-recipe-tile{font:inherit;text-align:left;min-height:112px;width:100%;border:1px solid #e3e5d9;background:#fff;border-radius:18px;padding:14px 13px;display:flex;align-items:flex-start;gap:10px;color:#1b4133;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.ran-recipe-tile:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(21,56,42,.1);border-color:#aec5a9}
+.ran-recipe-tile:focus-visible{outline:3px solid #3b8562;outline-offset:2px}
+.ran-recipe-tile[hidden]{display:none!important}
+.ran-recipe-symbol{display:grid;place-items:center;flex-shrink:0;width:34px;height:34px;border-radius:12px;background:#f4eddb;color:#98703d;font-size:23px}
+.ran-recipe-tile-copy{min-width:0;display:flex;flex-direction:column;gap:6px;flex:1}
+.ran-recipe-tile-copy strong{font-size:14px;line-height:1.3}
+.ran-recipe-tile-copy small{font-size:11px;color:#718276;line-height:1.35}
+.ran-recipe-arrow{align-self:flex-start;color:#aa946e}
+.ran-recipe-tag{display:inline-flex;align-self:flex-start;font-size:10px;font-weight:700;font-style:normal;padding:4px 7px;border-radius:100px;background:#fff3dd;color:#996519}
+.ran-recipe-tag.public{color:#236545;background:#e2f2e6}
+.ran-recipe-tag.local{color:#4c6192;background:#eaf0ff}
+.ran-hub-nothing{font-size:13px;border:1px dashed #d2d5c4;padding:18px;border-radius:13px;margin:12px 0 0;color:#617668}
+.ran-hub-foot{margin-top:14px;padding:19px 22px;display:flex;justify-content:space-between;align-items:center;gap:15px;background:#ecf1e8;border-radius:19px}
+.ran-hub-foot strong{display:block;font-size:14px;color:#264936;margin-bottom:5px}
+.ran-hub-foot span{display:block;font-size:12px;color:#637464;max-width:630px}
+.ran-admin{margin:0 0 22px;border:1px solid #e7dcc8;background:#fffefa;border-radius:22px;overflow:hidden}
+.ran-admin>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;padding:21px 25px;gap:15px;color:#23533d}
+.ran-admin>summary::-webkit-details-marker{display:none}
+.ran-admin>summary small{display:block;color:#768275;font-size:12px;margin-top:6px}
+.ran-admin-arrow{font-size:25px;transition:transform .18s ease}
+.ran-admin[open] .ran-admin-arrow{transform:rotate(180deg)}
+.ran-admin-body{border-top:1px solid #e9e0d3;padding:19px 20px}
+.ran-admin-actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+@media(max-width:1000px){.ran-recipe-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.ran-hub-hero{grid-template-columns:1fr;padding:26px 23px;border-radius:26px}.ran-hub-art{display:none}.ran-hub-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ran-hub-stats>div{padding:16px}.ran-hub-stats>div:last-child{grid-column:1/-1}.ran-hub-stats strong{font-size:29px}.ran-hub-directory{padding:21px 15px}.ran-hub-directory-title{align-items:flex-start}.ran-hub-toolbar{grid-template-columns:1fr}.ran-recipe-grid{grid-template-columns:1fr}.ran-recipe-tile{min-height:90px}.ran-hub-foot{flex-direction:column;align-items:stretch}.ran-admin>summary{padding:18px}}
+@media(prefers-reduced-motion:reduce){.ran-recipe-tile,.ran-hub-progress-track>span,.ran-admin-arrow{transition:none!important}}
