@@ -3,6 +3,7 @@ import { extractLocalOrder, LOCAL_MODEL_NAME } from './ranakara-nlp.mjs';
 import { mergeCatalogReference } from './catalog-import.mjs';
 import { createCleanWorkspace, applyGlobalReference } from './global-catalog.mjs';
 import { previewApprovedRecipeCSV,applyApprovedRecipePreview,invalidateRecipeApproval,auditActiveRecipeCoverage } from './recipe-bom-import.mjs';
+import { inspectPublicRecipeLibrary,applyPublicRecipeDefaults,copyPublicRecipeToWorkspace } from './global-recipe-library.mjs';
 
 const config=window.RANAKARA_CONFIG||{};
 // Guard against placeholder strings: non-empty placeholders are NOT a valid connection.
@@ -10,6 +11,7 @@ const CLOUD=/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(config.supabaseUrl||
 const base=(config.supabaseUrl||'').replace(/\/$/,'');
 const KEY='ranakara_demo_v1', SESSION_KEY='ranakara_cloud_session';
 let recipeReference=null, recipeReferenceError='';
+let publicRecipeLibrary=null, publicCatalogReference=null, publicRecipeError='';
 let data, session=null, draft=null, currentPage='dashboard', working=false, booting=false, cloudReady=false, cloudError='', globalCatalogError='';
 const uiState={plannerQuery:'',plannerStatus:'all',catalogQuery:'',catalogFilter:'all',materialQuery:'',orderText:''};
 try { data=JSON.parse(localStorage.getItem(KEY))||makeSeed(); } catch {data=makeSeed();}
@@ -56,6 +58,7 @@ async function mergeGlobalCatalog(){
     if(!response.ok)throw new Error(`HTTP ${response.status}`);
     const reference=await response.json();
     const result=applyGlobalReference(data,reference);
+    publicCatalogReference=reference;
     if(result.changed)data=result.workspace;
     globalCatalogError='';
     return result.changed;
@@ -65,14 +68,38 @@ async function mergeGlobalCatalog(){
     return false;
   }
 }
+// Shared reference is static read-only content deployed with the app.
+// Approved public BOMs can seed only empty private recipes; no account ever uploads
+// its private measurements, order history or stock to the public file.
+async function loadPublicRecipeLibrary(){
+ try{
+   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),12000);
+   let response;
+   try{response=await fetch('/global-recipes.json',{signal:controller.signal,cache:'no-store'});}
+   finally{clearTimeout(timer);}
+   if(!response.ok)throw new Error(`HTTP ${response.status}`);
+   const library=await response.json();
+   if(!publicCatalogReference)throw new Error('Katalog global belum berhasil dimuat.');
+   inspectPublicRecipeLibrary(library,publicCatalogReference);
+   publicRecipeLibrary=library;recipeReference={products:library.products};publicRecipeError='';
+   const seeded=applyPublicRecipeDefaults(data,library,publicCatalogReference);
+   if(seeded.changed)data=seeded.workspace;
+   return seeded.changed;
+ }catch(err){
+   publicRecipeError=err?.message||'Pustaka global tidak tersedia';
+   console.warn('Global recipe library unavailable:',err);
+   return false;
+ }
+}
 async function loadCloud(){
   if(!session?.user?.id)return;
   const rows=await authFetch(`/rest/v1/workspaces?select=data&user_id=eq.${encodeURIComponent(session.user.id)}`);
   const exists=rows.length && Array.isArray(rows[0].data?.products);
   data=exists?rows[0].data:createCleanWorkspace();
   const previous=structuredClone(data);
-  const changed=await mergeGlobalCatalog();
-  if(!exists || changed){
+  const changedCatalog=await mergeGlobalCatalog();
+  const changedRecipes=await loadPublicRecipeLibrary();
+  if(!exists || changedCatalog || changedRecipes){
     try{await saveCloud();}catch(err){data=previous;throw err;}
   }
 }
@@ -102,7 +129,7 @@ async function mutate(modifier){
   finally{working=false;}
 }
 function banner(){
-  const warning=globalCatalogError?`<div class="notice error">${esc(globalCatalogError)}</div>`:'';
+  const warning=[globalCatalogError,publicRecipeError].filter(Boolean).map(x=>`<div class="notice">${esc(x)}</div>`).join('');
   if(data.sample)return warning+`<div class="notice"><b>Data CONTOH.</b> Stok dan takaran resep pada katalog ini hanya ilustrasi untuk demo, bukan standar sarana upacara. Sesuaikan semua nilai dengan data UMKM sebelum digunakan atau diklaim dalam proposal.</div>`;
   return warning;
 }
@@ -193,8 +220,12 @@ function recipeReferencePanel(){
  const current=data.products.find(p=>p.id===item.productId)||data.products.find(p=>p.name.toLocaleLowerCase('id')===item.productName.toLocaleLowerCase('id'));
  const actual=(id,name)=>data.materials.find(m=>m.id===id)||data.materials.find(m=>m.name.toLocaleLowerCase('id')===name.toLocaleLowerCase('id'));
  const configured=item.ingredients.filter(x=>{let m=actual(x.id,x.name);return current?.recipe?.some(r=>r.materialId===m?.id);}).length;
+ const globalApproved=item.status==='approved';
+ const globalStatus=globalApproved?`<span class="status-chip completed">Takaran referensi publik terverifikasi</span>`:`<span class="status-chip in_progress">Referensi bahan · belum ada takaran publik</span>`;
+ const privateStatus=current?.recipeApproval?.status==='approved'?'Disahkan pada workspace UMKM':current?.recipe?.length?'Takaran privat, belum disahkan':'Belum ada resep privat';
+ const globalUse=globalApproved?`<button class="button secondary" type="button" data-action="apply-global-recipe" data-id="${esc(item.productId)}">Gunakan takaran referensi pada akun ini</button>`:'';
  return `<div class="card" id="bulk-recipe-card" style="margin-bottom:18px;border:2px solid #a9c3a5"><div class="flex-between"><div><h2 style="margin:0">Pustaka resep — 34 jenis upakara</h2><p class="hint">${list.filter(x=>x.ingredients.length).length} produk memiliki daftar bahan langsung dalam referensi; produk lain memerlukan pengkajian. Semua takaran harus diisi sesuai resep UMKM.</p></div><button class="button secondary" data-action="close-recipe-reference">Tutup</button></div>
- <label style="display:block;margin:12px 0">Pilih produk<select id="recipe-reference-product">${productOptions}</select></label><div class="notice"><b>${esc(item.productName)}</b> · ${configured}/${item.ingredients.length} bahan memiliki takaran di workspace. Jumlah kosong tidak dihitung oleh Material Planner.</div>
+ <label style="display:block;margin:12px 0">Pilih produk<select id="recipe-reference-product">${productOptions}</select></label><div class="notice"><b>${esc(item.productName)}</b> · ${globalStatus} · ${configured}/${item.ingredients.length} bahan memiliki takaran di workspace. <b>${esc(privateStatus)}.</b> ${globalUse}<p class="hint">Takaran referensi publik hanya muncul jika telah disetujui untuk dipublikasikan. Edit resep di akunmu tidak mengubah akun lain. Jumlah kosong tidak dihitung oleh Material Planner.</p></div>
  ${item.components.length?`<div class="notice"><b>Komponen banten bertingkat (belum dihitung otomatis):</b><ul>${item.components.map(x=>`<li>${esc(x.name)}</li>`).join('')}</ul><small>Jangan menambahkan takaran komponen dan bahan turunannya sekaligus tanpa metode penghitungan yang jelas.</small></div>`:''}
  ${item.ingredients.length?`<form id="bulk-recipe-form" data-product="${esc(item.productId)}"><div class="table-wrap"><table><thead><tr><th>Bahan referensi</th><th>Jumlah / 1 produk</th><th>Status</th></tr></thead><tbody>${item.ingredients.map(x=>{const m=actual(x.id,x.name);const old=current?.recipe?.find(r=>r.materialId===m?.id);return `<tr><td><strong>${esc(x.name)}</strong><br><small>${esc(m?.unit||x.unit||'satuan belum tersedia')}</small>${x.source?`<br><small><a href="${esc(x.source)}" target="_blank" rel="noopener noreferrer">Sumber</a></small>`:''}</td><td>${m?`<input class="small-input" type="number" step="0.001" min="0" max="100000" data-recipe-mat="${esc(m.id)}" value="${old?.amount??''}" placeholder="Isi takaran aktual" aria-label="Takaran ${esc(x.name)}" />`:'<span class="muted">Bahan belum ada di katalog</span>'}</td><td>${old?'Sudah ada':'Belum diisi'}</td></tr>`;}).join('')}</tbody></table></div><p class="hint">Kosong = takaran belum diketahui; isi 0 hanya jika bahan memang tidak digunakan pada varian UMKM. Angka 0 tidak disimpan sebagai kebutuhan.</p><button class="button primary" type="submit">Simpan takaran produk ini</button></form>`:'<div class="notice">Rincian bahan langsung belum tersedia dari sumber yang dipakai. Tambahkan resep manual setelah konfirmasi pengrajin.</div>'}</div>`;
 }
@@ -204,7 +235,8 @@ async function openRecipeReference(){
 }
 function catalogView(){
  const choices=data.materials.map(m=>`<option value="${esc(m.id)}">${esc(m.name)} (${esc(m.unit)})</option>`).join('');
- return `${banner()}${uiState.recipePanel?recipeReferencePanel():''}<div class="card" style="margin-bottom:16px;border:2px solid #aac9a9"><div class="flex-between"><div><h3 style="margin:0">Validasi resep 34 upakara · BOM pengrajin</h3><p class="hint">${auditActiveRecipeCoverage(data).readyProducts}/${auditActiveRecipeCoverage(data).totalProducts} produk sudah memiliki catatan pengesahan takaran. Impor hanya baris dengan jumlah terverifikasi; resep lama, stok, dan pesanan tetap aman.</p></div><div class="button-row"><a class="button secondary" href="/template_resep_34.csv" download>↓ Template takaran CSV</a><button type="button" class="button primary" data-action="import-approved-recipe">↑ Impor resep disetujui</button></div></div><p class="hint" style="margin-top:8px">Status "final_disetujui" harus disertai pengrajin, tanggal, UMKM, varian, dan daftar bahan bersih. Produk komposit harus diurai untuk menghindari penghitungan ganda. Angka kosong tidak dianggap nol.</p><input id="approved-recipe-csv" type="file" accept=".csv,text/csv" style="display:none" /></div><div class="card" style="margin-bottom:16px"><div class="flex-between"><div><h3 style="margin:0">Katalog referensi upakara Bali</h3><p class="hint">Gabungkan produk dan bahan dari JSON. Pesanan, resep yang sudah ada, dan stok tidak dihapus. Takaran per produk belum diisi dan harus divalidasi UMKM.</p></div><div class="button-row"><button type="button" class="button secondary" data-action="open-recipe-reference">📋 Lengkapi 34 resep</button><button type="button" class="button secondary" data-action="download-json">Backup data</button><button type="button" class="button primary" data-action="import-reference">Impor katalog JSON</button></div></div><input id="catalog-import-file" type="file" accept=".json,application/json" style="display:none" /></div><div class="col-2-equal"><div class="card"><h3>Tambah material</h3><form id="material-form" class="stacked-form"><label>Nama bahan<input name="name" required maxlength="100" placeholder="Misalnya janur" /></label><div class="field-row"><label>Satuan<input name="unit" required maxlength="20" placeholder="lembar / gram / pcs" /></label><label>Stok tersedia<input type="number" min="0" step="0.001" name="stock" value="0" required /></label></div><button class="button primary" type="submit">+ Simpan material</button></form></div>
+ const globalSummary=publicRecipeLibrary?inspectPublicRecipeLibrary(publicRecipeLibrary,publicCatalogReference):null;
+ return `${banner()}${uiState.recipePanel?recipeReferencePanel():''}<div class="card" style="margin-bottom:16px;border:1px solid #b6c8b2"><div class="flex-between"><div><h3 style="margin:0">Pustaka Resep Global · semua akun</h3><p class="hint">${globalSummary?`${globalSummary.total} produk · ${globalSummary.approved} takaran siap digunakan · ${globalSummary.referenceOnly} daftar bahan menunggu verifikasi takaran publik.`:'Belum termuat. Coba muat ulang pustaka.'} Setiap akun baru dapat melihat referensinya tanpa mengimpor CSV. Data usaha masing-masing tetap privat.</p></div><button type="button" class="button primary" data-action="open-recipe-reference">Buka pustaka global</button></div><p class="hint" style="margin-top:8px">Resep terverifikasi yang dipublikasikan kemudian dapat disalin secara privat. Takaran dari akun lain tidak dibagikan otomatis.</p></div><div class="card" style="margin-bottom:16px;border:2px solid #aac9a9"><div class="flex-between"><div><h3 style="margin:0">Validasi resep 34 upakara · BOM pengrajin</h3><p class="hint">${auditActiveRecipeCoverage(data).readyProducts}/${auditActiveRecipeCoverage(data).totalProducts} produk sudah memiliki catatan pengesahan takaran. Impor hanya baris dengan jumlah terverifikasi; resep lama, stok, dan pesanan tetap aman.</p></div><div class="button-row"><a class="button secondary" href="/template_resep_34.csv" download>↓ Template takaran CSV</a><button type="button" class="button primary" data-action="import-approved-recipe">↑ Impor resep disetujui</button></div></div><p class="hint" style="margin-top:8px">Status "final_disetujui" harus disertai pengrajin, tanggal, UMKM, varian, dan daftar bahan bersih. Produk komposit harus diurai untuk menghindari penghitungan ganda. Angka kosong tidak dianggap nol.</p><input id="approved-recipe-csv" type="file" accept=".csv,text/csv" style="display:none" /></div><div class="card" style="margin-bottom:16px"><div class="flex-between"><div><h3 style="margin:0">Katalog referensi upakara Bali</h3><p class="hint">Gabungkan produk dan bahan dari JSON. Pesanan, resep yang sudah ada, dan stok tidak dihapus. Takaran per produk belum diisi dan harus divalidasi UMKM.</p></div><div class="button-row"><button type="button" class="button secondary" data-action="open-recipe-reference">📋 Lengkapi 34 resep</button><button type="button" class="button secondary" data-action="download-json">Backup data</button><button type="button" class="button primary" data-action="import-reference">Impor katalog JSON</button></div></div><input id="catalog-import-file" type="file" accept=".json,application/json" style="display:none" /></div><div class="col-2-equal"><div class="card"><h3>Tambah material</h3><form id="material-form" class="stacked-form"><label>Nama bahan<input name="name" required maxlength="100" placeholder="Misalnya janur" /></label><div class="field-row"><label>Satuan<input name="unit" required maxlength="20" placeholder="lembar / gram / pcs" /></label><label>Stok tersedia<input type="number" min="0" step="0.001" name="stock" value="0" required /></label></div><button class="button primary" type="submit">+ Simpan material</button></form></div>
  <div class="card"><h3>Tambah produk</h3><form id="product-form" class="stacked-form"><label>Nama produk<input name="name" maxlength="100" required placeholder="Misalnya canang sari" /></label><label>Alias / singkatan (pisahkan koma)<input name="aliases" maxlength="350" placeholder="canang, cnng" /></label><button class="button primary" type="submit">+ Simpan produk</button></form></div></div>
  <div class="section-header"><h2>Produk & resep produksi</h2><span class="badge">${data.products.length} produk</span></div>
  <div class="card catalog-browser"><div class="toolbar"><label class="search-field">Cari jenis upakara atau alias<input id="catalog-search" type="search" value="${esc(uiState.catalogQuery)}" placeholder="Cari kwangen, daksina, segehan..." autocomplete="off" /></label><label class="filter-field">Status resep<select id="catalog-filter"><option value="all" ${uiState.catalogFilter==='all'?'selected':''}>Semua produk</option><option value="ready" ${uiState.catalogFilter==='ready'?'selected':''}>Ada komposisi</option><option value="missing" ${uiState.catalogFilter==='missing'?'selected':''}>Perlu dilengkapi</option></select></label></div><p id="catalog-result-count" class="hint" role="status"></p>
@@ -277,6 +309,17 @@ async function extract(){
 
 async function clickAction(button){
  const a=button.dataset.action,id=button.dataset.id;
+ if(a==='apply-global-recipe'){
+   if(!publicRecipeLibrary||!publicCatalogReference){toast('Pustaka global belum dimuat.',true);return;}
+   const item=publicRecipeLibrary.products.find(x=>x.productId===id);
+   if(!item||item.status!=='approved'){toast('Belum ada takaran global yang terverifikasi untuk produk ini.',true);return;}
+   const current=data.products.find(p=>p.id===id)||data.products.find(p=>p.name.toLocaleLowerCase('id-ID')===item.productName.toLocaleLowerCase('id-ID'));
+   if(!confirm(`Gunakan resep publik ${item.productName} di akun ini? Resep privat produk ini akan DIGANTI, tetapi stok, pesanan, dan resep produk lain tidak diubah.`))return;
+   let next;
+   try{next=copyPublicRecipeToWorkspace(data,publicRecipeLibrary,publicCatalogReference,id);}
+   catch(err){toast(err.message,true);return;}
+   await mutate(()=>{data.products=next.products;});return;
+ }
  if(a==='import-approved-recipe'){const el=$('#approved-recipe-csv');if(el)el.click();return;}
  if(a==='open-recipe-reference')return openRecipeReference();
  if(a==='close-recipe-reference'){uiState.recipePanel=false;render();return;}
@@ -311,7 +354,7 @@ async function clickAction(button){
    if(data.orders.some(o=>o.items.some(i=>i.productId===id))){toast('Produk sudah dipakai dalam pesanan. Pertahankan untuk riwayat.',true);return;}
    if(confirm('Hapus produk ini?'))await mutate(()=>{data.products=data.products.filter(p=>p.id!==id);});return;
  }
- if(a==='delete-recipe'){await mutate(()=>{const p=data.products.find(p=>p.id===id);p.recipe=p.recipe.filter(r=>r.materialId!==button.dataset.material);invalidateRecipeApproval(p);});return;}
+ if(a==='delete-recipe'){await mutate(()=>{const p=data.products.find(p=>p.id===id);p.recipe=p.recipe.filter(r=>r.materialId!==button.dataset.material);invalidateRecipeApproval(p);p.globalRecipeOptOut=true;});return;}
  if(a==='delete-order'){if(confirm('Hapus pesanan ini secara permanen?'))await mutate(()=>{data.orders=data.orders.filter(o=>o.id!==id);});return;}
  if(a==='reset-demo'){
    if(session){toast('Tidak tersedia saat mode cloud.',true);return;}
@@ -339,7 +382,7 @@ async function handleForm(form){
    }
    if(!changes.length){toast('Belum ada takaran yang diisi untuk produk ini.',true);return;}
    if(!confirm(`Simpan ${changes.length} takaran untuk ${p.name}? Takaran lama pada bahan yang sama akan diperbarui.`))return;
-   await mutate(()=>{invalidateRecipeApproval(p);for(const ch of changes){const i=p.recipe.findIndex(r=>r.materialId===ch.id);if(ch.amount===0){if(i>=0)p.recipe.splice(i,1);}else if(i>=0)p.recipe[i].amount=ch.amount;else p.recipe.push({materialId:ch.id,amount:ch.amount});}});
+   await mutate(()=>{invalidateRecipeApproval(p);p.globalRecipeOptOut=true;for(const ch of changes){const i=p.recipe.findIndex(r=>r.materialId===ch.id);if(ch.amount===0){if(i>=0)p.recipe.splice(i,1);}else if(i>=0)p.recipe[i].amount=ch.amount;else p.recipe.push({materialId:ch.id,amount:ch.amount});}});
    return;
  }
  if(form.id==='material-form'){
@@ -352,7 +395,7 @@ async function handleForm(form){
  }
  if(form.classList.contains('recipe-form')){
    const amount=Number(obj.amount);if(!isPositive(amount)||amount>100000){toast('Jumlah bahan harus positif.',true);return;}
-   await mutate(()=>{const p=data.products.find(p=>p.id===form.dataset.product);invalidateRecipeApproval(p);const prev=p.recipe.find(r=>r.materialId===obj.materialId);if(prev)prev.amount=rounded(amount);else p.recipe.push({materialId:obj.materialId,amount:rounded(amount)});});return;
+   await mutate(()=>{const p=data.products.find(p=>p.id===form.dataset.product);invalidateRecipeApproval(p);p.globalRecipeOptOut=true;const prev=p.recipe.find(r=>r.materialId===obj.materialId);if(prev)prev.amount=rounded(amount);else p.recipe.push({materialId:obj.materialId,amount:rounded(amount)});});return;
  }
 }
 async function signIn(email,password){
@@ -370,7 +413,7 @@ async function signUp(email,password){
  $('#auth-message').textContent=response.session?'Pendaftaran berhasil. Silakan masuk.':'Pendaftaran dikirim. Jika konfirmasi email diaktifkan, periksa inbox sebelum login.';
 }
 $('#auth-button').addEventListener('click',async()=>{
- if(session){if(!confirm('Keluar dari workspace cloud?'))return;try{await authFetch('/auth/v1/logout',{method:'POST'});}catch{}session=null;cloudReady=false;booting=false;sessionStorage.removeItem(SESSION_KEY);data=JSON.parse(localStorage.getItem(KEY)||'null')||makeSeed();draft=null;safeRender();await mergeGlobalCatalog();persistLocal();safeRender();toast('Keluar dari akun cloud.');return;}
+ if(session){if(!confirm('Keluar dari workspace cloud?'))return;try{await authFetch('/auth/v1/logout',{method:'POST'});}catch{}session=null;cloudReady=false;booting=false;sessionStorage.removeItem(SESSION_KEY);data=JSON.parse(localStorage.getItem(KEY)||'null')||makeSeed();draft=null;safeRender();await mergeGlobalCatalog();await loadPublicRecipeLibrary();persistLocal();safeRender();toast('Keluar dari akun cloud.');return;}
  if(!CLOUD){toast('Isi public/config.js terlebih dahulu dengan Supabase URL dan anon key.',true);return;}
  $('#auth-message').textContent='';$('#auth-dialog').showModal();
 });
@@ -429,14 +472,14 @@ document.addEventListener('change',async ev=>{
 // CRITICAL: Paint the app immediately. Never block the initial render on Supabase.
 safeRender();
 (async()=>{
- if(!CLOUD){await mergeGlobalCatalog();persistLocal();safeRender();return;}
+ if(!CLOUD){await mergeGlobalCatalog();await loadPublicRecipeLibrary();persistLocal();safeRender();return;}
  try{session=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');}
  catch{session=null;sessionStorage.removeItem(SESSION_KEY);}
- if(!session){await mergeGlobalCatalog();persistLocal();safeRender();return;}
+ if(!session){await mergeGlobalCatalog();await loadPublicRecipeLibrary();persistLocal();safeRender();return;}
  booting=true;safeRender();
  try{
    if(await ensureSession()){await loadCloud();cloudReady=true;cloudError='';}
-   else{toast('Sesi login kedaluwarsa. Silakan masuk kembali.',true);await mergeGlobalCatalog();persistLocal();}
+   else{toast('Sesi login kedaluwarsa. Silakan masuk kembali.',true);await mergeGlobalCatalog();await loadPublicRecipeLibrary();persistLocal();}
  }catch(err){
    cloudReady=false;cloudError=err.message||'Kesalahan tidak dikenal';
    console.error('RANAKARA cloud bootstrap failed:',err);
