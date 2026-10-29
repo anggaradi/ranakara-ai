@@ -1,0 +1,8 @@
+
+{
+  "name": "ranakara-ai",
+  "compatibility_date": "2026-10-29",
+  "assets": {
+    "directory": "./public"
+  }
+}
