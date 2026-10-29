@@ -1,5 +1,6 @@
 import { makeId, makeSeed, computePlan, rounded, isPositive, isISODate, validateOrder, normalizeAIOutput } from './engine.mjs';
 import { extractLocalOrder, LOCAL_MODEL_NAME } from './ranakara-nlp.mjs';
+import { mergeCatalogReference } from './catalog-import.mjs';
 
 const config=window.RANAKARA_CONFIG||{};
 // Guard against placeholder strings: non-empty placeholders are NOT a valid connection.
@@ -85,7 +86,7 @@ function dashboard(){
 }
 function catalogView(){
  const choices=data.materials.map(m=>`<option value="${esc(m.id)}">${esc(m.name)} (${esc(m.unit)})</option>`).join('');
- return `${banner()}<div class="col-2-equal"><div class="card"><h3>Tambah material</h3><form id="material-form" class="stacked-form"><label>Nama bahan<input name="name" required maxlength="100" placeholder="Misalnya janur" /></label><div class="field-row"><label>Satuan<input name="unit" required maxlength="20" placeholder="lembar / gram / pcs" /></label><label>Stok tersedia<input type="number" min="0" step="0.001" name="stock" value="0" required /></label></div><button class="button primary" type="submit">+ Simpan material</button></form></div>
+ return `${banner()}<div class="card" style="margin-bottom:16px"><div class="flex-between"><div><h3 style="margin:0">Katalog referensi upakara Bali</h3><p class="hint">Gabungkan produk dan bahan dari JSON. Pesanan, resep yang sudah ada, dan stok tidak dihapus. Takaran per produk belum diisi dan harus divalidasi UMKM.</p></div><div class="button-row"><button type="button" class="button secondary" data-action="download-json">Backup data</button><button type="button" class="button primary" data-action="import-reference">Impor katalog JSON</button></div></div><input id="catalog-import-file" type="file" accept=".json,application/json" style="display:none" /></div><div class="col-2-equal"><div class="card"><h3>Tambah material</h3><form id="material-form" class="stacked-form"><label>Nama bahan<input name="name" required maxlength="100" placeholder="Misalnya janur" /></label><div class="field-row"><label>Satuan<input name="unit" required maxlength="20" placeholder="lembar / gram / pcs" /></label><label>Stok tersedia<input type="number" min="0" step="0.001" name="stock" value="0" required /></label></div><button class="button primary" type="submit">+ Simpan material</button></form></div>
  <div class="card"><h3>Tambah produk</h3><form id="product-form" class="stacked-form"><label>Nama produk<input name="name" maxlength="100" required placeholder="Misalnya canang sari" /></label><label>Alias / singkatan (pisahkan koma)<input name="aliases" maxlength="350" placeholder="canang, cnng" /></label><button class="button primary" type="submit">+ Simpan produk</button></form></div></div>
  <div class="section-header"><h2>Daftar bahan</h2><span class="badge">${data.materials.length} bahan</span></div><div class="card">${data.materials.length?`<div class="table-wrap"><table><thead><tr><th>Bahan</th><th>Satuan</th><th>Stok tersedia</th><th>Aksi</th></tr></thead><tbody>${data.materials.map(m=>`<tr><td><strong>${esc(m.name)}</strong></td><td>${esc(m.unit)}</td><td><input class="small-input stock-input" data-material="${esc(m.id)}" type="number" min="0" step="0.001" value="${m.stock}" aria-label="Stok ${esc(m.name)}" /></td><td><button class="button secondary small" data-action="save-stock" data-id="${esc(m.id)}">Update</button> <button class="button danger small" data-action="delete-material" data-id="${esc(m.id)}">Hapus</button></td></tr>`).join('')}</tbody></table></div>`:tableEmpty('Belum ada bahan.')}</div>
  <div class="section-header"><h2>Produk & resep produksi</h2><span class="badge">${data.products.length} produk</span></div><div class="card">${data.products.length?data.products.map(p=>`<div class="recipe-block"><div class="flex-between"><div><h3 style="margin:0">${esc(p.name)}</h3><div class="hint">Alias: ${esc((p.aliases||[]).join(', ')||'—')}</div></div><button class="button danger small" data-action="delete-product" data-id="${esc(p.id)}">Hapus produk</button></div><div style="margin:12px 0">${p.recipe.length?p.recipe.map(r=>{const m=data.materials.find(x=>x.id===r.materialId);return `<span class="recipe-pill">${printNum(r.amount)} ${esc(m?.unit||'?')} ${esc(m?.name||'Bahan hilang')} <button class="button secondary small" data-action="delete-recipe" data-id="${esc(p.id)}" data-material="${esc(r.materialId)}" title="Hapus bahan dari resep">×</button></span>`;}).join(''):'<span class="muted">Belum ada komposisi bahan</span>'}</div><form class="recipe-form field-row three" data-product="${esc(p.id)}"><label>Bahan<select name="materialId" required>${choices}</select></label><label>Jumlah / 1 produk<input type="number" step="0.001" min="0.001" name="amount" required placeholder="Contoh: 2" /></label><label>Aksi<button type="submit" class="button secondary">+ Tambah ke resep</button></label></form><hr class="divider" /></div>`).join(''):tableEmpty('Tambahkan produk lebih dulu.')}</div>`;
@@ -177,6 +178,7 @@ async function clickAction(button){
    const rows=[['Bahan','Kebutuhan','Stok','Kekurangan','Satuan'],...plan().rows.map(r=>[r.name,r.required,r.stock,r.shortage,r.unit])];
    return download('ranakara-kebutuhan-bahan.csv','\ufeff'+rows.map(a=>a.map(x=>'"'+String(x).replaceAll('"','""')+'"').join(',')).join('\r\n'),'text/csv;charset=utf-8');
  }
+ if(a==='import-reference'){const uploader=$('#catalog-import-file');if(!uploader){toast('Buka halaman Katalog terlebih dahulu.',true);return;}uploader.click();return;}
  if(a==='download-json')return download('ranakara-backup.json',JSON.stringify(data,null,2),'application/json');
 }
 function download(name,content,mime){const file=new Blob([content],{type:mime});const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -222,6 +224,20 @@ document.addEventListener('click',async ev=>{
 });
 document.addEventListener('submit',async ev=>{const form=ev.target;if(form.matches('#material-form,#product-form,.recipe-form')){ev.preventDefault();await handleForm(form);}});
 document.addEventListener('change',async ev=>{
+ if(ev.target.id==='catalog-import-file'){
+   const file=ev.target.files?.[0]; if(!file)return;
+   try{
+     if(file.size>2_000_000)throw new Error('File JSON terlalu besar (maksimal 2 MB).');
+     const incoming=JSON.parse(await file.text());
+     const merged=mergeCatalogReference(data,incoming);const {counts}=merged;
+     const summary=`Tambah ${counts.newProducts} produk & ${counts.newMaterials} bahan; lewati ${counts.productsSkipped} produk dan ${counts.materialsSkipped} bahan yang sudah ada. Resep dan stok lama dipertahankan. Takaran resep produk baru masih kosong.`;
+     if(!confirm(summary+'\n\nLanjut impor? Disarankan backup data terlebih dahulu.'))return;
+     const saved=await mutate(()=>{data.products=merged.products;data.materials=merged.materials;});
+     if(saved)toast('Katalog referensi berhasil digabungkan. Isi komposisi bahan per unit dari data UMKM.');
+   }catch(err){toast('Impor gagal: '+(err?.message||'Format tidak valid'),true);}
+   finally{ev.target.value='';}
+   return;
+ }
  if(ev.target.matches('[data-status-id]')){const {statusId}=ev.target.dataset;const value=ev.target.value;await mutate(()=>{const order=data.orders.find(x=>x.id===statusId);if(order)order.status=value;});}
 });
 // CRITICAL: Paint the app immediately. Never block the initial render on Supabase.
