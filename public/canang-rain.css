@@ -1,0 +1,37 @@
+/* RANAKARA AI v3.1 — Canang Rain. Terbatas pada hero dashboard, tanpa mengganggu klik. */
+.hero:has(.ranakara-rain-layer){position:relative;isolation:isolate;overflow:hidden}
+.hero > .ranakara-rain-layer{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;user-select:none}
+.hero:has(.ranakara-rain-layer) > :not(.ranakara-rain-layer){position:relative;z-index:1}
+.ranakara-rain-layer .canang-drop{
+  position:absolute;top:0;left:var(--x);width:var(--size);height:var(--size);
+  background:url('/canang.svg') center / contain no-repeat;
+  opacity:var(--alpha);pointer-events:none;will-change:transform;
+  animation:ranakara-canang-fall var(--duration) linear var(--delay) infinite;
+}
+@keyframes ranakara-canang-fall{
+  0%{transform:translate3d(var(--sway-start),-105px,0) rotate(var(--rotate-start)) scale(var(--scale));opacity:0}
+  9%{opacity:var(--alpha)}
+  83%{opacity:var(--alpha)}
+  100%{transform:translate3d(var(--sway-end),var(--travel),0) rotate(var(--rotate-end)) scale(var(--scale));opacity:0}
+}
+.ranakara-canang-toggle{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border:1px solid #d2e2d5;background:#f5faf6;color:#2d604c;border-radius:99px;
+  padding:7px 11px;font-size:11px;line-height:1.25;font-weight:750;
+  white-space:nowrap;cursor:pointer;min-height:34px;
+  transition:background .18s ease,border-color .18s ease;
+}
+.ranakara-canang-toggle:hover{background:#e5f1e8;border-color:#9abbab}
+.ranakara-canang-toggle:focus-visible{outline:3px solid #7ab99b;outline-offset:2px}
+.ranakara-canang-toggle .canang-toggle-mark{width:18px;height:18px;background:url('/canang.svg') center/contain no-repeat;flex-shrink:0}
+.ranakara-canang-toggle[aria-pressed="false"]{background:#fff;color:#708277;border-color:#dce4dd}
+.ranakara-canang-toggle[aria-pressed="false"] .canang-toggle-mark{filter:grayscale(1);opacity:.52}
+.hero:has(.ranakara-rain-layer) .hero-steps span{box-shadow:0 2px 8px rgba(31,70,48,.055)}
+@media(max-width:760px){
+  .ranakara-canang-toggle{min-height:30px;padding:5px 8px;font-size:10px}
+  .ranakara-canang-toggle .canang-toggle-mark{width:15px;height:15px}
+  .hero:has(.ranakara-rain-layer) .ranakara-rain-layer{opacity:.7}
+  .hero:has(.ranakara-rain-layer) > :not(.ranakara-rain-layer){z-index:2}
+}
+@media(max-width:430px){.ranakara-canang-toggle .canang-toggle-label{display:none}}
+@media(prefers-reduced-motion:reduce){.ranakara-rain-layer .canang-drop{animation:none!important;display:none!important}}
