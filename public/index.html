@@ -8,7 +8,22 @@
   <title>RANAKARA AI — Order Intelligence untuk UMKM Bali</title>
   <link rel="stylesheet" href="/styles.css" />
   <script src="/config.js"></script>
-  <script type="module" src="/app.mjs"></script>
+  <script>
+    // Module-load errors would otherwise leave the placeholder on screen forever.
+    window.ranakaraStartupError = function() {
+      var el = document.getElementById('app-content');
+      if (el && el.textContent.includes('Memuat aplikasi')) {
+        el.innerHTML = '<div class="notice error"><strong>Gagal memuat modul aplikasi.</strong> Periksa apakah app.mjs dan engine.mjs tersedia di hosting. Coba muat ulang halaman.</div>';
+      }
+    };
+    window.addEventListener('load',function(){
+      setTimeout(function(){
+        var el=document.getElementById('app-content');
+        if(el && el.textContent.includes('Memuat aplikasi'))window.ranakaraStartupError();
+      },10000);
+    });
+  </script>
+  <script type="module" src="/app.mjs" onerror="window.ranakaraStartupError()"></script>
 </head>
 <body>
   <div class="app-shell">
@@ -22,18 +37,19 @@
         <button class="nav-button" data-nav="planner"><span>☷</span> Rencana Produksi</button>
         <button class="nav-button" data-nav="guide"><span>ⓘ</span> Panduan & Verifikasi</button>
       </nav>
-      <div class="side-bottom"><div class="small-tag">MVP 1.0 · BALI DIGIFEST 2026</div><p>Pesanan masuk. Rencana jadi. Keputusan tetap di tangan pelaku usaha.</p></div>
+      <div class="side-bottom"><div class="small-tag">MVP v3 · BALI DIGIFEST 2026</div><p>Pesanan masuk. Rencana jadi. Keputusan tetap di tangan pelaku usaha.</p></div>
     </aside>
     <div class="main-wrap">
       <header class="topbar"><div><div class="eyebrow">RANAKARA WORKSPACE</div><h1 id="page-title">Ringkasan Operasional</h1></div><div class="top-actions"><span class="pill" id="connection-status">Memuat…</span><button id="auth-button" class="button secondary small">Akun</button></div></header>
       <main id="app-content" class="main-content"><p>Memuat aplikasi…</p></main>
+      <nav class="mobile-nav" aria-label="Navigasi seluler"><button data-nav="dashboard" class="selected">Ringkasan</button><button data-nav="studio">AI Studio</button><button data-nav="catalog">Katalog</button><button data-nav="planner">Produksi</button><button data-nav="guide">Panduan</button></nav>
       <footer class="footer"><span>RANAKARA AI · Prototype — untuk pengujian dan validasi pengguna</span><span>Data contoh bukan standar komposisi sarana upacara</span></footer>
     </div>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="auth-dialog" aria-labelledby="auth-title">
     <form method="dialog" class="auth-form"><button type="submit" class="dialog-close" aria-label="Tutup">×</button></form>
-    <div class="auth-body"><div class="eyebrow">CLOUD WORKSPACE</div><h2 id="auth-title">Masuk ke RANAKARA</h2><p>Masuk dengan akun Supabase untuk menyimpan data antardevice dan mengaktifkan panggilan AI.</p>
+    <div class="auth-body"><div class="eyebrow">CLOUD WORKSPACE</div><h2 id="auth-title">Masuk ke RANAKARA</h2><p>Masuk dengan akun Supabase untuk menyimpan data antardevice ; AI lokal berjalan di browser.</p>
     <form id="login-form" class="stacked-form"><label>Email<input id="auth-email" type="email" required autocomplete="email" /></label><label>Password<input id="auth-password" type="password" required minlength="6" autocomplete="current-password" /></label><div class="button-row"><button type="submit" class="button primary" data-auth-action="login">Masuk</button><button type="button" class="button secondary" id="register-button">Daftar akun</button></div></form><p class="note" id="auth-message"></p></div>
   </dialog>
 </body>
