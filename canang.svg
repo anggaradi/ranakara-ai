@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+<title id="title">Ilustrasi canang sari Bali</title><desc id="desc">Alas janur hijau persegi dengan bunga berwarna merah, kuning, putih, dan biru muda</desc>
+<!-- Canang sari bergaya ilustrasi datar, dekoratif, bukan representasi resep ritual -->
+<path d="M80 8 151 80 80 152 9 80Z" fill="#467b52" stroke="#255940" stroke-width="4" stroke-linejoin="round"/>
+<path d="M80 17 141 80 80 141 19 80Z" fill="#98bd71" stroke="#f0e1a9" stroke-width="3" stroke-linejoin="round"/>
+<path d="M80 17V141M19 80H141M38 40L121 122M39 119L122 39" fill="none" stroke="#568b58" stroke-opacity=".76" stroke-width="3"/>
+<path d="M80 31 128 80 80 129 32 80Z" fill="#e7c988" stroke="#4b825a" stroke-width="3"/>
+<path d="M80 43 116 80 80 117 44 80Z" fill="#f2dfb0" stroke="#b18e58" stroke-width="2.6"/>
+<!-- Empat kelompok bunga mengelilingi pusat porosan, dengan warna solid -->
+<g transform="translate(80 57)">
+  <ellipse cx="0" cy="-10" rx="9" ry="12" fill="#ffce42"/>
+  <ellipse cx="10" cy="0" rx="12" ry="9" fill="#f4b931"/>
+  <ellipse cx="0" cy="10" rx="9" ry="12" fill="#f8dc60"/>
+  <ellipse cx="-10" cy="0" rx="12" ry="9" fill="#e7a72b"/>
+  <circle r="7" fill="#9d602b"/>
+</g>
+<g transform="translate(103 80)">
+  <ellipse cx="0" cy="-10" rx="9" ry="12" fill="#f7f4ea"/>
+  <ellipse cx="10" cy="0" rx="12" ry="9" fill="#fffdf3"/>
+  <ellipse cx="0" cy="10" rx="9" ry="12" fill="#e6e8df"/>
+  <ellipse cx="-10" cy="0" rx="12" ry="9" fill="#fffdf3"/>
+  <circle r="7" fill="#d3b05d"/>
+</g>
+<g transform="translate(80 102)">
+  <ellipse cx="0" cy="-10" rx="9" ry="12" fill="#ed6881"/>
+  <ellipse cx="10" cy="0" rx="12" ry="9" fill="#c94d6e"/>
+  <ellipse cx="0" cy="10" rx="9" ry="12" fill="#e95979"/>
+  <ellipse cx="-10" cy="0" rx="12" ry="9" fill="#f38593"/>
+  <circle r="7" fill="#f8c75e"/>
+</g>
+<g transform="translate(57 80)">
+  <ellipse cx="0" cy="-10" rx="9" ry="12" fill="#9a92d8"/>
+  <ellipse cx="10" cy="0" rx="12" ry="9" fill="#7c82c2"/>
+  <ellipse cx="0" cy="10" rx="9" ry="12" fill="#918bd0"/>
+  <ellipse cx="-10" cy="0" rx="12" ry="9" fill="#afa4e5"/>
+  <circle r="7" fill="#ffcb67"/>
+</g>
+<path d="M74 76c-10-8-15-8-22-3 8 1 12 7 18 11ZM86 77c9-7 15-7 22-2-8 1-12 6-18 11Z" fill="#26734a"/>
+<circle cx="80" cy="80" r="7" fill="#f6c965" stroke="#9b6e32" stroke-width="2"/>
+</svg>
