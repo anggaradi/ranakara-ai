@@ -1,0 +1,722 @@
+{
+  "catalogVersion": 1,
+  "type": "ranakara_public_reference_catalog",
+  "description": "Katalog referensi bersama; tanpa data transaksi atau takaran resep UMKM.",
+  "materials": [
+    {
+      "id": "m_tipat_nasi",
+      "name": "Tipat nasi / ketupat matang",
+      "unit": "buah"
+    },
+    {
+      "id": "m_kacang_saur",
+      "name": "Kacang saur",
+      "unit": "porsi"
+    },
+    {
+      "id": "m_jajan_uli",
+      "name": "Jajan uli / begina",
+      "unit": "buah"
+    },
+    {
+      "id": "m_telur_rebus",
+      "name": "Telur rebus",
+      "unit": "butir"
+    },
+    {
+      "id": "m_janur",
+      "name": "Janur kelapa",
+      "unit": "lembar"
+    },
+    {
+      "id": "m_janur_gading",
+      "name": "Janur kelapa gading",
+      "unit": "lembar"
+    },
+    {
+      "id": "m_slepan",
+      "name": "Slepan / daun kelapa tua",
+      "unit": "lembar"
+    },
+    {
+      "id": "m_daun_pisang",
+      "name": "Daun pisang",
+      "unit": "lembar"
+    },
+    {
+      "id": "m_pelawa",
+      "name": "Pelawa / plawa",
+      "unit": "ikat"
+    },
+    {
+      "id": "m_daun_dadap",
+      "name": "Daun dadap",
+      "unit": "lembar"
+    },
+    {
+      "id": "m_daun_waru",
+      "name": "Daun waru / pucuk",
+      "unit": "lembar"
+    },
+    {
+      "id": "m_pandan_harum",
+      "name": "Daun pandan harum",
+      "unit": "ikat"
+    },
+    {
+      "id": "m_pandan_berduri",
+      "name": "Daun pandan berduri",
+      "unit": "lembar"
+    },
+    {
+      "id": "m_sirih",
+      "name": "Daun sirih",
+      "unit": "lembar"
+    },
+    {
+      "id": "m_pinang",
+      "name": "Pinang / jambe",
+      "unit": "buah"
+    },
+    {
+      "id": "m_kapur",
+      "name": "Kapur sirih / pamor",
+      "unit": "gram"
+    },
+    {
+      "id": "m_gambir",
+      "name": "Gambir",
+      "unit": "gram"
+    },
+    {
+      "id": "m_porosan",
+      "name": "Porosan siap pakai",
+      "unit": "buah"
+    },
+    {
+      "id": "m_base_tampel",
+      "name": "Base tampel",
+      "unit": "buah"
+    },
+    {
+      "id": "m_bunga",
+      "name": "Bunga persembahan campur",
+      "unit": "gram"
+    },
+    {
+      "id": "m_burat",
+      "name": "Burat wangi",
+      "unit": "gram"
+    },
+    {
+      "id": "m_minyak_wangi",
+      "name": "Minyak wangi / lenga wangi",
+      "unit": "ml"
+    },
+    {
+      "id": "m_menyan",
+      "name": "Menyan",
+      "unit": "gram"
+    },
+    {
+      "id": "m_cendana",
+      "name": "Cendana",
+      "unit": "gram"
+    },
+    {
+      "id": "m_majegau",
+      "name": "Majegau",
+      "unit": "gram"
+    },
+    {
+      "id": "m_beras",
+      "name": "Beras putih",
+      "unit": "gram"
+    },
+    {
+      "id": "m_beras_kuning",
+      "name": "Beras kuning",
+      "unit": "gram"
+    },
+    {
+      "id": "m_beras_hitam",
+      "name": "Beras hitam / injin",
+      "unit": "gram"
+    },
+    {
+      "id": "m_nasi_putih",
+      "name": "Nasi putih siap",
+      "unit": "gram"
+    },
+    {
+      "id": "m_nasi_warna",
+      "name": "Nasi warna / panca warna",
+      "unit": "gram"
+    },
+    {
+      "id": "m_nasi_penek",
+      "name": "Nasi penek / telompokan",
+      "unit": "buah"
+    },
+    {
+      "id": "m_nasi_tumpeng",
+      "name": "Nasi tumpeng kecil",
+      "unit": "buah"
+    },
+    {
+      "id": "m_nasi_aon",
+      "name": "Nasi aon",
+      "unit": "buah"
+    },
+    {
+      "id": "m_rerasmen",
+      "name": "Rerasmen / lauk pauk",
+      "unit": "porsi"
+    },
+    {
+      "id": "m_pisang",
+      "name": "Pisang",
+      "unit": "buah"
+    },
+    {
+      "id": "m_tebu",
+      "name": "Tebu",
+      "unit": "potong"
+    },
+    {
+      "id": "m_buah",
+      "name": "Buah-buahan campur",
+      "unit": "buah"
+    },
+    {
+      "id": "m_umbi",
+      "name": "Umbi-umbian / pala bungkah",
+      "unit": "buah"
+    },
+    {
+      "id": "m_jagung",
+      "name": "Jagung",
+      "unit": "tongkol"
+    },
+    {
+      "id": "m_padi",
+      "name": "Padi",
+      "unit": "ikat"
+    },
+    {
+      "id": "m_kelapa",
+      "name": "Kelapa kupas",
+      "unit": "buah"
+    },
+    {
+      "id": "m_bungkak",
+      "name": "Kelapa gading muda / bungkak",
+      "unit": "buah"
+    },
+    {
+      "id": "m_telur_itik",
+      "name": "Telur itik mentah",
+      "unit": "butir"
+    },
+    {
+      "id": "m_telur_ayam",
+      "name": "Telur ayam mentah",
+      "unit": "butir"
+    },
+    {
+      "id": "m_kemiri",
+      "name": "Kemiri / tingkih",
+      "unit": "butir"
+    },
+    {
+      "id": "m_pangi",
+      "name": "Pangi / kluwek",
+      "unit": "butir"
+    },
+    {
+      "id": "m_bijiratus",
+      "name": "Bijaratus",
+      "unit": "porsi"
+    },
+    {
+      "id": "m_bawang",
+      "name": "Bawang merah",
+      "unit": "butir"
+    },
+    {
+      "id": "m_jahe",
+      "name": "Jahe",
+      "unit": "gram"
+    },
+    {
+      "id": "m_kunyit",
+      "name": "Kunyit / kunir",
+      "unit": "gram"
+    },
+    {
+      "id": "m_garam",
+      "name": "Garam",
+      "unit": "gram"
+    },
+    {
+      "id": "m_tepung_beras",
+      "name": "Tepung beras",
+      "unit": "gram"
+    },
+    {
+      "id": "m_tepung_ketan",
+      "name": "Tepung ketan",
+      "unit": "gram"
+    },
+    {
+      "id": "m_jajan",
+      "name": "Jajan/kue upakara",
+      "unit": "buah"
+    },
+    {
+      "id": "m_ceper",
+      "name": "Ceper",
+      "unit": "buah"
+    },
+    {
+      "id": "m_taledan",
+      "name": "Taledan",
+      "unit": "buah"
+    },
+    {
+      "id": "m_tamas",
+      "name": "Tamas",
+      "unit": "buah"
+    },
+    {
+      "id": "m_tangkih",
+      "name": "Tangkih / tri kona",
+      "unit": "buah"
+    },
+    {
+      "id": "m_kojong",
+      "name": "Kojong",
+      "unit": "buah"
+    },
+    {
+      "id": "m_aled_peras",
+      "name": "Aled / kulit peras",
+      "unit": "buah"
+    },
+    {
+      "id": "m_sampian_uras",
+      "name": "Sampian uras",
+      "unit": "buah"
+    },
+    {
+      "id": "m_sampian_plaus",
+      "name": "Sampian plaus / petangas",
+      "unit": "buah"
+    },
+    {
+      "id": "m_sampian_peras",
+      "name": "Sampian peras",
+      "unit": "buah"
+    },
+    {
+      "id": "m_sampian_nagasari",
+      "name": "Sampian nagasari",
+      "unit": "buah"
+    },
+    {
+      "id": "m_sampian_padma",
+      "name": "Sampian padma",
+      "unit": "buah"
+    },
+    {
+      "id": "m_sampian_jaet",
+      "name": "Sampian jaet guak",
+      "unit": "buah"
+    },
+    {
+      "id": "m_lis",
+      "name": "Lis / lis sanjata",
+      "unit": "buah"
+    },
+    {
+      "id": "m_tapak_dara",
+      "name": "Tampak dara",
+      "unit": "buah"
+    },
+    {
+      "id": "m_bedogan",
+      "name": "Serembeng daksina / bedogan",
+      "unit": "buah"
+    },
+    {
+      "id": "m_lekesan",
+      "name": "Lekesan",
+      "unit": "buah"
+    },
+    {
+      "id": "m_base_tubungan",
+      "name": "Base tubungan",
+      "unit": "buah"
+    },
+    {
+      "id": "m_jaja_kakiping",
+      "name": "Jaja kakiping",
+      "unit": "buah"
+    },
+    {
+      "id": "m_daun_keraras",
+      "name": "Daun pisang kering / keraras",
+      "unit": "lembar"
+    },
+    {
+      "id": "m_benang",
+      "name": "Benang tetebus",
+      "unit": "meter"
+    },
+    {
+      "id": "m_uang_kepeng",
+      "name": "Uang kepeng / pis bolong",
+      "unit": "keping"
+    },
+    {
+      "id": "m_uang_receh",
+      "name": "Uang receh / sesari",
+      "unit": "keping"
+    },
+    {
+      "id": "m_cilinaya",
+      "name": "Cilinaya",
+      "unit": "buah"
+    },
+    {
+      "id": "m_batang_pisang",
+      "name": "Batang pisang",
+      "unit": "batang"
+    },
+    {
+      "id": "m_dulang",
+      "name": "Dulang",
+      "unit": "buah"
+    },
+    {
+      "id": "m_semat",
+      "name": "Semat / pengikat janur",
+      "unit": "buah"
+    },
+    {
+      "id": "m_bambu",
+      "name": "Bambu penjor",
+      "unit": "batang"
+    },
+    {
+      "id": "m_sanggah_penjor",
+      "name": "Sanggah penjor",
+      "unit": "buah"
+    },
+    {
+      "id": "m_sampian_penjor",
+      "name": "Sampian penjor",
+      "unit": "buah"
+    },
+    {
+      "id": "m_sabut_kelapa",
+      "name": "Sabut kelapa",
+      "unit": "buah"
+    },
+    {
+      "id": "m_lidi",
+      "name": "Lidi",
+      "unit": "batang"
+    },
+    {
+      "id": "m_kapas",
+      "name": "Kapas",
+      "unit": "gram"
+    },
+    {
+      "id": "m_tirta",
+      "name": "Tirta / air suci",
+      "unit": "ml"
+    },
+    {
+      "id": "m_dupa",
+      "name": "Dupa",
+      "unit": "batang"
+    }
+  ],
+  "products": [
+    {
+      "id": "p_canang_sari",
+      "name": "Canang Sari",
+      "aliases": [
+        "canang sari",
+        "cn sari"
+      ]
+    },
+    {
+      "id": "p_canang_genten",
+      "name": "Canang Genten",
+      "aliases": [
+        "canang genten"
+      ]
+    },
+    {
+      "id": "p_canang_lenga",
+      "name": "Canang Lenga Wangi",
+      "aliases": [
+        "canang lenga wangi",
+        "canang lengawangi"
+      ]
+    },
+    {
+      "id": "p_canang_nyahnyah",
+      "name": "Canang Nyahnyah Gringsing",
+      "aliases": [
+        "canang nyahnyah gringsing"
+      ]
+    },
+    {
+      "id": "p_canang_gantal",
+      "name": "Canang Gantal",
+      "aliases": [
+        "canang gantal"
+      ]
+    },
+    {
+      "id": "p_canang_tubungan",
+      "name": "Canang Tubungan",
+      "aliases": [
+        "canang tubungan"
+      ]
+    },
+    {
+      "id": "p_canang_pangeresikan",
+      "name": "Canang Pangeresikan",
+      "aliases": [
+        "canang pangeresikan",
+        "canang pembersihan"
+      ]
+    },
+    {
+      "id": "p_canang_payasan",
+      "name": "Canang Payasan",
+      "aliases": [
+        "canang payasan"
+      ]
+    },
+    {
+      "id": "p_canang_meraka",
+      "name": "Canang Meraka",
+      "aliases": [
+        "canang meraka",
+        "canang maraka"
+      ]
+    },
+    {
+      "id": "p_canang_raka",
+      "name": "Canang Raka",
+      "aliases": [
+        "canang raka"
+      ]
+    },
+    {
+      "id": "p_daksina",
+      "name": "Daksina",
+      "aliases": [
+        "banten daksina",
+        "daksina biasa"
+      ]
+    },
+    {
+      "id": "p_daksina_alit",
+      "name": "Daksina Alit",
+      "aliases": [
+        "daksina alit"
+      ]
+    },
+    {
+      "id": "p_pejati",
+      "name": "Pejati",
+      "aliases": [
+        "banten pejati",
+        "pejati"
+      ]
+    },
+    {
+      "id": "p_peras",
+      "name": "Banten Peras",
+      "aliases": [
+        "peras",
+        "banten peras"
+      ]
+    },
+    {
+      "id": "p_ajuman",
+      "name": "Banten Ajuman / Sodaan",
+      "aliases": [
+        "ajuman",
+        "sodaan",
+        "sodan",
+        "soda",
+        "ajengan"
+      ]
+    },
+    {
+      "id": "p_penyeneng",
+      "name": "Penyeneng / Pebuat / Tehenan",
+      "aliases": [
+        "penyeneng",
+        "panyeneng",
+        "pebuat",
+        "tehenan"
+      ]
+    },
+    {
+      "id": "p_tipat_kelanan",
+      "name": "Tipat Kelanan",
+      "aliases": [
+        "tipat kelanan"
+      ]
+    },
+    {
+      "id": "p_pesucian",
+      "name": "Banten Pesucian / Pabersihan",
+      "aliases": [
+        "pesucian",
+        "pabersihan",
+        "pangersikan"
+      ]
+    },
+    {
+      "id": "p_dapetan",
+      "name": "Banten Dapetan",
+      "aliases": [
+        "dapetan",
+        "banten dapetan"
+      ]
+    },
+    {
+      "id": "p_segehan_kepel",
+      "name": "Segehan Kepel",
+      "aliases": [
+        "segehan kepel",
+        "segeh kepel"
+      ]
+    },
+    {
+      "id": "p_segehan_cacahan",
+      "name": "Segehan Cacahan",
+      "aliases": [
+        "segehan cacahan",
+        "segehan cacah",
+        "segeh cacahan"
+      ]
+    },
+    {
+      "id": "p_segehan_manca",
+      "name": "Segehan Manca Warna",
+      "aliases": [
+        "segehan manca warna",
+        "segehan panca warna"
+      ]
+    },
+    {
+      "id": "p_segehan_agung",
+      "name": "Segehan Agung",
+      "aliases": [
+        "segehan agung"
+      ]
+    },
+    {
+      "id": "p_kwangen",
+      "name": "Kwangen / Kawangen",
+      "aliases": [
+        "kwangen",
+        "kawangen"
+      ]
+    },
+    {
+      "id": "p_prayascita",
+      "name": "Banten Prayascita",
+      "aliases": [
+        "prayascita",
+        "parayascita",
+        "prascita"
+      ]
+    },
+    {
+      "id": "p_byakala",
+      "name": "Banten Byakala",
+      "aliases": [
+        "byakala",
+        "bayakala",
+        "bayakaon",
+        "byakaon"
+      ]
+    },
+    {
+      "id": "p_gebogan",
+      "name": "Gebogan / Pajegan",
+      "aliases": [
+        "gebogan",
+        "pajegan"
+      ]
+    },
+    {
+      "id": "p_penjor",
+      "name": "Penjor Galungan",
+      "aliases": [
+        "penjor",
+        "penjor galungan"
+      ]
+    },
+    {
+      "id": "p_suci",
+      "name": "Banten Suci",
+      "aliases": [
+        "banten suci",
+        "suci soroh"
+      ]
+    },
+    {
+      "id": "p_pengambean",
+      "name": "Banten Pengambean",
+      "aliases": [
+        "pengambean",
+        "pengambeyan",
+        "pengambyan"
+      ]
+    },
+    {
+      "id": "p_pulogembal",
+      "name": "Banten Pulogembal",
+      "aliases": [
+        "pulogembal",
+        "pulo gembal"
+      ]
+    },
+    {
+      "id": "p_tumpeng_peras",
+      "name": "Tumpeng Peras",
+      "aliases": [
+        "tumpeng peras"
+      ]
+    },
+    {
+      "id": "p_sorohan_alit",
+      "name": "Sorohan Alit",
+      "aliases": [
+        "sorohan alit",
+        "sorohan"
+      ]
+    },
+    {
+      "id": "p_sesayut",
+      "name": "Banten Sesayut",
+      "aliases": [
+        "sesayut",
+        "banten sesayut"
+      ]
+    }
+  ]
+}

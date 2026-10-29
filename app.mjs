@@ -1,12 +1,15 @@
 import { makeId, makeSeed, computePlan, rounded, isPositive, isISODate, validateOrder, normalizeAIOutput } from './engine.mjs';
 import { extractLocalOrder, LOCAL_MODEL_NAME } from './ranakara-nlp.mjs';
+import { mergeCatalogReference } from './catalog-import.mjs';
+import { createCleanWorkspace, applyGlobalReference } from './global-catalog.mjs';
 
 const config=window.RANAKARA_CONFIG||{};
 // Guard against placeholder strings: non-empty placeholders are NOT a valid connection.
 const CLOUD=/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(config.supabaseUrl||'') && /^(sb_publishable_|eyJ)/.test(config.supabaseAnonKey||'');
 const base=(config.supabaseUrl||'').replace(/\/$/,'');
 const KEY='ranakara_demo_v1', SESSION_KEY='ranakara_cloud_session';
-let data, session=null, draft=null, currentPage='dashboard', working=false, booting=false, cloudReady=false, cloudError='';
+let data, session=null, draft=null, currentPage='dashboard', working=false, booting=false, cloudReady=false, cloudError='', globalCatalogError='';
+const uiState={plannerQuery:'',plannerStatus:'all',catalogQuery:'',catalogFilter:'all',materialQuery:'',orderText:''};
 try { data=JSON.parse(localStorage.getItem(KEY))||makeSeed(); } catch {data=makeSeed();}
 if(!data || !Array.isArray(data.products)||!Array.isArray(data.orders)||!Array.isArray(data.materials))data=makeSeed();
 const $=sel=>document.querySelector(sel);
@@ -27,6 +30,7 @@ async function authFetch(path,{method='GET',body,token=session?.access_token,tim
     return parsed;
   }catch(err){
     if(err?.name==='AbortError')throw new Error('Koneksi Supabase melewati batas waktu 12 detik. Periksa jaringan, Project URL, dan API key.');
+    if(err instanceof TypeError)throw new Error('Gagal menghubungi Supabase (Failed to fetch). Periksa koneksi, Project URL, atau kebijakan browser. NLP lokal tetap bisa diuji tanpa login.');
     throw err;
   }finally{clearTimeout(timer);}
 }
@@ -38,10 +42,37 @@ async function ensureSession(){
   if(!session)return false;
   try {await authFetch('/auth/v1/user');return true;}catch{if(await tryRefresh())return true;session=null;sessionStorage.removeItem(SESSION_KEY);return false;}
 }
+// The master reference is a public static file (Cloudflare Pages); only a copy of it
+// is merged into each PRIVATE Supabase workspace. Customer orders never enter the file.
+async function mergeGlobalCatalog(){
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),12000);
+    let response;
+    try{response=await fetch('/global-catalog.json',{signal:controller.signal,cache:'no-store'});}
+    finally{clearTimeout(timer);}
+    if(!response.ok)throw new Error(`HTTP ${response.status}`);
+    const reference=await response.json();
+    const result=applyGlobalReference(data,reference);
+    if(result.changed)data=result.workspace;
+    globalCatalogError='';
+    return result.changed;
+  }catch(err){
+    globalCatalogError='Katalog referensi global belum dapat dimuat ('+(err?.message||'gangguan jaringan')+'). Coba refresh; data usaha tetap terpisah.';
+    console.warn('Reference catalog unavailable:',err);
+    return false;
+  }
+}
 async function loadCloud(){
   if(!session?.user?.id)return;
   const rows=await authFetch(`/rest/v1/workspaces?select=data&user_id=eq.${encodeURIComponent(session.user.id)}`);
-  if(rows.length && rows[0].data?.products){data=rows[0].data;}else{data=makeSeed();await saveCloud();}
+  const exists=rows.length && Array.isArray(rows[0].data?.products);
+  data=exists?rows[0].data:createCleanWorkspace();
+  const previous=structuredClone(data);
+  const changed=await mergeGlobalCatalog();
+  if(!exists || changed){
+    try{await saveCloud();}catch(err){data=previous;throw err;}
+  }
 }
 async function saveCloud(){
   if(!session?.user?.id)throw new Error('Belum login.');
@@ -52,7 +83,7 @@ async function saveCloud(){
   const timedSend=async()=>{
     const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),12000);
     try{return await fetch(`${base}${endpoint}`,{method:'POST',headers,body:JSON.stringify(payload),signal:controller.signal});}
-    catch(err){if(err?.name==='AbortError')throw new Error('Penyimpanan Supabase melewati batas waktu 12 detik.');throw err;}
+    catch(err){if(err?.name==='AbortError')throw new Error('Penyimpanan Supabase melewati batas waktu 12 detik.');if(err instanceof TypeError)throw new Error('Tidak dapat menyimpan ke Supabase (Failed to fetch). Periksa koneksi cloud; perubahan dibatalkan untuk mencegah data tidak sinkron.');throw err;}
     finally{clearTimeout(timer);}
   };
   let response=await timedSend();
@@ -69,41 +100,119 @@ async function mutate(modifier){
   finally{working=false;}
 }
 function banner(){
-  if(data.sample)return `<div class="notice"><b>Data CONTOH.</b> Stok dan takaran resep pada katalog ini hanya ilustrasi untuk demo, bukan standar sarana upacara. Sesuaikan semua nilai dengan data UMKM sebelum digunakan atau diklaim dalam proposal.</div>`;
-  return '';
+  const warning=globalCatalogError?`<div class="notice error">${esc(globalCatalogError)}</div>`:'';
+  if(data.sample)return warning+`<div class="notice"><b>Data CONTOH.</b> Stok dan takaran resep pada katalog ini hanya ilustrasi untuk demo, bukan standar sarana upacara. Sesuaikan semua nilai dengan data UMKM sebelum digunakan atau diklaim dalam proposal.</div>`;
+  return warning;
 }
 function tableEmpty(message='Belum ada data.') {return `<div class="empty">${esc(message)}</div>`;}
 function plan(){return computePlan(data.orders,data.products,data.materials);}
+// UI-only derived state: no additional API calls and no changes to Supabase schema.
+const localToday=()=>new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Makassar'});
+function orderDeadlineKind(o,today=localToday()){
+  if(!['new','in_progress'].includes(o.status)||!o.dueDate)return 'none';
+  if(o.dueDate<today)return 'late';
+  const days=Math.round((Date.parse(o.dueDate+'T00:00:00Z')-Date.parse(today+'T00:00:00Z'))/86400000);
+  return days<=3?'soon':'later';
+}
+function orderSearchText(o){
+  return [o.customer||'',o.id||'',...(o.items||[]).map(i=>data.products.find(p=>p.id===i.productId)?.name||''),o.dueDate||''].join(' ').toLocaleLowerCase('id-ID');
+}
+function applyPlannerFilters(){
+  if(currentPage!=='planner')return;
+  let shown=0;
+  for(const el of document.querySelectorAll('[data-order-row]')){
+    const okStatus=uiState.plannerStatus==='all'||el.dataset.status===uiState.plannerStatus;
+    const okQuery=(el.dataset.search||'').includes(uiState.plannerQuery.toLocaleLowerCase('id-ID').trim());
+    const visible=okStatus&&okQuery;
+    el.hidden=!visible;
+    if(visible)shown++;
+  }
+  const counter=$('#planner-result-count');if(counter)counter.textContent=`${shown} dari ${data.orders.length} pesanan`;
+  const empty=$('#planner-empty-filter');if(empty)empty.hidden=shown!==0 || data.orders.length===0;
+}
+function applyCatalogFilters(){
+  if(currentPage!=='catalog')return;
+  let shown=0;
+  for(const el of document.querySelectorAll('[data-product-card]')){
+    const okQuery=(el.dataset.search||'').includes(uiState.catalogQuery.toLocaleLowerCase('id-ID').trim());
+    const okRecipe=uiState.catalogFilter==='all'||(uiState.catalogFilter==='ready'?el.dataset.recipeReady==='yes':el.dataset.recipeReady==='no');
+    el.hidden=!(okQuery&&okRecipe);
+    if(!el.hidden)shown++;
+  }
+  const counter=$('#catalog-result-count');if(counter)counter.textContent=`Menampilkan ${shown} dari ${data.products.length} produk`;
+  const empty=$('#catalog-empty-filter');if(empty)empty.hidden=shown!==0 || data.products.length===0;
+}
+function applyMaterialFilters(){
+  if(currentPage!=='catalog')return;
+  let shown=0;
+  for(const el of document.querySelectorAll('[data-material-row]')){
+    const ok=(el.dataset.search||'').includes(uiState.materialQuery.toLocaleLowerCase('id-ID').trim());
+    el.hidden=!ok;if(ok)shown++;
+  }
+  const counter=$('#material-result-count');if(counter)counter.textContent=`Menampilkan ${shown} dari ${data.materials.length} bahan`;
+  const empty=$('#material-empty-filter');if(empty)empty.hidden=shown!==0 || data.materials.length===0;
+}
 function dashboard(){
-  const p=plan();const active=data.orders.filter(o=>['new','in_progress'].includes(o.status));
-  const recent=[...data.orders].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,6);
-  return `${banner()}<div class="hero"><div><div class="eyebrow">PRODUCTION INTELLIGENCE FOR BALI</div><h2>Dari percakapan pelanggan menjadi keputusan produksi yang lebih terukur.</h2><p>Proses pesanan menggunakan AI, verifikasi informasi ambigu, dan hitung kebutuhan material berdasarkan katalog usahamu.</p></div><button class="button primary" data-nav="studio">+ Proses pesanan baru</button></div>
-  <div class="stats"><div class="stat"><small>Seluruh pesanan</small><strong>${data.orders.length}</strong><em>Dalam workspace</em></div><div class="stat"><small>Perlu diproses</small><strong>${active.length}</strong><em>Status baru / diproses</em></div><div class="stat"><small>Jenis produk</small><strong>${data.products.length}</strong><em>Katalog saat ini</em></div><div class="stat"><small>Material kurang</small><strong>${p.rows.filter(x=>x.shortage>0).length}</strong><em>Berdasarkan kebutuhan aktif</em></div></div>
-  <div class="two-col"><div class="card"><div class="flex-between"><h3>Pesanan terbaru</h3><button class="button secondary small" data-nav="planner">Lihat semua</button></div>${recent.length?`<div class="table-wrap"><table><thead><tr><th>Pesanan</th><th>Tenggat</th><th>Status</th></tr></thead><tbody>${recent.map(o=>`<tr><td><strong>${esc(o.customer||'Tanpa nama')}</strong><br><span class="muted">${o.items.map(i=>`${esc(data.products.find(p=>p.id===i.productId)?.name||'Produk') } × ${i.quantity}`).join(', ')}</span></td><td>${dateLabel(o.dueDate)}</td><td><span class="status-chip ${o.status}">${badge(o.status)}</span></td></tr>`).join('')}</tbody></table></div>`:tableEmpty('Belum ada pesanan. Mulai dari AI Order Studio.')}</div>
-  <div class="card"><h3>Kebutuhan bahan aktif</h3><p class="hint">Total untuk pesanan Baru + Diproses. Stok tidak otomatis dikurangi saat pesanan selesai.</p>${p.rows.length?p.rows.slice(0,6).map(r=>`<div class="metric-row"><div><strong>${esc(r.name)}</strong><br><span class="muted">Perlu ${printNum(r.required)} ${esc(r.unit)}</span></div><span class="${r.shortage>0?'error-text':'success-text'}">${r.shortage>0?'Kurang '+printNum(r.shortage):'Cukup'}</span></div>`).join(''):tableEmpty('Tambahkan bahan di katalog.')}${p.missingRecipes.length?`<div class="notice error">Belum ada resep: ${esc(p.missingRecipes.join(', '))}</div>`:''}</div></div>`;
+  const p=plan(),today=localToday();
+  const active=data.orders.filter(o=>['new','in_progress'].includes(o.status));
+  const recent=[...data.orders].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,5);
+  const stages=[['new','Baru'],['in_progress','Diproses'],['completed','Selesai'],['cancelled','Dibatalkan']];
+  const due=[...active].filter(o=>['late','soon'].includes(orderDeadlineKind(o,today))).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||'')).slice(0,5);
+  const countDueLate=active.filter(o=>orderDeadlineKind(o,today)==='late').length;
+  const countShort=p.rows.filter(x=>x.shortage>0).length;
+  const missing=p.missingRecipes.length;
+  return `${banner()}
+  <section class="hero hero-premium"><div><div class="eyebrow">WORKSPACE PRODUKSI · BALI</div><h2>Pesanan lebih rapi.<br>Produksi lebih siap.</h2><p>Dari pesan pelanggan menjadi pesanan terverifikasi dan perhitungan bahan. Semua angka di bawah berasal dari data workspace ini.</p><div class="hero-steps"><span>01 Baca pesan</span><span>02 Verifikasi</span><span>03 Siapkan bahan</span></div></div><button class="button primary hero-action" data-nav="studio">+ Proses pesanan</button></section>
+  <div class="stats stats-interactive">
+    <button class="stat stat-action" data-order-filter="all"><small>Seluruh pesanan</small><strong>${data.orders.length}</strong><em>Lihat daftar pesanan <span aria-hidden="true">›</span></em></button>
+    <button class="stat stat-action" data-order-filter="new"><small>Pesanan baru</small><strong>${data.orders.filter(o=>o.status==='new').length}</strong><em>Perlu ditindaklanjuti <span aria-hidden="true">›</span></em></button>
+    <button class="stat stat-action" data-order-filter="in_progress"><small>Sedang diproses</small><strong>${data.orders.filter(o=>o.status==='in_progress').length}</strong><em>Pantau progres <span aria-hidden="true">›</span></em></button>
+    <button class="stat stat-action" data-nav="planner"><small>Jenis bahan kurang</small><strong>${countShort}</strong><em>Lihat kebutuhan produksi <span aria-hidden="true">›</span></em></button>
+  </div>
+  <div class="dashboard-grid">
+    <div class="card"><div class="flex-between"><div><h3>Alur pesanan</h3><p class="hint">Distribusi berdasarkan status aktual.</p></div><span class="badge">${data.orders.length} total</span></div>
+      <div class="pipeline-list">${stages.map(([status,label])=>{const count=data.orders.filter(o=>o.status===status).length;const ratio=data.orders.length?count/data.orders.length*100:0;return `<button class="pipeline-item" data-order-filter="${status}" aria-label="Tampilkan ${count} pesanan status ${label}"><span>${label}</span><span class="pipeline-track"><span class="pipeline-fill ${status}" style="width:${ratio}%"></span></span><strong>${count}</strong></button>`;}).join('')}</div>
+      <div class="insight-row"><span>${data.products.length} produk di katalog</span><button class="text-action" data-nav="catalog">Kelola katalog →</button></div>
+    </div>
+    <div class="card"><div class="flex-between"><div><h3>Perlu perhatian</h3><p class="hint">Tenggat hari ini hingga 3 hari mendatang dan yang terlambat.</p></div><span class="badge ${countDueLate?'badge-alert':''}">${due.length} ditampilkan</span></div>
+      ${due.length?`<div class="attention-list">${due.map(o=>`<button class="attention-item" data-order-filter="${o.status}"><span><strong>${esc(o.customer||'Tanpa nama')}</strong><small>${dateLabel(o.dueDate)} · ${o.items.length} jenis produk</small></span><span class="status-chip ${orderDeadlineKind(o,today)==='late'?'cancelled':'in_progress'}">${orderDeadlineKind(o,today)==='late'?'Lewat tenggat':'Segera'}</span></button>`).join('')}</div>`:tableEmpty('Belum ada pesanan aktif dengan tenggat dekat.')}
+      ${missing?`<div class="notice" style="margin-top:13px">${missing} jenis produk pada pesanan aktif belum memiliki resep. <button class="text-action" data-nav="catalog">Periksa resep →</button></div>`:''}
+    </div>
+  </div>
+  <div class="section-header"><h2>Aktivitas terakhir</h2><button class="button secondary small" data-nav="planner">Semua pesanan</button></div>
+  <div class="card">${recent.length?`<div class="table-wrap"><table><thead><tr><th>Pelanggan / Pesanan</th><th>Tenggat</th><th>Status</th></tr></thead><tbody>${recent.map(o=>`<tr><td><strong>${esc(o.customer||'Tanpa nama')}</strong><br><span class="muted">${o.items.map(i=>`${esc(data.products.find(p=>p.id===i.productId)?.name||'Produk')} × ${Number(i.quantity)}`).join(', ')}</span></td><td>${dateLabel(o.dueDate)}</td><td><span class="status-chip ${esc(o.status)}">${badge(o.status)}</span></td></tr>`).join('')}</tbody></table></div>`:tableEmpty('Belum ada pesanan. Mulai dari AI Order Studio.')}</div>`;
 }
 function catalogView(){
  const choices=data.materials.map(m=>`<option value="${esc(m.id)}">${esc(m.name)} (${esc(m.unit)})</option>`).join('');
- return `${banner()}<div class="col-2-equal"><div class="card"><h3>Tambah material</h3><form id="material-form" class="stacked-form"><label>Nama bahan<input name="name" required maxlength="100" placeholder="Misalnya janur" /></label><div class="field-row"><label>Satuan<input name="unit" required maxlength="20" placeholder="lembar / gram / pcs" /></label><label>Stok tersedia<input type="number" min="0" step="0.001" name="stock" value="0" required /></label></div><button class="button primary" type="submit">+ Simpan material</button></form></div>
+ return `${banner()}<div class="card" style="margin-bottom:16px"><div class="flex-between"><div><h3 style="margin:0">Katalog referensi upakara Bali</h3><p class="hint">Gabungkan produk dan bahan dari JSON. Pesanan, resep yang sudah ada, dan stok tidak dihapus. Takaran per produk belum diisi dan harus divalidasi UMKM.</p></div><div class="button-row"><button type="button" class="button secondary" data-action="download-json">Backup data</button><button type="button" class="button primary" data-action="import-reference">Impor katalog JSON</button></div></div><input id="catalog-import-file" type="file" accept=".json,application/json" style="display:none" /></div><div class="col-2-equal"><div class="card"><h3>Tambah material</h3><form id="material-form" class="stacked-form"><label>Nama bahan<input name="name" required maxlength="100" placeholder="Misalnya janur" /></label><div class="field-row"><label>Satuan<input name="unit" required maxlength="20" placeholder="lembar / gram / pcs" /></label><label>Stok tersedia<input type="number" min="0" step="0.001" name="stock" value="0" required /></label></div><button class="button primary" type="submit">+ Simpan material</button></form></div>
  <div class="card"><h3>Tambah produk</h3><form id="product-form" class="stacked-form"><label>Nama produk<input name="name" maxlength="100" required placeholder="Misalnya canang sari" /></label><label>Alias / singkatan (pisahkan koma)<input name="aliases" maxlength="350" placeholder="canang, cnng" /></label><button class="button primary" type="submit">+ Simpan produk</button></form></div></div>
- <div class="section-header"><h2>Daftar bahan</h2><span class="badge">${data.materials.length} bahan</span></div><div class="card">${data.materials.length?`<div class="table-wrap"><table><thead><tr><th>Bahan</th><th>Satuan</th><th>Stok tersedia</th><th>Aksi</th></tr></thead><tbody>${data.materials.map(m=>`<tr><td><strong>${esc(m.name)}</strong></td><td>${esc(m.unit)}</td><td><input class="small-input stock-input" data-material="${esc(m.id)}" type="number" min="0" step="0.001" value="${m.stock}" aria-label="Stok ${esc(m.name)}" /></td><td><button class="button secondary small" data-action="save-stock" data-id="${esc(m.id)}">Update</button> <button class="button danger small" data-action="delete-material" data-id="${esc(m.id)}">Hapus</button></td></tr>`).join('')}</tbody></table></div>`:tableEmpty('Belum ada bahan.')}</div>
- <div class="section-header"><h2>Produk & resep produksi</h2><span class="badge">${data.products.length} produk</span></div><div class="card">${data.products.length?data.products.map(p=>`<div class="recipe-block"><div class="flex-between"><div><h3 style="margin:0">${esc(p.name)}</h3><div class="hint">Alias: ${esc((p.aliases||[]).join(', ')||'—')}</div></div><button class="button danger small" data-action="delete-product" data-id="${esc(p.id)}">Hapus produk</button></div><div style="margin:12px 0">${p.recipe.length?p.recipe.map(r=>{const m=data.materials.find(x=>x.id===r.materialId);return `<span class="recipe-pill">${printNum(r.amount)} ${esc(m?.unit||'?')} ${esc(m?.name||'Bahan hilang')} <button class="button secondary small" data-action="delete-recipe" data-id="${esc(p.id)}" data-material="${esc(r.materialId)}" title="Hapus bahan dari resep">×</button></span>`;}).join(''):'<span class="muted">Belum ada komposisi bahan</span>'}</div><form class="recipe-form field-row three" data-product="${esc(p.id)}"><label>Bahan<select name="materialId" required>${choices}</select></label><label>Jumlah / 1 produk<input type="number" step="0.001" min="0.001" name="amount" required placeholder="Contoh: 2" /></label><label>Aksi<button type="submit" class="button secondary">+ Tambah ke resep</button></label></form><hr class="divider" /></div>`).join(''):tableEmpty('Tambahkan produk lebih dulu.')}</div>`;
+ <div class="section-header"><h2>Produk & resep produksi</h2><span class="badge">${data.products.length} produk</span></div>
+ <div class="card catalog-browser"><div class="toolbar"><label class="search-field">Cari jenis upakara atau alias<input id="catalog-search" type="search" value="${esc(uiState.catalogQuery)}" placeholder="Cari kwangen, daksina, segehan..." autocomplete="off" /></label><label class="filter-field">Status resep<select id="catalog-filter"><option value="all" ${uiState.catalogFilter==='all'?'selected':''}>Semua produk</option><option value="ready" ${uiState.catalogFilter==='ready'?'selected':''}>Ada komposisi</option><option value="missing" ${uiState.catalogFilter==='missing'?'selected':''}>Perlu dilengkapi</option></select></label></div><p id="catalog-result-count" class="hint" role="status"></p>
+ ${data.products.length?`<div class="catalog-items">${data.products.map(p=>`<details class="recipe-block catalog-item" data-product-card data-search="${esc([p.name,...(p.aliases||[])].join(' ').toLocaleLowerCase('id-ID'))}" data-recipe-ready="${p.recipe.length?'yes':'no'}"><summary><span><strong>${esc(p.name)}</strong><small>Alias: ${esc((p.aliases||[]).join(', ')||'—')}</small></span><span class="recipe-summary-meta"><span class="status-chip ${p.recipe.length?'completed':'in_progress'}">${p.recipe.length?`${p.recipe.length} bahan`:'Resep kosong'}</span><span class="chevron" aria-hidden="true">⌄</span></span></summary><div class="recipe-details"><div class="flex-between"><p class="hint">Komposisi per 1 unit produk; gunakan takaran terverifikasi UMKM.</p><button class="button danger small" data-action="delete-product" data-id="${esc(p.id)}">Hapus produk</button></div><div style="margin:12px 0">${p.recipe.length?p.recipe.map(r=>{const m=data.materials.find(x=>x.id===r.materialId);return `<span class="recipe-pill">${printNum(r.amount)} ${esc(m?.unit||'?')} ${esc(m?.name||'Bahan hilang')} <button class="button secondary small" data-action="delete-recipe" data-id="${esc(p.id)}" data-material="${esc(r.materialId)}" title="Hapus bahan dari resep">×</button></span>`;}).join(''):'<span class="muted">Belum ada komposisi bahan</span>'}</div><form class="recipe-form field-row three" data-product="${esc(p.id)}"><label>Bahan<select name="materialId" required>${choices}</select></label><label>Jumlah / 1 produk<input type="number" step="0.001" min="0.001" name="amount" required placeholder="Contoh: 2" /></label><label>Aksi<button type="submit" class="button secondary">+ Tambah ke resep</button></label></form></div></details>`).join('')}</div><div id="catalog-empty-filter" class="empty" hidden>Tidak ada produk yang sesuai filter.</div>`:tableEmpty('Tambahkan produk lebih dulu.')}</div>
+ <div class="section-header"><h2>Daftar bahan</h2><span class="badge">${data.materials.length} bahan</span></div><div class="card"><label class="search-field">Cari bahan<input type="search" id="material-search" value="${esc(uiState.materialQuery)}" placeholder="Cari janur, beras, bunga..." autocomplete="off" /></label><p id="material-result-count" class="hint" role="status"></p>${data.materials.length?`<div class="table-wrap"><table><thead><tr><th>Bahan</th><th>Satuan</th><th>Stok tersedia</th><th>Aksi</th></tr></thead><tbody>${data.materials.map(m=>`<tr data-material-row data-search="${esc([m.name,m.unit].join(' ').toLocaleLowerCase('id-ID'))}"><td><strong>${esc(m.name)}</strong></td><td>${esc(m.unit)}</td><td><input class="small-input stock-input" data-material="${esc(m.id)}" type="number" min="0" step="0.001" value="${m.stock}" aria-label="Stok ${esc(m.name)}" /></td><td><button class="button secondary small" data-action="save-stock" data-id="${esc(m.id)}">Update</button> <button class="button danger small" data-action="delete-material" data-id="${esc(m.id)}">Hapus</button></td></tr>`).join('')}</tbody></table></div><div id="material-empty-filter" class="empty" hidden>Tidak ada bahan yang cocok.</div>`:tableEmpty('Belum ada bahan.')}</div>`;
 }
 function draftItem(row,i){return `<div class="draft-item" data-index="${i}"><label>Produk<select class="draft-product"><option value="">Pilih produk...</option>${data.products.map(p=>`<option value="${esc(p.id)}" ${p.id===row.productId?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label><label>Jumlah<input class="draft-qty" type="number" min="1" max="100000" step="1" value="${esc(row.quantity)}" /></label><div><div class="label-caption">Kepercayaan AI</div><span class="badge">${esc(row.confidence||'manual')}</span></div><button class="button danger small" data-action="remove-draft" data-index="${i}">Hapus</button>${row.rawName?`<div class="hint" style="grid-column:1/-1">Teks produk dari AI: <strong>${esc(row.rawName)}</strong>${row.sourceText?' · '+esc(row.sourceText):''}</div>`:''}</div>`;}
-function studio(){return `<div class="two-col"><div class="card"><div class="flex-between"><h3>01 / Pesan pelanggan</h3><span class="badge">NLP lokal · TF-IDF kNN</span></div><p class="hint">Tempel pesan tanpa nomor telepon, alamat, atau identitas pribadi. Untuk chat pelanggan nyata, minta izin dan minimalkan data.</p><label>Isi pesan<textarea id="order-text" maxlength="2500" placeholder="Bu, pesan 30 canang sama 12 pejati untuk Jumat pagi. Tolong konfirmasi jam pengambilan."></textarea></label><div class="button-row" style="margin-top:14px"><button class="button primary" id="ai-button" data-action="extract" ${!session?'disabled':''}>✦ Analisis dengan AI</button><button class="button secondary" data-action="manual-draft">+ Buat draf manual</button></div>${!session?`<div class="notice" style="margin-top:15px">Mode cloud belum aktif: ${CLOUD?'masuk akun Supabase terlebih dahulu.':'isi konfigurasi Supabase di public/config.js dan jalankan SQL.'} Tombol draf manual tetap bisa diuji.</div>`:''}<div class="test-box"><b>Kenapa harus verifikasi?</b><p class="hint">AI tidak otomatis menyimpan pesanan, mengubah stok, atau menentukan tanggal yang tidak pasti. Setiap hasil diperiksa oleh pengguna.</p></div></div>
+function studio(){return `<div class="two-col"><div class="card"><div class="flex-between"><h3>01 / Pesan pelanggan</h3><span class="badge">${esc(LOCAL_MODEL_NAME)} · lokal</span></div><p class="hint">Tempel pesan tanpa nomor telepon, alamat, atau identitas pribadi. Untuk chat pelanggan nyata, minta izin dan minimalkan data.</p><label>Isi pesan<textarea id="order-text" maxlength="2500" placeholder="Bu, pesan 30 canang sama 12 pejati untuk Jumat pagi. Tolong konfirmasi jam pengambilan.">${esc(uiState.orderText)}</textarea></label><div class="button-row" style="margin-top:14px"><button class="button primary" id="ai-button" data-action="extract">✦ Analisis NLP Lokal</button><button class="button secondary" data-action="manual-draft">+ Buat draf manual</button><button class="button secondary" data-action="sample-message">Isi contoh pesan</button></div>${!(session&&cloudReady)?`<div class="notice" style="margin-top:15px"><b>AI lokal tersedia tanpa internet.</b> Analisis pesanan berjalan di browser tanpa OpenAI. ${session?'Sinkronisasi Supabase sedang bermasalah, jadi penyimpanan cloud belum tersedia.':'Tanpa login, pesanan yang dikonfirmasi hanya tersimpan pada browser ini (mode demo).'} </div>`:''}<div class="test-box"><b>Kenapa harus verifikasi?</b><p class="hint">AI tidak otomatis menyimpan pesanan, mengubah stok, atau menentukan tanggal yang tidak pasti. Setiap hasil diperiksa oleh pengguna.</p></div></div>
  <div class="card"><div class="flex-between"><h3>02 / Hasil ekstraksi & konfirmasi</h3><span class="badge">Human-in-the-loop</span></div>${draft?`${draft.questions.length?`<div class="notice"><strong>Perlu klarifikasi</strong><div style="margin-top:8px">${draft.questions.map(q=>`<p class="question">• ${esc(q)}</p>`).join('')}</div></div>`:''}<div id="draft-list" class="draft-list">${draft.items.map(draftItem).join('')}</div><div style="margin-top:10px"><button class="button secondary small" data-action="add-draft-item">+ Tambah produk</button></div><div class="field-row" style="margin-top:16px"><label>Nama pesanan (opsional)<input id="draft-customer" maxlength="90" placeholder="Contoh: Pesanan pelanggan A" /></label><label>Tanggal selesai<input id="draft-date" type="date" value="${esc(draft.delivery.date_iso)}" required /></label></div><div class="field-row" style="margin-top:13px"><label>Waktu / catatan jam<input id="draft-time" maxlength="80" value="${esc(draft.delivery.time_text)}" placeholder="Misalnya pagi; belum dikonfirmasi" /></label><label>Catatan produksi<input id="draft-notes" maxlength="500" value="${esc(draft.notes)}" placeholder="Catatan produksi" /></label></div><div class="button-row" style="margin-top:18px"><button class="button primary" data-action="confirm-order">✓ Konfirmasi & simpan pesanan</button><button class="button secondary" data-action="clear-draft">Batal</button></div><p class="hint">Tanggal wajib dipastikan oleh pengguna sebelum pesanan disimpan. Jika pilihan produk belum ditemukan, pilih produk katalog secara manual.</p>`:tableEmpty('Belum ada draf. Masukkan chat dan jalankan AI, atau buat draf manual untuk pengujian.')} </div></div>`;}
-function planner(){const p=plan();const orderList=[...data.orders].sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));return `${banner()}<div class="stats"><div class="stat"><small>Pesanan aktif</small><strong>${p.activeCount}</strong><em>Status baru & diproses</em></div><div class="stat"><small>Material tercatat</small><strong>${p.rows.length}</strong><em>Dari katalog bahan</em></div><div class="stat"><small>Bahan perlu dibeli</small><strong>${p.rows.filter(x=>x.shortage>0).length}</strong><em>Jenis bahan kekurangan stok</em></div><div class="stat"><small>Resep belum lengkap</small><strong>${p.missingRecipes.length}</strong><em>Produk tanpa komposisi</em></div></div>
- <div class="section-header"><h2>Material requirement planning</h2><button class="button secondary small" data-action="download-csv">↓ Ekspor CSV</button></div><div class="card"><p class="hint">Perhitungan: Σ(jumlah produk × penggunaan bahan per unit). Kekurangan = max(0, kebutuhan − stok). Hanya pesanan Baru dan Diproses yang dihitung. Stok tidak otomatis berkurang.</p>${p.missingRecipes.length?`<div class="notice error">Perencanaan belum lengkap karena resep belum tersedia untuk: ${esc(p.missingRecipes.join(', '))}</div>`:''}${p.rows.length?`<div class="table-wrap"><table><thead><tr><th>Bahan</th><th>Kebutuhan</th><th>Stok</th><th>Kekurangan</th><th>Status</th></tr></thead><tbody>${p.rows.map(r=>`<tr><td><strong>${esc(r.name)}</strong></td><td>${printNum(r.required)} ${esc(r.unit)}</td><td>${printNum(r.stock)} ${esc(r.unit)}</td><td class="${r.shortage>0?'error-text':''}">${printNum(r.shortage)} ${esc(r.unit)}</td><td><span class="status-chip ${r.shortage>0?'in_progress':'completed'}">${r.shortage>0?'Beli / siapkan':'Cukup'}</span></td></tr>`).join('')}</tbody></table></div>`:tableEmpty('Belum ada bahan.')}</div>
- <div class="section-header"><h2>Manajemen pesanan</h2><span class="badge">${data.orders.length} tercatat</span></div><div class="card">${orderList.length?`<div class="table-wrap"><table><thead><tr><th>Pesanan</th><th>Tenggat</th><th>Item</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${orderList.map(o=>`<tr><td><strong>${esc(o.customer||'Tanpa nama')}</strong><br><span class="muted">${esc(o.id.slice(0,18))}</span></td><td>${dateLabel(o.dueDate)}<br><span class="muted">${esc(o.dueTime||'—')}</span></td><td>${o.items.map(i=>`${esc(data.products.find(p=>p.id===i.productId)?.name||'Produk dihapus')} × ${i.quantity}`).join('<br>')}</td><td><select data-status-id="${esc(o.id)}"><option value="new" ${o.status==='new'?'selected':''}>Baru</option><option value="in_progress" ${o.status==='in_progress'?'selected':''}>Diproses</option><option value="completed" ${o.status==='completed'?'selected':''}>Selesai</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Dibatalkan</option></select></td><td><button class="button danger small" data-action="delete-order" data-id="${esc(o.id)}">Hapus</button></td></tr>`).join('')}</tbody></table></div>`:tableEmpty('Belum ada pesanan. Buat pesanan dari AI Order Studio.')}</div>`;}
-function guide(){return `<div class="two-col"><div class="card"><h3>Status kesiapan teknis</h3><div class="metric-row"><span>Mode data</span><strong>${session?'Supabase + RLS':CLOUD?'Demo lokal (belum login)':'Demo lokal browser'}</strong></div><div class="metric-row"><span>AI NLP lokal</span><strong class="success-text">Model TF-IDF kNN tersedia di browser</strong></div><div class="metric-row"><span>Katalog dan stok</span><strong>Fungsional</strong></div><div class="metric-row"><span>Perhitungan bahan</span><strong>Deterministik</strong></div><div class="metric-row"><span>URL hosting</span><strong>${esc(location.hostname)}</strong></div><div class="notice info" style="margin-top:20px">Model NLP lokal tidak memakai OpenAI API, tetapi kemampuannya terbatas pada pencocokan produk ke katalog dan parser jumlah/tanggal. Jalankan evaluasi berlabel pada pesan baru dan catat hasilnya sebelum mengisi formulir lomba.</div><div class="button-row"><button class="button secondary" data-action="download-json">↓ Backup data JSON</button>${!session?'<button class="button danger" data-action="reset-demo">Reset data demo</button>':''}</div></div><div class="card"><h3>Checklist technical gate</h3><p class="hint">Mengikuti Panduan Peserta AI Web Innovation Challenge Bali DigiFest 2026.</p><div class="mini-list"><div><span>Website aktif & dapat diuji</span><span>Periksa URL Netlify</span></div><div><span>Model NLP lokal benar-benar berjalan</span><span>Uji input baru</span></div><div><span>Data pesanan tersimpan</span><span>Uji reload</span></div><div><span>Repository & README</span><span>Lampirkan GitHub</span></div><div><span>AI / Technology Disclosure</span><span>Dokumen tersedia</span></div><div><span>Proposal PDF maks. 5 halaman isi</span><span>Susun setelah MVP valid</span></div></div><hr class="divider" /><p class="hint">Data contoh bahan hanya ilustrasi. Tidak ada integrasi WhatsApp langsung, OCR screenshot, forecasting permintaan, atau pemotongan stok otomatis pada versi ini.</p></div></div>`;}
+function planner(){
+ const p=plan();const orderList=[...data.orders].sort((a,b)=>(a.dueDate||'9999-12-31').localeCompare(b.dueDate||'9999-12-31'));
+ return `${banner()}<div class="stats stats-compact"><div class="stat"><small>Pesanan aktif</small><strong>${p.activeCount}</strong><em>Baru & diproses</em></div><div class="stat"><small>Material tercatat</small><strong>${p.rows.length}</strong><em>Jenis bahan</em></div><div class="stat"><small>Perlu pembelian</small><strong>${p.rows.filter(x=>x.shortage>0).length}</strong><em>Kekurangan stok</em></div><div class="stat"><small>Resep belum lengkap</small><strong>${p.missingRecipes.length}</strong><em>Perlu diverifikasi</em></div></div>
+ <div class="section-header"><h2>Rencana kebutuhan bahan</h2><button class="button secondary small" data-action="download-csv">Unduh CSV</button></div>
+ <div class="card"><p class="hint">Perhitungan: Σ(jumlah produk × bahan per unit). Kekurangan = max(0, kebutuhan − stok). Hanya pesanan Baru dan Diproses dihitung; stok tidak otomatis dikurangi.</p>${p.missingRecipes.length?`<div class="notice error">Perencanaan belum lengkap. Resep perlu ditambahkan untuk: ${esc(p.missingRecipes.join(', '))}</div>`:''}${p.rows.length?`<div class="table-wrap"><table><thead><tr><th>Bahan</th><th>Kebutuhan</th><th>Stok</th><th>Kekurangan</th><th>Status</th></tr></thead><tbody>${p.rows.map(r=>`<tr><td><strong>${esc(r.name)}</strong></td><td>${printNum(r.required)} ${esc(r.unit)}</td><td>${printNum(r.stock)} ${esc(r.unit)}</td><td class="${r.shortage>0?'error-text':''}">${printNum(r.shortage)} ${esc(r.unit)}</td><td><span class="status-chip ${r.shortage>0?'in_progress':'completed'}">${r.shortage>0?'Beli / siapkan':'Cukup'}</span></td></tr>`).join('')}</tbody></table></div><div id="material-empty-filter" class="empty" hidden>Tidak ada bahan yang cocok.</div>`:tableEmpty('Belum ada bahan.')}</div>
+ <div class="section-header"><h2>Manajemen pesanan</h2><span class="badge">${data.orders.length} tercatat</span></div>
+ <div class="card"><div class="toolbar"><label class="search-field">Cari pelanggan, produk, ID, atau tanggal<input id="planner-search" type="search" value="${esc(uiState.plannerQuery)}" placeholder="Ketik nama atau produk..." autocomplete="off" /></label><label class="filter-field">Filter status<select id="planner-filter"><option value="all" ${uiState.plannerStatus==='all'?'selected':''}>Semua status</option><option value="new" ${uiState.plannerStatus==='new'?'selected':''}>Baru</option><option value="in_progress" ${uiState.plannerStatus==='in_progress'?'selected':''}>Diproses</option><option value="completed" ${uiState.plannerStatus==='completed'?'selected':''}>Selesai</option><option value="cancelled" ${uiState.plannerStatus==='cancelled'?'selected':''}>Dibatalkan</option></select></label></div><p id="planner-result-count" class="hint" role="status"></p>
+ ${orderList.length?`<div class="table-wrap"><table id="planner-orders-table"><thead><tr><th>Pesanan</th><th>Tenggat</th><th>Item</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${orderList.map(o=>`<tr data-order-row data-status="${esc(o.status)}" data-search="${esc(orderSearchText(o))}"><td><strong>${esc(o.customer||'Tanpa nama')}</strong><br><span class="muted">${esc(o.id.slice(0,18))}</span></td><td>${dateLabel(o.dueDate)}<br><span class="muted">${esc(o.dueTime||'—')}</span></td><td>${o.items.map(i=>`${esc(data.products.find(p=>p.id===i.productId)?.name||'Produk dihapus')} × ${Number(i.quantity)}`).join('<br>')}</td><td><select data-status-id="${esc(o.id)}" aria-label="Status pesanan ${esc(o.customer||o.id)}"><option value="new" ${o.status==='new'?'selected':''}>Baru</option><option value="in_progress" ${o.status==='in_progress'?'selected':''}>Diproses</option><option value="completed" ${o.status==='completed'?'selected':''}>Selesai</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Dibatalkan</option></select></td><td><button class="button danger small" data-action="delete-order" data-id="${esc(o.id)}">Hapus</button></td></tr>`).join('')}</tbody></table></div><div id="planner-empty-filter" class="empty" hidden>Tidak ada pesanan yang sesuai pencarian atau filter.</div>`:tableEmpty('Belum ada pesanan. Buat dari AI Order Studio.')}</div>`;
+}
+function guide(){return `<div class="two-col"><div class="card"><h3>Status kesiapan teknis</h3><div class="metric-row"><span>Mode data</span><strong>${session?'Supabase + RLS':CLOUD?'Demo lokal (belum login)':'Demo lokal browser'}</strong></div><div class="metric-row"><span>AI NLP lokal</span><strong class="success-text">Model TF-IDF kNN tersedia di browser</strong></div><div class="metric-row"><span>Katalog dan stok</span><strong>Fungsional</strong></div><div class="metric-row"><span>Perhitungan bahan</span><strong>Deterministik</strong></div><div class="metric-row"><span>URL hosting</span><strong>${esc(location.hostname)}</strong></div><div class="notice info" style="margin-top:20px">Model NLP lokal tidak memakai OpenAI API, tetapi kemampuannya terbatas pada pencocokan produk ke katalog dan parser jumlah/tanggal. Jalankan evaluasi berlabel pada pesan baru dan catat hasilnya sebelum mengisi formulir lomba.</div><div class="button-row"><button class="button secondary" data-action="download-json">↓ Backup data JSON</button>${!session?'<button class="button danger" data-action="reset-demo">Reset data demo</button>':''}</div></div><div class="card"><h3>Checklist technical gate</h3><p class="hint">Mengikuti Panduan Peserta AI Web Innovation Challenge Bali DigiFest 2026.</p><div class="mini-list"><div><span>Website aktif & dapat diuji</span><span>Periksa URL Cloudflare</span></div><div><span>Model NLP lokal benar-benar berjalan</span><span>Uji input baru</span></div><div><span>Data pesanan tersimpan</span><span>Uji reload</span></div><div><span>Repository & README</span><span>Lampirkan GitHub</span></div><div><span>AI / Technology Disclosure</span><span>Dokumen tersedia</span></div><div><span>Proposal PDF maks. 5 halaman isi</span><span>Susun setelah MVP valid</span></div></div><hr class="divider" /><p class="hint">Data contoh bahan hanya ilustrasi. Tidak ada integrasi WhatsApp langsung, OCR screenshot, forecasting permintaan, atau pemotongan stok otomatis pada versi ini.</p></div></div>`;}
 function render(){
  const titles={dashboard:'Ringkasan Operasional',studio:'AI Order Studio',catalog:'Katalog Produk & Bahan',planner:'Rencana Produksi',guide:'Panduan & Verifikasi'};
  $('#page-title').textContent=titles[currentPage];
  $('#connection-status').textContent=booting?'Menyambungkan cloud…':session?(cloudReady?'Cloud terhubung':'Cloud perlu diperiksa'):CLOUD?'Demo lokal · belum login':'Mode demo lokal · periksa config.js';
  $('#connection-status').className=`pill ${session&&cloudReady?'good':'warn'}`;
  $('#auth-button').textContent=session?'Keluar':'Masuk / Daftar';
- document.querySelectorAll('[data-nav]').forEach(e=>e.classList.toggle('selected',e.dataset.nav===currentPage));
+ document.querySelectorAll('[data-nav]').forEach(e=>{const selected=e.dataset.nav===currentPage;e.classList.toggle('selected',selected);if(selected)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
  $('#app-content').innerHTML=({dashboard,studio,catalog:catalogView,planner,guide}[currentPage])();
+ applyPlannerFilters();applyCatalogFilters();applyMaterialFilters();
 }
 function safeRender(){
   try{render();}
@@ -125,8 +234,8 @@ function readDraftFromUI(){
  draft.customer=$('#draft-customer')?.value||'';
 }
 async function extract(){
- if(booting||!cloudReady){toast('Koneksi cloud belum siap. Periksa status akun.',true);return;}
- if(!session){toast('Masuk ke akun cloud untuk menyimpan hasil AI.',true);return;}
+ // AI inference is 100% local and MUST NOT depend on cloud auth/network.
+ // Cloud is required only if the user decides to save to Supabase.
  const text=$('#order-text')?.value?.trim();if(!text||text.length<4){toast('Masukkan teks pesanan minimal 4 karakter.',true);return;}
  if(!data.products.length){toast('Tambahkan produk di katalog terlebih dahulu.',true);return;}
  const button=$('#ai-button');button.disabled=true;button.textContent='Memproses NLP lokal…';
@@ -136,12 +245,13 @@ async function extract(){
    const result=extractLocalOrder({text,catalog:data.products.map(p=>({id:p.id,name:p.name,aliases:p.aliases})),referenceDate:new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Makassar'})});
    draft=normalizeAIOutput(result,data.products);draft.customer='';render();
    toast(`Analisis NLP lokal selesai. Mohon verifikasi hasil (${LOCAL_MODEL_NAME}).`);
- }catch(err){toast(err.message||'Model lokal gagal memproses teks.',true);button.disabled=false;button.textContent='✦ Analisis dengan AI';}
+ }catch(err){toast(err.message||'Model lokal gagal memproses teks.',true);button.disabled=false;button.textContent='✦ Analisis NLP Lokal';}
 }
 
 async function clickAction(button){
  const a=button.dataset.action,id=button.dataset.id;
  if(a==='extract')return extract();
+ if(a==='sample-message'){uiState.orderText='Pesan 10 pejati, eh tambah 5 lagi. Untuk besok pagi.';const field=$('#order-text');if(field){field.value=uiState.orderText;field.focus();}return;}
  if(a==='manual-draft'){draft={items:[{productId:'',quantity:1,rawName:'',confidence:'manual'}],delivery:{date_iso:'',time_text:'',raw_text:''},notes:'',questions:[],customer:''};render();toast('Draf manual dibuat; ini bukan keluaran AI.');return;}
  if(a==='add-draft-item'){readDraftFromUI();draft.items.push({productId:'',quantity:1,rawName:'',confidence:'manual'});render();return;}
  if(a==='remove-draft'){readDraftFromUI();draft.items.splice(Number(button.dataset.index),1);render();return;}
@@ -149,9 +259,10 @@ async function clickAction(button){
  if(a==='confirm-order'){
    readDraftFromUI();const items=draft.items.map(i=>({productId:i.productId,quantity:Number(i.quantity)}));
    const dueDate=draft.delivery.date_iso;const problems=validateOrder({items,dueDate},data.products);
+   if(dueDate && dueDate<localToday())problems.push('Tanggal selesai sudah lewat. Pilih tanggal hari ini atau setelahnya.');
    if(problems.length){toast(problems.join(' '),true);return;}
    const saved=await mutate(()=>{data.orders.push({id:makeId('order'),customer:draft.customer||'Pesanan tanpa nama',items,dueDate,dueTime:draft.delivery.time_text,notes:draft.notes,status:'new',createdAt:new Date().toISOString()});});
-   if(saved){draft=null;currentPage='planner';render();}return;
+   if(saved){draft=null;uiState.orderText='';uiState.plannerStatus='all';uiState.plannerQuery='';currentPage='planner';render();}return;
  }
  if(a==='save-stock'){
    const input=document.querySelector(`.stock-input[data-material="${CSS.escape(id)}"]`);const value=Number(input?.value);
@@ -176,6 +287,7 @@ async function clickAction(button){
    const rows=[['Bahan','Kebutuhan','Stok','Kekurangan','Satuan'],...plan().rows.map(r=>[r.name,r.required,r.stock,r.shortage,r.unit])];
    return download('ranakara-kebutuhan-bahan.csv','\ufeff'+rows.map(a=>a.map(x=>'"'+String(x).replaceAll('"','""')+'"').join(',')).join('\r\n'),'text/csv;charset=utf-8');
  }
+ if(a==='import-reference'){const uploader=$('#catalog-import-file');if(!uploader){toast('Buka halaman Katalog terlebih dahulu.',true);return;}uploader.click();return;}
  if(a==='download-json')return download('ranakara-backup.json',JSON.stringify(data,null,2),'application/json');
 }
 function download(name,content,mime){const file=new Blob([content],{type:mime});const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -209,31 +321,54 @@ async function signUp(email,password){
  $('#auth-message').textContent=response.session?'Pendaftaran berhasil. Silakan masuk.':'Pendaftaran dikirim. Jika konfirmasi email diaktifkan, periksa inbox sebelum login.';
 }
 $('#auth-button').addEventListener('click',async()=>{
- if(session){if(!confirm('Keluar dari workspace cloud?'))return;try{await authFetch('/auth/v1/logout',{method:'POST'});}catch{}session=null;cloudReady=false;booting=false;sessionStorage.removeItem(SESSION_KEY);data=JSON.parse(localStorage.getItem(KEY)||'null')||makeSeed();draft=null;safeRender();toast('Keluar dari akun cloud.');return;}
+ if(session){if(!confirm('Keluar dari workspace cloud?'))return;try{await authFetch('/auth/v1/logout',{method:'POST'});}catch{}session=null;cloudReady=false;booting=false;sessionStorage.removeItem(SESSION_KEY);data=JSON.parse(localStorage.getItem(KEY)||'null')||makeSeed();draft=null;safeRender();await mergeGlobalCatalog();persistLocal();safeRender();toast('Keluar dari akun cloud.');return;}
  if(!CLOUD){toast('Isi public/config.js terlebih dahulu dengan Supabase URL dan anon key.',true);return;}
  $('#auth-message').textContent='';$('#auth-dialog').showModal();
 });
 $('#login-form').addEventListener('submit',async ev=>{ev.preventDefault();const email=$('#auth-email').value.trim(),password=$('#auth-password').value;const msg=$('#auth-message');msg.textContent='Memproses login…';try{await signIn(email,password);}catch(err){msg.textContent=`Gagal masuk: ${err.message}`;}});
 $('#register-button').addEventListener('click',async()=>{const msg=$('#auth-message');msg.textContent='Memproses pendaftaran…';try{await signUp($('#auth-email').value.trim(),$('#auth-password').value);}catch(err){msg.textContent=`Gagal mendaftar: ${err.message}`;}});
 document.addEventListener('click',async ev=>{
+ const filter=ev.target.closest('[data-order-filter]');if(filter){uiState.plannerStatus=filter.dataset.orderFilter;uiState.plannerQuery='';currentPage='planner';render();return;}
  const nav=ev.target.closest('[data-nav]');if(nav){currentPage=nav.dataset.nav;render();return;}
  const action=ev.target.closest('[data-action]');if(action){ev.preventDefault();await clickAction(action);}
 });
 document.addEventListener('submit',async ev=>{const form=ev.target;if(form.matches('#material-form,#product-form,.recipe-form')){ev.preventDefault();await handleForm(form);}});
+document.addEventListener('input',ev=>{
+ if(ev.target.id==='order-text'){uiState.orderText=ev.target.value;return;}
+ if(ev.target.id==='planner-search'){uiState.plannerQuery=ev.target.value;applyPlannerFilters();return;}
+ if(ev.target.id==='catalog-search'){uiState.catalogQuery=ev.target.value;applyCatalogFilters();return;}
+ if(ev.target.id==='material-search'){uiState.materialQuery=ev.target.value;applyMaterialFilters();return;}
+});
 document.addEventListener('change',async ev=>{
+ if(ev.target.id==='planner-filter'){uiState.plannerStatus=ev.target.value;applyPlannerFilters();return;}
+ if(ev.target.id==='catalog-filter'){uiState.catalogFilter=ev.target.value;applyCatalogFilters();return;}
+ if(ev.target.id==='catalog-import-file'){
+   const file=ev.target.files?.[0]; if(!file)return;
+   try{
+     if(file.size>2_000_000)throw new Error('File JSON terlalu besar (maksimal 2 MB).');
+     const incoming=JSON.parse(await file.text());
+     const merged=mergeCatalogReference(data,incoming);const {counts}=merged;
+     const summary=`Tambah ${counts.newProducts} produk & ${counts.newMaterials} bahan; lewati ${counts.productsSkipped} produk dan ${counts.materialsSkipped} bahan yang sudah ada. Resep dan stok lama dipertahankan. Takaran resep produk baru masih kosong.`;
+     if(!confirm(summary+'\n\nLanjut impor? Disarankan backup data terlebih dahulu.'))return;
+     const saved=await mutate(()=>{data.products=merged.products;data.materials=merged.materials;});
+     if(saved)toast('Katalog referensi berhasil digabungkan. Isi komposisi bahan per unit dari data UMKM.');
+   }catch(err){toast('Impor gagal: '+(err?.message||'Format tidak valid'),true);}
+   finally{ev.target.value='';}
+   return;
+ }
  if(ev.target.matches('[data-status-id]')){const {statusId}=ev.target.dataset;const value=ev.target.value;await mutate(()=>{const order=data.orders.find(x=>x.id===statusId);if(order)order.status=value;});}
 });
 // CRITICAL: Paint the app immediately. Never block the initial render on Supabase.
 safeRender();
 (async()=>{
- if(!CLOUD)return;
+ if(!CLOUD){await mergeGlobalCatalog();persistLocal();safeRender();return;}
  try{session=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');}
  catch{session=null;sessionStorage.removeItem(SESSION_KEY);}
- if(!session)return;
+ if(!session){await mergeGlobalCatalog();persistLocal();safeRender();return;}
  booting=true;safeRender();
  try{
    if(await ensureSession()){await loadCloud();cloudReady=true;cloudError='';}
-   else{toast('Sesi login kedaluwarsa. Silakan masuk kembali.',true);}
+   else{toast('Sesi login kedaluwarsa. Silakan masuk kembali.',true);await mergeGlobalCatalog();persistLocal();}
  }catch(err){
    cloudReady=false;cloudError=err.message||'Kesalahan tidak dikenal';
    console.error('RANAKARA cloud bootstrap failed:',err);
