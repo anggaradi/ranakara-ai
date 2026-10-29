@@ -1,5 +1,5 @@
 /**
- * RANAKARA-NLP v3.0 — device-local, zero-API inference.
+ * RANAKARA-NLP v3.1 — device-local, zero-API inference.
  * Product entity recognizer: supervised instance-based char 2/3-gram TF-IDF 1-NN,
  * fitted on each seller's product names and labelled aliases.
  * Quantities and dates: transparent deterministic parser. Human confirmation required.
@@ -8,7 +8,7 @@
 
 const clean = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
 const tokensOf = text => [...String(text).matchAll(/[\p{L}\p{N}]+/gu)].map(match => ({v:clean(match[0]),raw:match[0],start:match.index,end:match.index+match[0].length}));
-const STOP = new Set('eh lagi tambahkan ditambah nambah ubah ganti aku saya tiang titiang bu pak kak pesan pesen pesankan order minta tolong mau ingin perlu ambil di antar dikirim kirim untuk pada tanggal hari besok lusa nanti pagi siang sore malam beserta sama dan serta juga yang biasa ada sejumlah sebanyak jadi total unit buah pcs bungkus box bisa kalau ya nggih ngih dong dulu tambahan tambah sekalian plus minta tolong sebelum setelah jam pukul berapa bukan tidak gak nggak jangan batal batalkan batalin dibatalin hapus coret cancel kurangi kurangin dikurangi potong turunin turunkan menjadi maksudnya ralat seharusnya isi gedenya lebih kurang kecil tadi tolongnya lusin kodi setengah lusin'.split(' '));
+const STOP = new Set('eh lagi cukup cukupnya cuma hanya saja aja tambahkan ditambah nambah ubah ganti aku saya tiang titiang bu pak kak pesan pesen pesankan order minta tolong mau ingin perlu ambil di antar dikirim kirim untuk pada tanggal hari besok lusa nanti pagi siang sore malam beserta sama dan serta juga yang biasa ada sejumlah sebanyak jadi total unit buah pcs bungkus box bisa kalau ya nggih ngih dong dulu tambahan tambah sekalian plus minta tolong sebelum setelah jam pukul berapa bukan tidak gak nggak jangan batal batalkan batalin dibatalin hapus coret cancel kurangi kurangin dikurangi potong turunin turunkan menjadi maksudnya ralat seharusnya isi gedenya lebih kurang kecil tadi tolongnya lusin kodi setengah lusin'.split(' '));
 const MONTHS = new Set('januari februari maret april mei juni juli agustus september oktober november desember jan feb mar apr mei jun jul agu sep okt nov des'.split(' '));
 const TIMEWORDS = new Set('senin selasa rabu kamis jumat sabtu minggu kemarin besok lusa pagi siang sore malam pukul jam'.split(' '));
 
@@ -162,6 +162,8 @@ const CANCELLATION=/(?:\b(?:batal|batalkan|batalin|dibatalkan|dibatalin|cancel|h
 const ADDITION=/(?:\b(?:tambah|tambahkan|ditambah|nambah|tambahin|tambahi|plus|naikkan|naikin|tambahan)\b)/i;
 const SUBTRACTION=/(?:\b(?:kurangi|kurangin|dikurangi|potong|turunin|turunkan|minus|berkurang)\b)/i;
 const REPLACEMENT=/(?:\b(?:jadi|menjadi|ubah|ganti|ralat|maksudnya|seharusnya|revisi|koreksi|total)\b)/i;
+// A colloquial final amount is an amendment, not a newly named catalogue product.
+const FINAL_AMOUNT=/(?:\b(?:cukup|cukupnya|cuma|hanya)\b)/i;
 const QUESTION=/(?:\b(?:berapa|apakah|bisa|boleh|harga|stok|ready|tersedia|tanya|biaya)\b|\?)/i;
 const safeExcerpt=s=>String(s).slice(0,100).replace(/\b(?:\+62|62|0)8\d{7,11}\b/g,'[nomor telepon]').replace(/\b[^\s@]+@[^\s@]+\.[^\s@]+\b/g,'[email]');
 
@@ -170,7 +172,7 @@ function chooseAction(clause){
   if(CANCELLATION.test(s))return {label:'cancel',method:'guard'};
   if(SUBTRACTION.test(s))return {label:'subtract',method:'guard'};
   if(ADDITION.test(s))return {label:'add',method:'guard'};
-  if(REPLACEMENT.test(s))return {label:'replace',method:'guard'};
+  if(REPLACEMENT.test(s)||FINAL_AMOUNT.test(s))return {label:'replace',method:'guard'};
   if(QUESTION.test(s))return {label:'inquiry',method:'guard'};
   const p=classifyIntent(s);
   // The learned classifier may assist with paraphrases, but uncertain text is NOT
@@ -194,7 +196,7 @@ function splitClauses(text){
     }
   }
   if(start<t.length)spans.push(text.slice(t[start].start,t[t.length-1].end));
-  return spans.map(x=>x.trim()).filter(x=>x.length>1);
+  return spans.map(x=>x.trim()).filter(x=>x.length>1||/^\d$/.test(x));
 }
 
 const UNITS=new Map([['lusin',12],['kodi',20]]);
@@ -294,6 +296,7 @@ export function extractLocalOrder({text,catalog,referenceDate}={}){
     return {items:[],delivery,notes:'',questions:['Pesan berbentuk pertanyaan; konfirmasi apakah pelanggan benar-benar membuat pesanan.'],intent_summary:['inquiry']};
   }
   const state=new Map(),questions=[],notes=[],clauses=splitClauses(text),resolved=[];
+  let pendingCorrection=null; // {id, clauseIndex}: an explicitly rejected OLD quantity, awaiting a replacement.
   for(const [ci,clause] of clauses.entries()){
     // Detection uses the same catalogue-fitted product recognition as v2.2.
     const {found,tokens}=mentions(clause,safeCatalog);
@@ -305,9 +308,28 @@ export function extractLocalOrder({text,catalog,referenceDate}={}){
     const rangeInClause=/\b\d+\s*[-–]\s*\d+\b/.test(clause) && !/\b20\d{2}[-/]\d{1,2}[-/]\d{1,2}\b/.test(clause);
     const alternativeInClause=/\b\d+\s+(?:atau|ato)\s+\d+\b/i.test(clause);
     if(rangeInClause||alternativeInClause)questions.push(`Rentang/alternatif jumlah pada “${safeExcerpt(clause)}” belum pasti; pilih satu jumlah.`);
-    // "bukan 5 kwangen" negates an alternative amount, NOT an existing confirmed order.
-    const deniedAlternative=/^\s*bukan\s+(?:\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|seratus)/i.test(clause);
-    if(deniedAlternative){questions.push(`Jumlah yang ditolak pada “${safeExcerpt(clause)}” tidak digunakan. Pastikan jumlah akhir.`);continue;}
+    // "jangan 12, cukup 8" rejects the PREVIOUS count, not the product itself.
+    // Unlike "jangan dibuat" (genuine cancellation), a bare rejected quantity
+    // is a pending correction. We never guess which product among several was meant.
+    const rejectsQuantity=/^\s*(?:jangan|bukan)\s+(?:\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|seratus|dua\s+belas)\b/i.test(clause);
+    if(rejectsQuantity){
+      resolved.push({clause,action:'reject_old_quantity',method:'guard'});
+      const namedTargets=[...new Set(found.filter(f=>f.id&&!f.ambiguous).map(f=>f.id))];
+      const id=namedTargets.length===1?namedTargets[0]:namedTargets.length===0&&state.size===1?[...state.keys()][0]:null;
+      const rejected=quantities.length===1?quantities[0].value:null;
+      const row=id?state.get(id):null;
+      if(!id){questions.push(state.size>1?'Jumlah yang ditolak tidak menyebut produk; tentukan produk yang dikoreksi.':'Jumlah yang ditolak belum memiliki produk aktif; klarifikasi pesanan.');pendingCorrection=null;continue;}
+      if(rejected===null){questions.push(`Jumlah yang ditolak pada “${safeExcerpt(clause)}” belum jelas; konfirmasi jumlah akhir.`);pendingCorrection=null;continue;}
+      if(!row||row.quantity!==rejected){
+        // "10 kwangen, bukan 5 kwangen" does not negate the actual 10-unit order.
+        questions.push(`Jumlah ${rejected} yang ditolak tidak sama dengan jumlah aktif “${row?.product_name||'produk'}”; konfirmasi maksud pelanggan.`);
+        pendingCorrection=null;continue;
+      }
+      row.quantity=null;row.confidence='low';
+      pendingCorrection={id,clauseIndex:ci};
+      notes.push(`${row.product_name}: jumlah lama ${rejected} ditolak`);
+      continue;
+    }
     resolved.push({clause,action:action.label,method:action.method});
     const named=found.filter(f=>f.id&&!f.ambiguous);
     if(found.some(f=>!f.id||f.ambiguous))questions.push(`Produk pada frasa “${safeExcerpt(clause)}” tidak pasti; pilih manual.`);
@@ -356,19 +378,25 @@ export function extractLocalOrder({text,catalog,referenceDate}={}){
         else {state.set(f.id,{catalog_id:f.id,product_name:product.name,quantity:qty,confidence:'medium',source_text:f.phrase});notes.push(`${product.name}: jumlah akhir ${qty}`);}
       }
     }
-    if(!addressed&&quantities.length&&amendments){
-      const target=state.size===1?[...state.keys()][0]:null;
+    // A bare final number after "jangan 12" or "bukan 12" also resolves
+    // the pending correction: "bukan 12, tapi 8". No product is fabricated.
+    const pendingIsRecent=Boolean(pendingCorrection&&pendingCorrection.clauseIndex===ci-1&&state.has(pendingCorrection.id));
+    const pendingBareFinal=pendingIsRecent&&!addressed&&quantities.length===1&&action.label==='create';
+    if(pendingBareFinal)resolved[resolved.length-1].action='replace';
+    if(!addressed&&quantities.length&&(amendments||pendingBareFinal)){
+      const target=pendingIsRecent?pendingCorrection.id:state.size===1?[...state.keys()][0]:null;
       if(!target){questions.push(state.size>1?`Frasa “${safeExcerpt(clause)}” bisa merujuk lebih dari satu produk; tentukan target revisi.`:`Frasa “${safeExcerpt(clause)}” tidak memiliki produk/jumlah awal; klarifikasi dulu.`);continue;}
       const row=state.get(target),qty=quantities[0].value;
-      if(quantities.length>1){questions.push(`Ada lebih dari satu jumlah pada frasa “${clause}”; klarifikasi.`);continue;}
-      if(row.quantity===null){questions.push(`Jumlah awal “${row.product_name}” belum diketahui sehingga revisi tidak bisa dihitung.`);continue;}
+      if(quantities.length>1){questions.push(`Ada lebih dari satu jumlah pada frasa “${safeExcerpt(clause)}”; klarifikasi.`);continue;}
+      if(row.quantity===null&&!(pendingIsRecent&&(action.label==='replace'||pendingBareFinal))){questions.push(`Jumlah awal “${row.product_name}” belum diketahui sehingga revisi tidak bisa dihitung.`);continue;}
       const previous=row.quantity;
-      const next=action.label==='add'?previous+qty:action.label==='subtract'?previous-qty:qty;
+      const effectiveAction=pendingBareFinal?'replace':action.label;
+      const next=effectiveAction==='add'?previous+qty:effectiveAction==='subtract'?previous-qty:qty;
       if(next<=0){state.delete(target);notes.push(`${row.product_name}: revisi menghabiskan pesanan.`);}
       else if(next>100000){row.quantity=null;questions.push(`Jumlah revisi “${row.product_name}” di luar batas.`);}
-      else {row.quantity=next;row.confidence='medium';notes.push(`${row.product_name}: ${previous} ${action.label==='add'?'+':action.label==='subtract'?'-':'→'} ${qty} = ${next}`);}
+      else {row.quantity=next;row.confidence='medium';notes.push(pendingIsRecent?`${row.product_name}: koreksi jumlah → ${next}`:`${row.product_name}: ${previous} ${effectiveAction==='add'?'+':effectiveAction==='subtract'?'-':'→'} ${qty} = ${next}`);pendingCorrection=null;}
     }
-    if(action.label==='create'&&named.length===0&&quantities.length){questions.push(`Produk dalam frasa “${safeExcerpt(clause)}” tidak ditemukan pada katalog.`);}
+    if(action.label==='create'&&!pendingBareFinal&&named.length===0&&quantities.length){questions.push(`Produk dalam frasa “${safeExcerpt(clause)}” tidak ditemukan pada katalog.`);}
     if(action.label==='create'&&quantities.length>consumed.size&&named.length){questions.push(`Ada jumlah yang belum dapat dipasangkan dengan produk pada frasa “${safeExcerpt(clause)}”.`);}
   }
   const items=[...state.values()];
@@ -381,4 +409,4 @@ export function extractLocalOrder({text,catalog,referenceDate}={}){
   // No original input, phone numbers, or customer identifiers are recorded in output.
   return {items,delivery,notes:notes.length?`Revisi: ${notes.join('; ')}. Periksa kembali sebelum simpan.`:'',questions:[...new Set(questions)],intent_summary:resolved.map(x=>x.action)};
 }
-export const LOCAL_MODEL_NAME='RANAKARA-NLP v3.0 · TF-IDF 1-NN (produk + intent) + parser aman (browser)';
+export const LOCAL_MODEL_NAME='RANAKARA-NLP v3.1 · TF-IDF 1-NN (produk + intent) + parser aman (browser)';
