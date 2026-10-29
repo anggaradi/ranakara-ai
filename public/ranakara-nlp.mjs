@@ -1,5 +1,5 @@
 /**
- * RANAKARA-NLP v2.2 — device-local, zero-API inference.
+ * RANAKARA-NLP v3.0 — device-local, zero-API inference.
  * Product entity recognizer: supervised instance-based char 2/3-gram TF-IDF 1-NN,
  * fitted on each seller's product names and labelled aliases.
  * Quantities and dates: transparent deterministic parser. Human confirmation required.
@@ -8,7 +8,7 @@
 
 const clean = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
 const tokensOf = text => [...String(text).matchAll(/[\p{L}\p{N}]+/gu)].map(match => ({v:clean(match[0]),raw:match[0],start:match.index,end:match.index+match[0].length}));
-const STOP = new Set('eh lagi tambahkan ditambah nambah ubah ganti aku saya tiang titiang bu pak kak pesan pesen pesankan order minta tolong mau ingin perlu ambil di antar dikirim kirim untuk pada tanggal hari besok lusa nanti pagi siang sore malam beserta sama dan serta juga yang biasa ada sejumlah sebanyak jadi total unit buah pcs bungkus box bisa kalau ya nggih ngih dong dulu tambahan tambah sekalian plus minta tolong sebelum setelah jam pukul berapa'.split(' '));
+const STOP = new Set('eh lagi tambahkan ditambah nambah ubah ganti aku saya tiang titiang bu pak kak pesan pesen pesankan order minta tolong mau ingin perlu ambil di antar dikirim kirim untuk pada tanggal hari besok lusa nanti pagi siang sore malam beserta sama dan serta juga yang biasa ada sejumlah sebanyak jadi total unit buah pcs bungkus box bisa kalau ya nggih ngih dong dulu tambahan tambah sekalian plus minta tolong sebelum setelah jam pukul berapa bukan tidak gak nggak jangan batal batalkan batalin dibatalin hapus coret cancel kurangi kurangin dikurangi potong turunin turunkan menjadi maksudnya ralat seharusnya isi gedenya lebih kurang kecil tadi tolongnya lusin kodi setengah lusin'.split(' '));
 const MONTHS = new Set('januari februari maret april mei juni juli agustus september oktober november desember jan feb mar apr mei jun jul agu sep okt nov des'.split(' '));
 const TIMEWORDS = new Set('senin selasa rabu kamis jumat sabtu minggu kemarin besok lusa pagi siang sore malam pukul jam'.split(' '));
 
@@ -76,160 +76,309 @@ function mentions(text, catalog) {
   }
   return {found:found.sort((a,b)=>a.start-b.start),tokens:t};
 }
-const wordNumbers=new Map([['satu',1],['dua',2],['tiga',3],['empat',4],['lima',5],['enam',6],['tujuh',7],['delapan',8],['sembilan',9],['sepuluh',10],['sebelas',11],['dua belas',12],['dua puluh',20],['tiga puluh',30],['empat puluh',40],['lima puluh',50],['seratus',100]]);
-function parseNumbers(text,tokens) {
-  const excludes=[...text.matchAll(/\b\d{4}-\d{1,2}-\d{1,2}\b|\b\d{1,2}[.:]\d{2}\b/g)].map(m=>[m.index,m.index+m[0].length]);
-  const quantities=[];
-  for(let i=0;i<tokens.length;i++){
-    const w=tokens[i];
-    if(excludes.some(([s,e])=>w.start>=s&&w.end<=e))continue;
-    if(/^\d+$/.test(w.v)){
-      const value=Number(w.v);
-      if(value>0&&value<=100000&&!(MONTHS.has(tokens[i+1]?.v)||TIMEWORDS.has(tokens[i-1]?.v)))quantities.push({at:i,end:i,value});
-    }else if(wordNumbers.has(`${w.v} ${tokens[i+1]?.v}`)){
-      quantities.push({at:i,end:i+1,value:wordNumbers.get(`${w.v} ${tokens[i+1].v}`)});i++;
-    }else if(wordNumbers.has(w.v))quantities.push({at:i,end:i,value:wordNumbers.get(w.v)});
-  }
-  return quantities;
-}
-const validISO=value=>{
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
-  const d=new Date(value+'T00:00:00Z');return Number.isFinite(+d)&&d.toISOString().slice(0,10)===value;
+
+/**
+ * Intent model: instance-based TF-IDF classifier trained on explicitly labelled,
+ * hand-written sentence examples. Product-recognition ML remains catalogue-fitted.
+ * Rule guards protect high-risk cancellation, negation, arithmetic and ambiguity.
+ */
+const INTENT_EXAMPLES = {
+  create: [
+    'pesan pejati', 'saya mau pesan canang', 'tolong buatkan daksina', 'order lima unit',
+    'beli sepuluh canang', 'butuh pejati untuk besok', 'minta dibuatkan kwangen',
+    'ambil dua buah', 'titip pesan untuk besok', 'buatkan lima puluh buah',
+    'ada pesanan dari pelanggan', 'tolong siapkan tiga paket', 'pesen canang sari',
+    'mau beli perlengkapan upacara', 'tolong bikinin kwangen'
+  ],
+  add: [
+    'tambah lagi lima', 'tambahkan lima unit', 'ditambah dua saja', 'nambah tiga ya',
+    'tambahi tiga paket', 'plus empat buah', 'tambahan lima unit', 'masih kurang lima lagi',
+    'ikut tambah sepuluh', 'tambahin lima', 'sekalian tambahin tiga', 'boleh tambah dua',
+    'naikkan jumlahnya lima lagi', 'naikin pesanan tiga', 'buat tambahannya lima'
+  ],
+  subtract: [
+    'kurangi lima', 'tolong kurangin dua', 'dikurangi tiga unit', 'potong lima unit',
+    'jumlahnya dikit lagi kurangi dua', 'turunkan lima', 'turunin tiga',
+    'potong jumlahnya dua', 'kurangin pesanannya sepuluh', 'berkurang lima',
+    'mohon dikurangi empat', 'saya mau mengurangi dua', 'kurang lima lagi',
+    'buat berkurang tiga', 'minus lima'
+  ],
+  replace: [
+    'ubah jadi tujuh', 'sekarang jadi delapan', 'ganti ke tiga belas',
+    'ralat jumlahnya enam', 'maksudnya lima belas', 'koreksi jadi enam',
+    'seharusnya tujuh', 'total pesanan sekarang dua belas',
+    'ganti pesanannya', 'bukan sepuluh tapi lima', 'jadi sembilan saja',
+    'tolong ubah menjadi empat', 'betulkan jadi lima', 'revisi jumlah ke tujuh',
+    'jumlah terakhir delapan'
+  ],
+  cancel: [
+    'batalkan pesanan', 'pesanan dibatalkan', 'saya batal', 'tidak jadi pesan',
+    'nggak jadi pesan', 'gak jadi ambil', 'jangan dibuat', 'tidak usah pesan',
+    'hapus yang itu', 'coret pesanan ini', 'cancel semuanya',
+    'stop pesanannya', 'tidak jadi membeli', 'saya tidak mau lagi',
+    'pesanan tolong dibatalkan'
+  ],
+  inquiry: [
+    'berapa harga canang', 'apakah tersedia pejati', 'masih ada stok',
+    'bisa pesan untuk besok', 'minta info harga', 'berapa lama pembuatannya',
+    'boleh tanya produk', 'ini ready tidak', 'berapa biaya satuan',
+    'ada pilihan produk', 'bisa dikirim tidak', 'apakah bisa pesan dulu',
+    'mau tanya ketersediaan', 'boleh lihat harga', 'minta daftar harga'
+  ]
 };
-function extractTime(text) {
-  let date_iso=null;let raw_text='';let time_text=null;
-  const iso=text.match(/\b(20\d{2}-\d{2}-\d{2})\b/);
-  const ddmmyyyy=text.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);
-  if(iso){raw_text=iso[0];if(validISO(iso[1]))date_iso=iso[1];}
-  else if(ddmmyyyy){raw_text=ddmmyyyy[0];const possible=`${ddmmyyyy[3]}-${ddmmyyyy[2].padStart(2,'0')}-${ddmmyyyy[1].padStart(2,'0')}`;if(validISO(possible))date_iso=possible;}
-  else {const rel=text.match(/\b(?:senin|selasa|rabu|kamis|jumat|jum'at|sabtu|minggu|besok|lusa|hari ini|nanti)\b/i);raw_text=rel?.[0]||'';}
-  const clock=text.match(/\b(?:pukul|jam)\s*\d{1,2}(?:[.:]\d{2})?\b/i);
-  const vague=text.match(/\b(?:pagi|siang|sore|malam)\b/i);
+const INTENT_CLASSES=Object.keys(INTENT_EXAMPLES);
+const INTENT_TRAIN=INTENT_CLASSES.flatMap(label=>INTENT_EXAMPLES[label].map((phrase)=>({id:label,name:label,aliases:[],phrase})));
+// Normalize content words that are incidental to action classification.
+function intentText(input) {
+  return clean(input).replace(/\b\d+\b/g,' angka ')
+    .replace(/\b(pejati|canang|sari|kwangen|daksina|gebogan|segehan|upakara)\b/g,' produk ');
+}
+const intentCorpus=INTENT_TRAIN.map(e=>({...e,gram:grams(intentText(e.phrase))}));
+function buildIntentModel(){
+  const df=new Map();for(const ex of intentCorpus)for(const key of ex.gram.keys())df.set(key,(df.get(key)||0)+1);
+  const idf=key=>Math.log(1+(intentCorpus.length+1)/((df.get(key)||0)+1))+0.5;
+  const vector=map=>{
+    const v=new Map();let n=0;
+    for(const [key,count] of map){const weight=(1+Math.log(count))*idf(key);v.set(key,weight);n+=weight*weight;}
+    for(const [key,weight] of v)v.set(key,weight/(Math.sqrt(n)||1));return v;
+  };
+  return {vector,examples:intentCorpus.map(ex=>({...ex,vec:vector(ex.gram)}))};
+}
+const INTENT_MODEL=buildIntentModel();
+export function classifyIntent(utterance){
+  const vector=INTENT_MODEL.vector(grams(intentText(utterance)));
+  const byLabel=new Map(INTENT_CLASSES.map(k=>[k,0]));
+  for(const ex of INTENT_MODEL.examples){let s=0;for(const [k,w] of vector)s+=w*(ex.vec.get(k)||0);
+    if(s>byLabel.get(ex.id))byLabel.set(ex.id,s);
+  }
+  const rank=[...byLabel.entries()].sort((a,b)=>b[1]-a[1]);
+  const [label,score]=rank[0];
+  return {label,score:Math.round(score*1000)/1000,margin:Math.round((score-(rank[1]?.[1]||0))*1000)/1000};
+}
+
+const BOUNDARY=new Set(['eh','dan','serta','lalu','kemudian','terus','tapi','tetapi']);
+const REVISION=new Set(['tambah','tambahkan','ditambah','nambah','tambahin','tambahi','plus','kurangi','kurangin','dikurangi','potong','turunin','turunkan','jadi','menjadi','ubah','ganti','ralat','maksudnya','seharusnya','batalkan','batal','cancel','hapus','coret','stop']);
+const CANCELLATION=/(?:\b(?:batal|batalkan|batalin|dibatalkan|dibatalin|cancel|hapus|coret|stop|jangan|tidak\s+usah|gak\s+usah|nggak\s+usah|tidak\s+jadi|gak\s+jadi|nggak\s+jadi|ga\s+jadi|tidak\s+pesan|gak\s+pesan|nggak\s+pesan|ga\s+pesan|belum\s+pesan|tidak\s+mau|gak\s+mau|nggak\s+mau|bukan)\b)/i;
+const ADDITION=/(?:\b(?:tambah|tambahkan|ditambah|nambah|tambahin|tambahi|plus|naikkan|naikin|tambahan)\b)/i;
+const SUBTRACTION=/(?:\b(?:kurangi|kurangin|dikurangi|potong|turunin|turunkan|minus|berkurang)\b)/i;
+const REPLACEMENT=/(?:\b(?:jadi|menjadi|ubah|ganti|ralat|maksudnya|seharusnya|revisi|koreksi|total)\b)/i;
+const QUESTION=/(?:\b(?:berapa|apakah|bisa|boleh|harga|stok|ready|tersedia|tanya|biaya)\b|\?)/i;
+const safeExcerpt=s=>String(s).slice(0,100).replace(/\b(?:\+62|62|0)8\d{7,11}\b/g,'[nomor telepon]').replace(/\b[^\s@]+@[^\s@]+\.[^\s@]+\b/g,'[email]');
+
+function chooseAction(clause){
+  const s=clean(clause);
+  if(CANCELLATION.test(s))return {label:'cancel',method:'guard'};
+  if(SUBTRACTION.test(s))return {label:'subtract',method:'guard'};
+  if(ADDITION.test(s))return {label:'add',method:'guard'};
+  if(REPLACEMENT.test(s))return {label:'replace',method:'guard'};
+  if(QUESTION.test(s))return {label:'inquiry',method:'guard'};
+  const p=classifyIntent(s);
+  // The learned classifier may assist with paraphrases, but uncertain text is NOT
+  // allowed to silently cancel or change an order.
+  if(p.score>=0.70&&p.margin>=0.15&&p.label!=='create')return {label:p.label,method:'ml',score:p.score};
+  return {label:'create',method:'default',score:p.score};
+}
+
+function splitClauses(text){
+  const t=tokensOf(text);if(!t.length)return [];
+  const spans=[];let start=0;
+  for(let i=1;i<t.length;i++){
+    const word=t[i].v;const between=text.slice(t[i-1].end,t[i].start);
+    const prior=t[i-1].v;
+    const earlier=t.slice(start,i).map(x=>x.v);
+    const completeReplacementPhrase=word==='jadi'&&earlier.some(w=>['ubah','ganti','ralat','revisi','koreksi'].includes(w));
+    const cue=REVISION.has(word)&&!completeReplacementPhrase&&!(['tidak','gak','nggak','ga','belum','bukan'].includes(prior)&&word==='jadi');
+    if(/[;,!?]/.test(between)||BOUNDARY.has(word)||cue){
+      if(i>start)spans.push(text.slice(t[start].start,t[i-1].end));
+      start=BOUNDARY.has(word)?i+1:i;
+    }
+  }
+  if(start<t.length)spans.push(text.slice(t[start].start,t[t.length-1].end));
+  return spans.map(x=>x.trim()).filter(x=>x.length>1);
+}
+
+const UNITS=new Map([['lusin',12],['kodi',20]]);
+const ONES={nol:0,satu:1,se:1,dua:2,tiga:3,empat:4,lima:5,enam:6,tujuh:7,delapan:8,sembilan:9};
+function readWordNumber(words,i){
+  const token=words[i]?.v; if(!token)return null;
+  if(token==='seratus'){
+    const rest=readWordNumber(words,i+1);return {value:100+(rest?.value||0),end:rest?rest.end:i};
+  }
+  if(token==='sepuluh')return {value:10,end:i};
+  if(token==='sebelas')return {value:11,end:i};
+  const one=ONES[token];if(one===undefined||one===0)return null;
+  let j=i,n=one;
+  if(words[i+1]?.v==='ratus'){
+    n=one*100;j=i+1;const rest=readWordNumber(words,j+1);if(rest&&rest.value<100){n+=rest.value;j=rest.end;}
+  }else if(words[i+1]?.v==='puluh'){
+    n=one*10;j=i+1;
+    if(ONES[words[j+1]?.v]>0){n+=ONES[words[j+1].v];j++;}
+  }else if(words[i+1]?.v==='belas'){n=one+10;j=i+1;}
+  return {value:n,end:j};
+}
+function parseQuantities(raw,mentionsFound){
+  const words=tokensOf(raw);const quantities=[],warnings=[];
+  const protectedPositions=[];
+  for(const m of raw.matchAll(/\b20\d{2}[-/]\d{1,2}[-/]\d{1,2}\b|\b\d{1,2}[.:]\d{2}\b|\b(?:pukul|jam)\s+\d{1,2}(?:[.:]\d{2})?\b/gi))protectedPositions.push([m.index,m.index+m[0].length]);
+  const covered=new Set();for(const m of mentionsFound)for(let i=m.start;i<=m.end;i++)covered.add(i);
+  for(let i=0;i<words.length;i++){
+    const w=words[i];if(covered.has(i)||protectedPositions.some(([a,b])=>w.start>=a&&w.start<b))continue;
+    let num;
+    if(/^\d+$/.test(w.v))num={value:Number(w.v),end:i};
+    else num=readWordNumber(words,i);
+    if(!num||!Number.isSafeInteger(num.value)||num.value<1||num.value>100000)continue;
+    if(words[i-1]?.v==='tanggal'||words[i-1]?.v==='tgl'||words[i-1]?.v==='pukul'||words[i-1]?.v==='jam')continue;
+    let end=num.end,value=num.value;
+    const unit=words[end+1]?.v;
+    if(UNITS.has(unit)){value*=UNITS.get(unit);end++;}
+    else if(new Set(['kotak','box','dus','paket','pak','pack','bungkus']).has(unit)){
+      warnings.push(`Satuan kemasan “${unit}” belum memiliki faktor konversi ke unit produk; jumlah harus dikonfirmasi.`);
+      i=end+1;continue;
+    }
+    if(value>100000)continue;
+    quantities.push({start:i,end,value,source:raw.slice(w.start,words[end].end)});
+    i=end;
+  }
+  return {words,quantities,warnings};
+}
+function alignProductQuantities(found,quantities){
+  const assignments=new Map();const consumed=new Set();
+  const combos=[];
+  for(let pi=0;pi<found.length;pi++)for(let qi=0;qi<quantities.length;qi++){
+    const p=found[pi],q=quantities[qi];
+    const overlap=q.start<=p.end&&q.end>=p.start;
+    if(overlap)continue;
+    const distance=q.end<p.start?p.start-q.end:q.start-p.end;
+    if(distance>5)continue;
+    const crossedProduct=found.some((r,ri)=>ri!==pi&&(r.start>Math.min(p.start,q.start)&&r.start<Math.max(p.start,q.start)));
+    if(crossedProduct)continue;
+    combos.push({pi,qi,cost:distance});
+  }
+  combos.sort((a,b)=>a.cost-b.cost);
+  for(const {pi,qi} of combos){if(assignments.has(pi)||consumed.has(qi))continue;assignments.set(pi,quantities[qi].value);consumed.add(qi);}
+  return {assignments,consumed};
+}
+const isoValid=s=>{
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(s||''))return false;
+  const d=new Date(s+'T00:00:00Z');return Number.isFinite(+d)&&d.toISOString().slice(0,10)===s;
+};
+function shiftISO(date,n){const d=new Date(date+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);}
+function parseDelivery(text,referenceDate){
+  let date_iso=null,raw_text='',time_text=null;
+  const iso=text.match(/\b20\d{2}-\d{2}-\d{2}\b/), slash=text.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);
+  if(iso){raw_text=iso[0];if(isoValid(raw_text))date_iso=raw_text;}
+  else if(slash){raw_text=slash[0];const d=`${slash[3]}-${slash[2].padStart(2,'0')}-${slash[1].padStart(2,'0')}`;if(isoValid(d))date_iso=d;}
+  else{
+    const relative=text.match(/\b(?:lusa|besok|hari ini)\b/i);
+    const weekday=text.match(/\b(?:senin|selasa|rabu|kamis|jumat|jum'at|sabtu|minggu)\b/i);
+    raw_text=relative?.[0]||weekday?.[0]||'';
+    if(relative&&isoValid(referenceDate))date_iso=shiftISO(referenceDate,clean(relative[0])==='lusa'?2:clean(relative[0])==='besok'?1:0);
+  }
+  const clock=text.match(/\b(?:pukul|jam)\s*\d{1,2}(?:[.:]\d{2})?\b/i),vague=text.match(/\b(?:pagi|siang|sore|malam)\b/i);
   time_text=clock?.[0]||vague?.[0]||null;
   return {date_iso,time_text,raw_text};
 }
-function matchQuantity(product,quantity,allMentions,tokens) {
-  const isBetween=tokenIndex=>allMentions.some(p=>p!==product&&((p.start>Math.min(tokenIndex,product.start)&&p.start<Math.max(tokenIndex,product.start))|| (p.end>Math.min(tokenIndex,product.start)&&p.end<Math.max(tokenIndex,product.start))));
-  let gap=quantity.at>product.end?quantity.at-product.end:product.start-quantity.end;
-  if(gap<0)gap=0;
-  if(gap>5||isBetween(quantity.at))return Infinity;
-  const s=Math.min(quantity.at,product.start),e=Math.max(quantity.end,product.end);
-  const middle=tokens.slice(s,e+1).map(x=>x.v);
-  let penalty=middle.some(x=>x==='dan'||x==='serta'||x==='atau')?2:0;
-  // Allow natural format '20 canang' and 'canang 20'.
-  return gap+penalty;
-}
-/**
- * Recognize explicit quantity revisions in dialogue. The ML recognizer finds product
- * entities; this deterministic layer applies safe, auditable arithmetic afterwards.
- * Do not attach an implicit change to one of several products: ask for clarification.
- */
-function detectRevisions(tokens, quantities, found) {
-  const addWords=new Set(['tambah','tambahkan','ditambah','nambah','plus']);
-  const replaceWords=new Set(['jadi','menjadi','ubah','ganti','total']);
-  const boundaryWords=new Set(['dan','serta','atau','lalu','kemudian']);
-  const changes=[];
-  for(let qi=0;qi<quantities.length;qi++){
-    const q=quantities[qi];
-    let cue=-1,kind=null;
-    for(let k=q.at-1;k>=Math.max(0,q.at-4);k--){
-      const word=tokens[k]?.v;
-      if(addWords.has(word)||replaceWords.has(word)){
-        cue=k;kind=addWords.has(word)?'add':'replace';break;
-      }
-      if(boundaryWords.has(word)||/^\d+$/.test(word||''))break;
-    }
-    if(cue<0)continue;
-    // If a product is named immediately after the revised number, it is explicit.
-    // Stop at conjunctions, another quantity, or a new amendment command.
-    const later=found.filter(p=>p.start>q.end&&p.start<=q.end+3 &&
-      !tokens.slice(q.end+1,p.start).some(t=>boundaryWords.has(t.v)||/^[0-9]+$/.test(t.v)||addWords.has(t.v)||replaceWords.has(t.v)));
-    const explicit=later.find(p=>p.id&&!p.ambiguous)||null;
-    const before=found.filter(p=>p.end<cue&&p.id&&!p.ambiguous).sort((a,b)=>b.end-a.end);
-    // For implicit references with multiple catalog products mentioned already,
-    // don't guess what 'tambah 5 lagi' refers to.
-    const earlierIds=new Set(before.map(p=>p.id));
-    const target=explicit?.id||(earlierIds.size===1?before[0]?.id:null);
-    const ambiguity=!target&&earlierIds.size>1;
-    changes.push({qi,cue,kind,target,ambiguous:ambiguity,explicitAfter:explicit});
-  }
-  return changes;
-}
 
-export function extractLocalOrder({text,catalog,referenceDate}={}) {
-  if(typeof text!=='string'||text.trim().length<4||text.length>2500)throw new Error('Teks pesanan harus 4–2.500 karakter.');
-  if(!Array.isArray(catalog)||catalog.length<1||catalog.length>60)throw new Error('Katalog harus berisi 1–60 produk.');
-  const safeCatalog=catalog.map(p=>({id:String(p.id||''),name:String(p.name||''),aliases:Array.isArray(p.aliases)?p.aliases.slice(0,10).map(String):[]}));
-  const {found,tokens}=mentions(text,safeCatalog);const quantities=parseNumbers(text,tokens);const allocated=new Map(),taken=new Set();
-  const revisions=detectRevisions(tokens,quantities,found);
-  const reserved=new Set(revisions.map(e=>e.qi));
-  const possibles=[];
-  for(let i=0;i<found.length;i++)for(let q=0;q<quantities.length;q++){
-    if(reserved.has(q))continue; // A revision must not replace the original count accidentally.
-    const cost=matchQuantity(found[i],quantities[q],found,tokens);
-    if(Number.isFinite(cost))possibles.push({i,q,cost});
+/**
+ * Structured, conservative inference. All detected edits are reviewable, and a
+ * cancellation is never turned into a new positive-quantity order.
+ */
+export function extractLocalOrder({text,catalog,referenceDate}={}){
+  if(typeof text!=='string'||text.trim().length<4||text.length>2500)throw Error('Teks pesanan harus 4–2.500 karakter.');
+  if(!Array.isArray(catalog)||catalog.length<1||catalog.length>120)throw Error('Katalog harus berisi 1–120 produk.');
+  const safeCatalog=catalog.map(p=>({id:String(p.id??''),name:String(p.name??''),aliases:Array.isArray(p.aliases)?p.aliases.slice(0,15).map(String):[]}));
+  // A bare question is not a confirmed purchase. In particular, "Pesan 3 canang?"
+  // must not become a committed order without the seller asking for confirmation.
+  if(/\?\s*$/.test(text) && !/[.!?][^?]*\?/.test(text)){
+    const delivery=parseDelivery(text,referenceDate);
+    return {items:[],delivery,notes:'',questions:['Pesan berbentuk pertanyaan; konfirmasi apakah pelanggan benar-benar membuat pesanan.'],intent_summary:['inquiry']};
   }
-  possibles.sort((a,b)=>a.cost-b.cost);
-  for(const {i,q} of possibles){if(!allocated.has(i)&&!taken.has(q)){allocated.set(i,quantities[q].value);taken.add(q);}}
-  const questions=[];
-  const rows=found.map((m,i)=>{
-    const product=safeCatalog.find(p=>p.id===m.id);
-    const quantity=allocated.get(i)??null;
-    if(m.ambiguous)questions.push(`Nama produk “${m.phrase}” mirip dengan beberapa item katalog; pilih produk yang benar.`);
-    return {catalog_id:m.id,product_name:product?.name||m.phrase,quantity,confidence:m.id&&m.score>=0.88&&m.margin>=0.12?'high':m.id&&m.score>=0.72?'medium':'low',source_text:m.phrase};
-  });
-  // Apply explicit amendments in textual order to the initially extracted quantity.
-  const coveredMentions=new Set(),audit=[];
-  for(const change of revisions){
-    const q=quantities[change.qi];
-    if(change.ambiguous){
-      questions.push(`Frasa “${tokens[change.cue].raw} ${q.value}” bisa merujuk lebih dari satu produk; tentukan produknya secara manual.`);
+  const state=new Map(),questions=[],notes=[],clauses=splitClauses(text),resolved=[];
+  for(const [ci,clause] of clauses.entries()){
+    // Detection uses the same catalogue-fitted product recognition as v2.2.
+    const {found,tokens}=mentions(clause,safeCatalog);
+    const {quantities,warnings}=parseQuantities(clause,found);
+    questions.push(...warnings);
+    const {assignments,consumed}=alignProductQuantities(found,quantities);
+    const action=chooseAction(clause);
+    // A numeric range is not a committed quantity. Never silently take the first number.
+    const rangeInClause=/\b\d+\s*[-–]\s*\d+\b/.test(clause) && !/\b20\d{2}[-/]\d{1,2}[-/]\d{1,2}\b/.test(clause);
+    const alternativeInClause=/\b\d+\s+(?:atau|ato)\s+\d+\b/i.test(clause);
+    if(rangeInClause||alternativeInClause)questions.push(`Rentang/alternatif jumlah pada “${safeExcerpt(clause)}” belum pasti; pilih satu jumlah.`);
+    // "bukan 5 kwangen" negates an alternative amount, NOT an existing confirmed order.
+    const deniedAlternative=/^\s*bukan\s+(?:\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|seratus)/i.test(clause);
+    if(deniedAlternative){questions.push(`Jumlah yang ditolak pada “${safeExcerpt(clause)}” tidak digunakan. Pastikan jumlah akhir.`);continue;}
+    resolved.push({clause,action:action.label,method:action.method});
+    const named=found.filter(f=>f.id&&!f.ambiguous);
+    if(found.some(f=>!f.id||f.ambiguous))questions.push(`Produk pada frasa “${safeExcerpt(clause)}” tidak pasti; pilih manual.`);
+    const available=new Set([...state.keys()].filter(id=>state.get(id)?.quantity!==null));
+    const targets=[...new Set(named.map(m=>m.id))];
+    if(action.label==='inquiry'){
+      questions.push(`Pesan “${safeExcerpt(clause)}” mungkin hanya pertanyaan; konfirmasi sebelum membuat pesanan.`);
       continue;
     }
-    if(!change.target){
-      questions.push(`Jumlah revisi ${q.value} belum dapat dipasangkan dengan produk yang pasti.`);
+    if(action.label==='cancel'){
+      if(targets.length){for(const id of targets){state.delete(id);notes.push(`Pembatalan produk: ${safeCatalog.find(p=>p.id===id)?.name||id}`);}}
+      else if(available.size===1){const id=[...available][0];state.delete(id);notes.push(`Pembatalan produk: ${safeCatalog.find(p=>p.id===id)?.name||id}`);}
+      else if(available.size>1){questions.push('Pembatalan tidak menyebut produk; tentukan produk yang dibatalkan.');}
+      else {questions.push('Pesan mengandung pembatalan, bukan pesanan baru. Tidak ada item dibuat.');}
       continue;
     }
-    const mainIndex=rows.findIndex(item=>item.catalog_id===change.target);
-    if(mainIndex<0)continue;
-    const row=rows[mainIndex], previous=row.quantity;
-    const next=change.kind==='add'?(previous===null?q.value:previous+q.value):q.value;
-    if(!Number.isSafeInteger(next)||next<1||next>100000){
-      questions.push(`Jumlah hasil revisi “${row.product_name}” di luar batas; periksa manual.`);
-      continue;
+    const amendments=['add','subtract','replace'].includes(action.label);
+    const compoundReplacement=(action.label==='replace'&&targets.length===1&&state.size===1&&!state.has(targets[0]));
+    if(compoundReplacement){const previous=[...state.keys()][0];state.delete(previous);notes.push(`Ganti jenis produk: ${safeCatalog.find(p=>p.id===previous)?.name} → ${safeCatalog.find(p=>p.id===targets[0])?.name}`);}
+    let addressed=false;
+    for(let i=0;i<found.length;i++){
+      const f=found[i];if(!f.id||f.ambiguous)continue;
+      addressed=true;
+      const product=safeCatalog.find(p=>p.id===f.id);
+      const qty=(rangeInClause||alternativeInClause)?null:(assignments.get(i)??null);
+      const old=state.get(f.id);
+      if(action.label==='create'){
+        if(old){questions.push(`Produk “${product.name}” disebut berulang tanpa instruksi perubahan yang jelas; periksa jumlah.`);old.quantity=null;old.confidence='low';}
+        else state.set(f.id,{catalog_id:f.id,product_name:product.name,quantity:qty,confidence:f.score>=0.88?'high':'medium',source_text:f.phrase});
+      }else if(action.label==='add'){
+        if(!old){
+          // If another product was already ordered, a named 'tambah 5 canang'
+          // adds a new line; otherwise baseline is unknown and must stay null.
+          const isAdditionalProduct=state.size>0&&qty!==null;
+          state.set(f.id,{catalog_id:f.id,product_name:product.name,quantity:isAdditionalProduct?qty:null,confidence:'low',source_text:f.phrase});
+          questions.push(isAdditionalProduct?`Konfirmasi item tambahan “${product.name}” sebanyak ${qty} unit.`:`Jumlah awal “${product.name}” belum diketahui; pastikan apakah ${qty??'jumlah tambahan'} adalah pesanan baru.`);
+        }
+        else if(qty===null||old.quantity===null){old.quantity=null;questions.push(`Penambahan “${product.name}” belum memiliki jumlah lengkap.`);}
+        else{const next=old.quantity+qty;if(next>100000){old.quantity=null;questions.push(`Hasil penambahan “${product.name}” terlalu besar.`);}else{notes.push(`${product.name}: ${old.quantity} + ${qty} = ${next}`);old.quantity=next;old.confidence='medium';}}
+      }else if(action.label==='subtract'){
+        if(!old){questions.push(`Tidak ada jumlah awal “${product.name}” untuk dikurangi.`);}
+        else if(qty===null||old.quantity===null){old.quantity=null;questions.push(`Pengurangan “${product.name}” belum jelas.`);}
+        else{const next=old.quantity-qty;if(next<=0){state.delete(f.id);notes.push(`${product.name}: dikurangi ${qty} → habis/dibatalkan`);}else{notes.push(`${product.name}: ${old.quantity} - ${qty} = ${next}`);old.quantity=next;old.confidence='medium';}}
+      }else if(action.label==='replace'){
+        if(qty===null){questions.push(`Jumlah pengganti “${product.name}” belum diketahui.`);}
+        else {state.set(f.id,{catalog_id:f.id,product_name:product.name,quantity:qty,confidence:'medium',source_text:f.phrase});notes.push(`${product.name}: jumlah akhir ${qty}`);}
+      }
     }
-    if(previous===null && !change.explicitAfter && change.kind==='add'){
-      questions.push(`Jumlah awal “${row.product_name}” belum diketahui; pastikan apakah ${q.value} merupakan jumlah total.`);
-      continue;
+    if(!addressed&&quantities.length&&amendments){
+      const target=state.size===1?[...state.keys()][0]:null;
+      if(!target){questions.push(state.size>1?`Frasa “${safeExcerpt(clause)}” bisa merujuk lebih dari satu produk; tentukan target revisi.`:`Frasa “${safeExcerpt(clause)}” tidak memiliki produk/jumlah awal; klarifikasi dulu.`);continue;}
+      const row=state.get(target),qty=quantities[0].value;
+      if(quantities.length>1){questions.push(`Ada lebih dari satu jumlah pada frasa “${clause}”; klarifikasi.`);continue;}
+      if(row.quantity===null){questions.push(`Jumlah awal “${row.product_name}” belum diketahui sehingga revisi tidak bisa dihitung.`);continue;}
+      const previous=row.quantity;
+      const next=action.label==='add'?previous+qty:action.label==='subtract'?previous-qty:qty;
+      if(next<=0){state.delete(target);notes.push(`${row.product_name}: revisi menghabiskan pesanan.`);}
+      else if(next>100000){row.quantity=null;questions.push(`Jumlah revisi “${row.product_name}” di luar batas.`);}
+      else {row.quantity=next;row.confidence='medium';notes.push(`${row.product_name}: ${previous} ${action.label==='add'?'+':action.label==='subtract'?'-':'→'} ${qty} = ${next}`);}
     }
-    row.quantity=next;
-    row.confidence=row.confidence==='high'?'medium':row.confidence; // arithmetic revision merits human review
-    taken.add(change.qi);
-    if(change.explicitAfter){
-      const idx=found.indexOf(change.explicitAfter);
-      if(idx>=0 && idx!==mainIndex)coveredMentions.add(idx);
-    }
-    audit.push(`${row.product_name}: ${previous===null?'(baru)':previous} ${change.kind==='add'?'+':'→'} ${q.value} = ${next}`);
-    questions.push(`Konfirmasi jumlah akhir “${row.product_name}”: ${next} unit (hasil revisi pesanan).`);
+    if(action.label==='create'&&named.length===0&&quantities.length){questions.push(`Produk dalam frasa “${safeExcerpt(clause)}” tidak ditemukan pada katalog.`);}
+    if(action.label==='create'&&quantities.length>consumed.size&&named.length){questions.push(`Ada jumlah yang belum dapat dipasangkan dengan produk pada frasa “${safeExcerpt(clause)}”.`);}
   }
-  // Repeated product references outside an explicit revision are ambiguous: retain warning.
-  const ids=new Set();const finalRows=[];
-  for(let i=0;i<rows.length;i++){
-    if(coveredMentions.has(i))continue;
-    const item=rows[i];
-    if(item.catalog_id&&ids.has(item.catalog_id)){
-      item.quantity=null;
-      questions.push(`Produk “${item.product_name}” disebut berulang; pastikan jumlah akhirnya.`);
-    }else if(item.catalog_id)ids.add(item.catalog_id);
-    if(item.quantity===null && !(item.catalog_id && rows.slice(0,i).some(r=>r.catalog_id===item.catalog_id)))questions.push(`Berapa jumlah produk “${item.product_name}”?`);
-    finalRows.push(item);
-  }
-  if(finalRows.length===0)questions.push('Belum ada produk yang dapat dikenali dari katalog. Pilih produk secara manual atau tambah alias.');
-  if(quantities.some((q,i)=>!taken.has(i)))questions.push('Ada angka yang belum dapat dipasangkan ke produk katalog; periksa apakah ada produk yang belum dikenali.');
-  const delivery=extractTime(text);
-  if(!delivery.date_iso)questions.push('Tanggal pemenuhan pesanan belum pasti; pilih tanggal setelah mengonfirmasi pelanggan.');
+  const items=[...state.values()];
+  for(const item of items)if(item.quantity===null)questions.push(`Berapa jumlah produk “${item.product_name}”?`);
+  if(!items.length)questions.push('Tidak ada item pesanan aktif yang pasti. Jangan menyimpan sebagai pesanan baru sebelum diklarifikasi.');
+  const delivery=parseDelivery(text,referenceDate);
+  if(!delivery.date_iso)questions.push('Tanggal pemenuhan pesanan belum pasti; konfirmasi tanggal pelanggan.');
+  if(delivery.date_iso&&delivery.raw_text&&/^(lusa|besok|hari ini)$/i.test(delivery.raw_text))questions.push(`Konfirmasi tanggal relatif “${delivery.raw_text}”: ${delivery.date_iso}.`);
   if(!delivery.time_text)questions.push('Apakah ada jam pengambilan/pengiriman yang perlu dikonfirmasi?');
-  const notes=audit.length?`Revisi jumlah terdeteksi otomatis: ${audit.join('; ')}. Harap periksa sebelum menyimpan.`:'';
-  return {items:finalRows,delivery,notes,questions:[...new Set(questions)]};
+  // No original input, phone numbers, or customer identifiers are recorded in output.
+  return {items,delivery,notes:notes.length?`Revisi: ${notes.join('; ')}. Periksa kembali sebelum simpan.`:'',questions:[...new Set(questions)],intent_summary:resolved.map(x=>x.action)};
 }
-export const LOCAL_MODEL_NAME='RANAKARA-NLP v2.2 · TF-IDF char n-gram + 1-NN + koreksi kuantitas (browser)';
+export const LOCAL_MODEL_NAME='RANAKARA-NLP v3.0 · TF-IDF 1-NN (produk + intent) + parser aman (browser)';
