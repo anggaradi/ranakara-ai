@@ -1,66 +1,69 @@
-# RANAKARA AI — Bali DigiFest 2026 (MVP 1.0)
+# RANAKARA AI — Bali DigiFest 2026
 
-**Produk web AI untuk penjual sarana upacara di Bali:** pesan pelanggan -> ekstraksi bahasa alami oleh AI -> verifikasi manusia -> pesanan tersimpan -> kebutuhan bahan produksi.
+**Order Intelligence & Material Planning untuk UMKM Upakara Bali**  
+**Kategori:** Mahasiswa/Umum — Business & MSME Digitalization  
+**Status:** MVP fungsional; validasi lapangan dan seluruh takaran resep belum selesai.  
+**Repository:** https://github.com/anggaradi/ranakara-ai  
+**Website:** [ISI URL VERCEL AKTIF DARI DASHBOARD]  
+**Rilis yang diajukan:** [ISI TAG / COMMIT SHA SETELAH FINALISASI]
 
-> Status: kode prototipe siap build statis dan diuji lokal; **belum boleh diklaim telah diuji end-to-end dengan OpenAI, Supabase, dan Netlify** hingga kredensial asli ditambahkan, website di-deploy, dan pengujian live lulus. Tidak ada demo AI palsu.
+## Deskripsi, masalah dan pengguna
+RANAKARA AI membantu pengrajin/penjual sarana upacara Bali mengubah pesan informal pelanggan menjadi draf pesanan terstruktur, meninjau dan mengonfirmasi item, mencatat status pesanan, dan menghitung kebutuhan bahan berdasarkan resep yang tersedia. Sasaran awal: pelaku UMKM upakara yang menerima pesanan melalui pesan teks dan memerlukan pencatatan serta rencana produksi yang konsisten.
 
-## Fitur yang sudah diimplementasikan di source code
+## Fitur yang telah diimplementasikan
+- **AI Order Studio:** analisis pesan teks dengan NLP lokal di browser; pengenalan produk dari katalog/alias; klasifikasi maksud pesanan; ekstraksi jumlah, revisi, pembatalan, dan klarifikasi ambiguitas.
+- **Human-in-the-loop:** hasil AI tidak otomatis menjadi pesanan; pengguna memverifikasi jumlah/tanggal; penyimpanan pesanan ambigu memerlukan verifikasi tambahan.
+- **Katalog publik:** 34 jenis referensi upakara, alias, daftar bahan/komponen; pengguna baru memperoleh referensi secara otomatis.
+- **Global Recipe Library:** daftar bahan publik dan penanda validasi; takaran numerik global belum dipublikasikan sebagai resep terverifikasi (0/34 pada rilis referensi yang diperiksa).
+- **Manajemen pesanan & MRP:** status Baru / Diproses / Selesai / Dibatalkan; MRP menghitung jumlah bahan = Σ(qty produk × takaran bahan per unit) lalu kekurangan = max(0, kebutuhan - stok); perhitungan hanya valid untuk produk yang resep numeriknya telah dilengkapi.
+- **Mode demo juri:** contoh simulasi terpisah dari data bisnis; tidak boleh disamakan dengan data pelanggan nyata.
+- **Workspace privat:** Supabase Auth dan tabel `public.workspaces` dengan Row Level Security per `user_id`; mode demo lokal tersedia tanpa login.
+- **UX Bali Immersive:** gapura dan ornamentasi canang, transisi, navigasi mobile, pencarian katalog, serta dukungan mengurangi animasi.
 
-- Dashboard jumlah pesanan, pesanan aktif, dan kekurangan bahan.
-- Katalog produk beserta alias nama lokal, bahan, stok, dan resep jumlah bahan per produk.
-- Studio pesanan berbasis teks: memanggil AI online lewat Netlify Function **hanya untuk pengguna yang sudah login**; keluaran terstruktur, validasi katalog, deteksi kemungkinan ambiguitas.
-- Alternatif **draf manual** yang jelas dibedakan dari AI — berguna saat belum punya API key.
-- Konfirmasi pengguna sebelum menyimpan pesanan, termasuk tanggal yang wajib jelas.
-- Perencanaan bahan deterministik, tidak memakai AI untuk aritmetika.
-- Status pesanan baru/diproses/selesai/dibatalkan; ekspor kebutuhan CSV & backup data JSON.
-- Penyimpanan demo di browser (`localStorage`); penyimpanan cloud per user di Supabase (`RLS`).
-
-## Yang belum masuk versi 1.0
-
-OCR screenshot WhatsApp, WhatsApp Business API, prediksi permintaan, pengelolaan supplier, multi-karyawan, autentikasi MFA, sistem pengurangan stok otomatis, dan jaminan kesesuaian takaran bahan untuk seluruh tradisi upacara. **Jangan klaim fitur tersebut ada pada formulir.**
-
-## Struktur repo
-
+## Arsitektur dan alur
 ```
-public/                  # HTML, CSS, UI JS, engine perencanaan
-netlify/functions/       # endpoint AI server-side (bukan browser)
-supabase/schema.sql      # tabel & row level security
-scripts/check.mjs        # build check
- tests/                   # regression tests
-netlify.toml             # publish folder dan fungsi server
+Pesan teks → Browser (Vercel static frontend)
+           → RANAKARA-NLP v3.2 (TF-IDF char 2/3-gram, 1-NN produk,
+              classifier intent berbasis contoh berlabel, parser aturan)
+           → Draf terstruktur + alasan klarifikasi → Persetujuan manusia
+           → Supabase Auth + workspaces JSONB (RLS, milik akun)
+           → MRP deterministik → Kebutuhan bahan / kekurangan stok
 ```
+Modul utama: `public/ranakara-nlp.mjs` (NLP), `public/app.mjs` (UI & workflow), `public/engine.mjs` (validasi dan MRP), `public/global-catalog.*`, `public/global-recipes.json`, `public/recipe-bom-import.mjs`. `netlify/functions/` dan dokumen `DEPLOY_NETLIFY.md` di repository lama merupakan artefak historis dan **bukan** bagian dari alur produksi Vercel saat ini.
 
-## Menguji tanpa layanan eksternal
+## Model AI dan alasan pemilihan
+`RANAKARA-NLP v3.2` merupakan **hybrid machine learning + rule-based NLP**, **bukan LLM atau AI generatif**. Model menggunakan TF-IDF karakter n-gram dan 1-nearest-neighbor pada nama/alias produk serta klasifikasi intent berdasarkan contoh kalimat berlabel. Parser deterministik menangani kuantitas/tanggal, revisi, dan aturan keselamatan. Inferensi berlangsung di browser dan tidak memerlukan OpenAI API. AI diperlukan karena variasi bahasa informal, istilah upakara, dan koreksi percakapan tidak dapat ditangani dengan memilih produk dari daftar statis saja. Hasil AI harus diverifikasi manusia.
 
-1. Pasang Node.js 20+.
-2. Jalankan `npm test` dan `npm run build`.
-3. Untuk melihat UI lokal tanpa API/backend, jalankan `python3 -m http.server 8080 -d public`, lalu buka `http://localhost:8080`.
-4. Website menjalankan **mode demo lokal**, hanya memakai browser storage. AI online tidak aktif sampai Supabase dan OpenAI API diatur.
+## Cara menjalankan lokal
+Prasyarat: Node.js >=20 dan Python 3 (untuk server statis opsional).
+```bash
+npm test
+npm run build
+python3 -m http.server 8080 -d public
+```
+Lalu buka http://localhost:8080. Untuk sinkronisasi, buat Supabase project, aktifkan Auth, jalankan `supabase/schema.sql`, dan isi **hanya** Supabase project URL + public anon/publishable key di `public/config.js`. Jangan menaruh service_role key, token privat, atau password di frontend. `public/config.js` belum tentu siap pakai dalam setiap salinan source; cek isinya setelah clone.
 
-## Konfigurasi AI + cloud + Netlify
+## Deploy Vercel
+- Import repository GitHub; preset `Other`.
+- Root Directory `./`; Output Directory `public`.
+- Build command dapat dikosongkan jika *Override* diaktifkan; alternatif jalankan `npm run build` setelah sinkronisasi script pemeriksaan pada branch saat ini.
+- Masukkan URL Vercel aktif ke Supabase Auth Redirect URLs bila menggunakan tautan login yang memerlukan redirect.
+- Verifikasi HTTPS, login, data lintas browser, NLP, validasi tanggal, dan perhitungan resep sebelum submission.
 
-Baca [`DEPLOY_NETLIFY.md`](DEPLOY_NETLIFY.md) langkah demi langkah. Syarat utama:
+## Pengujian dan bukti
+Pada snapshot source lokal v8.2 yang diuji: **115/115 tes Node lulus** dan `npm run build` lulus (30 Okt 2026). Ini pengujian kode lokal, bukan verifikasi deployment produksi. Evaluasi NLP v3.1 pada **120 pesan sintetis baru** memperoleh **115/120 kecocokan pesan penuh (95,8%)**. Setelah lima isu diperbaiki, v3.2 lulus **120/120 tes regresi yang sama**; hasil ini **tidak boleh diklaim sebagai akurasi independen**. Perlu data percakapan pelanggan anonim dan berizin untuk evaluasi lanjutan. Detail dalam `VALIDATION_REPORT.md`.
 
-- Supabase Auth, database `workspaces` dengan Row Level Security.
-- `public/config.js` berisi **hanya** Supabase project URL dan anon/public publishable key.
-- Environment variables **di Netlify Functions**: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `OPENAI_API_KEY`, optional `OPENAI_MODEL` (default `gpt-4o-mini`).
-- Deploy melalui GitHub -> Netlify, publish `public`, build `npm run build`.
-- Uji login, output AI pada pesanan baru, penyimpanan cloud sesudah reload, dan perhitungan bahan.
+## Keterbatasan
+- Takaran numerik global 34 produk belum dinyatakan lengkap/terverifikasi. Daftar bahan referensi bukan resep universal; variasi desa adat dan pengrajin perlu dihormati.
+- Belum ada integrasi langsung WhatsApp API, OCR pesan gambar, forecast permintaan, auto-deduct stok, supplier automation, dan validasi lapangan formal.
+- Model berbasis katalog bisa salah mengenali istilah, revisi ambigu, negasi, dan konteks panjang; keputusan akhir tetap pada pengguna.
+- Tidak ada pengujian keamanan penetrasi independen atau jaminan 100% bebas bug.
 
-API key OpenAI **tidak boleh** dimasukkan dalam `public/config.js`, HTML, JS frontend, atau commit GitHub.
+## Tim dan kepemilikan
+**Tim:** RANAKARA AI. **Ketua:** [ISI SESUAI FORM PENDAFTARAN]. **Anggota:** [ISI JIKA ADA, MAKS. 3 ORANG TOTAL]. **Institusi:** [ISI SESUAI FORM].
 
-## Penilaian dan disclosure
+## Disclosure, aset dan komponen sebelum kompetisi
+Pengembangan menggunakan bantuan AI untuk penulisan/revisi kode, eksplorasi desain, dokumentasi, dan gambar ilustrasi. Penggunaan alat AI adalah *development assistance*; AI dalam produk adalah NLP lokal yang dapat diuji pada browser. Aset gapura/canang dekoratif hasil generasi ilustratif, **bukan foto dokumentasi pengrajin**. Supabase dan Vercel merupakan layanan pihak ketiga; dataset referensi upakara berasal dari penelusuran literatur dan memerlukan validasi serati. Lihat `AI_DISCLOSURE.md`. Riwayat prototipe dan revisi dibuat sebelum submission dan wajib diungkapkan sesuai panduan.
 
-Referensi: *Panduan Peserta AI Web Innovation Challenge Bali DigiFest 2026*, halaman 2–10. Ketentuan: website live, AI material, GitHub bisa diakses juri, proposal PDF, dan disclosure teknologi. Semua penggunaan AI coding assistant dan data sumber harus diungkapkan jujur. Lihat `AI_DISCLOSURE.md` dan `FORM_SUBMISSION.md`.
-
-## Data contoh
-
-Produk `Canang sari` dan `Pejati` serta angka bahan di seed adalah **ILUSTRASI** untuk demonstrasi logika. Jangan diperlakukan sebagai standar komposisi adat. Ganti menggunakan catatan dari UMKM yang bersedia berpartisipasi.
-
-## Pengujian yang belum dilakukan
-
-Sebelum submission: evaluasi ekstraksi AI pada dataset pesanan berlabel; uji keliru-katalog/ambiguitas; pengujian kelompok pengguna; test URL Netlify live; validasi privasi; audit keamanan lanjut; Netlify runtime. Jika ada kegagalan, perbaiki dulu sebelum mengisi "sudah berfungsi".
-
-## Hak dan lisensi
-
-Draf proyek ditujukan untuk tim RANAKARA AI. Komponen dari pihak ketiga (Netlify, Supabase, OpenAI) tunduk pada persyaratan masing-masing. Source code tidak memuat model berbayar atau data pelanggan.
+## Privasi dan keselamatan
+Hindari menempelkan nama lengkap, nomor HP, alamat pelanggan, atau percakapan tanpa izin. Data workspace per pengguna dibatasi oleh Supabase RLS; tidak ada klaim audit keamanan independen. Jangan mempublikasikan akun demo/password di README—berikan lewat form/kontak panitia saja. Materi upakara bersifat referensi operasional, bukan pedoman ritual universal.

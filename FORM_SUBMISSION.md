@@ -1,31 +1,21 @@
-# Draf isian formulir Bali DigiFest (jangan klaim fitur belum diuji)
+# Form Submission — RANAKARA AI (draft siap tempel setelah verifikasi)
 
-**Nama Produk:** RANAKARA AI  
-**Bidang Solusi:** UMKM & Bisnis  
-**Status Project:** Dibangun khusus/baru untuk kompetisi ini (jika faktanya demikian).  
-
-**Elevator Pitch:** RANAKARA AI adalah aplikasi web yang membantu UMKM sarana upacara di Bali mengubah pesan pesanan pelanggan yang tidak terstruktur menjadi data pesanan yang bisa diperiksa dan dikonfirmasi. Setelah diverifikasi, pesanan dihubungkan ke katalog bahan untuk menghasilkan kebutuhan produksi dan informasi kekurangan stok. Sasaran utamanya adalah pemilik dan pengelola usaha sarana upacara yang menerima pesanan melalui chat.
-
-**Masalah:** Informasi nama produk, jumlah, varian dan tenggat dapat tersebar di chat dan perlu ditransfer manual untuk keperluan produksi; potensi kesalahan dan waktu administrasi perlu divalidasi melalui wawancara pengguna sebelum menjadi klaim empiris.
-
-**Target Pengguna:** Produsen dan penjual sarana upacara Hindu Bali yang mengelola pesanan melalui pesan digital.
-
-**Fitur Utama Sudah Berfungsi:** DIISI SETELAH online test. Jangan menyatakan analisis AI dan penyimpanan cloud sudah siap sampai diuji dengan credential asli.
-
-**URL Website:** DIISI SETELAH DEPLOY.  
-**Akun Demo:** DIISI SETELAH SIGN-UP DAN TEST. Jangan taruh password production.  
-**URL GitHub:** DIISI SETELAH PUSH.  
-**Repository Status:** Public atau Private sesuai faktanya.  
-**Git Tag:** Buat `v1.0-submission` setelah final test, jangan hanya mengetik nama tag.
-
-**Jenis AI:** Large Language Model / Generative AI; Natural Language Processing.  
-**Model AI:** OpenAI Responses API; nama model sesuai `OPENAI_MODEL` aktual.  
-**Peran AI:** Teks pesanan + katalog -> ekstraksi terstruktur nama produk/jumlah/tenggat/pertanyaan -> koreksi pengguna -> pesanan tervalidasi -> material planning deterministik.
-
-**AI-assisted Development:** ChatGPT untuk desain, coding, dan dokumentasi. Tambahkan tools lainnya bila benar-benar digunakan.
-
-**Third-party:** Netlify Functions, Supabase Auth / PostgreSQL, OpenAI API. Data awal sintetis, data uji perlu dikumpulkan dan dijelaskan sumbernya.
-
-**Privasi:** Ketika fungsi online, data login Supabase dilindungi Auth dan RLS; endpoint AI memverifikasi user sebelum API call, API key tersimpan server. Chat disarankan dianonimkan dan penggunaan data pengguna harus memperoleh izin. Dokumentasikan hasil uji keamanan sebelum klaim keamanan final.
-
-**Proposal PDF:** belum dibuat karena hasil deploy, screenshot, dan pengujian AI belum tersedia; ikuti pedoman 5 halaman isi + cover dan lampiran.
+- **Nama inovasi:** RANAKARA AI — AI-assisted Order Intelligence & Material Planning for Balinese Upakara MSMEs
+- **Kategori:** Mahasiswa/Umum (Business & MSME Digitalization)
+- **Ketua tim:** [ISI PERSIS SESUAI FORM]
+- **Anggota:** [ISI JIKA ADA, MAKSIMUM 3 ORANG TOTAL]
+- **Instansi:** [ISI INSTANSI SESUAI FORM]
+- **Status proyek:** MVP telah dikembangkan melalui beberapa iterasi sebelum tanggal submission. Wajib ungkap penggunaan asisten AI coding dan versi awal di GitHub.
+- **Masalah:** Pesanan upakara disampaikan dalam pesan tidak terstruktur dengan koreksi jumlah, istilah lokal, dan tenggat; penjual perlu verifikasi dan perencanaan bahan tanpa pencatatan ulang yang berpotensi keliru.
+- **Solusi:** AI NLP lokal mengubah pesan teks menjadi draf item/kuantitas/maksud, meminta klarifikasi untuk informasi tidak aman, dan meneruskan pesanan terverifikasi ke pencatatan produksi dan MRP deterministik.
+- **Target pengguna:** Pengrajin/penjual banten dan sarana upakara Bali skala UMKM.
+- **Fitur live:** AI Order Studio, katalog referensi 34 jenis, pusat resep global, dashboard, status pesanan, kalkulasi bahan berdasarkan resep yang tersedia, demo juri, login Supabase dan RLS.
+- **AI:** `RANAKARA-NLP v3.2`, TF-IDF character 2/3-gram + 1-NN produk; klasifikasi intent berlabel; rule-based parser koreksi, negasi, tanggal/kuantitas; lokal di browser; **tidak menggunakan OpenAI API pada inferensi saat ini**.
+- **Data & privacy:** katalog referensi dan contoh intent sintetis; tidak perlu data pelanggan untuk demo; sesi login dan workspace disimpan di Supabase, isolasi melalui RLS; input pelanggan harus diminimalkan.
+- **Dataset/evaluasi:** 120 pesan sintetis baru: v3.1 115/120; v3.2 120/120 sebagai regresi setelah perbaikan. Bukan akurasi nyata.
+- **GitHub:** https://github.com/anggaradi/ranakara-ai
+- **URL aktif:** [ISI URL VERCEL DARI PANEL PROJECT]
+- **Commit/tag:** [ISI SHA / v1.0-submission SETELAH DIKUNCI]
+- **Demo account:** [KIRIM KEPADA PANITIA SECARA PRIVAT JIKA DIMINTA]
+- **Proposal PDF:** `AIWIC2026_TimRanakara_RANAKARAAI.pdf`
+- **Keterbatasan:** takaran numerik publik belum selesai, belum ada integrasi WhatsApp langsung, validasi pelanggan nyata belum tersedia.
