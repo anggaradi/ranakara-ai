@@ -45,48 +45,64 @@
   <script type="module" src="/role-portal.mjs"></script>
 </head>
 <body>
+  <!-- PUBLIC ROLE LANDING: presentation only, not an authentication boundary -->
   <section id="role-gate" class="rp-gate" aria-labelledby="rp-gate-title">
-    <header class="rp-gate-top"><div class="rp-wordmark"><span class="rp-logo">R</span><span>RANAKARA <strong>AI</strong></span></div><span class="rp-label">UPAKARA BALI · LAYANAN DIGITAL</span></header>
-    <div class="rp-gate-content"><p class="rp-kicker">Selamat datang di RANAKARA</p><h1 id="rp-gate-title">Anda ingin melakukan apa?</h1><p class="rp-muted">Pilih tampilan yang sesuai. Anda bisa menggantinya kapan saja.</p>
-      <div class="rp-roles">
-        <button type="button" class="rp-role-card" data-role-choice="buyer"><span class="rp-role-icon" aria-hidden="true">◎</span><strong>Saya Pembeli</strong><span>Lihat upakara, pilih jumlah, dan siapkan permintaan pesanan tanpa menu yang rumit.</span><b>Mulai sebagai pembeli <span aria-hidden="true">→</span></b></button>
-        <button type="button" class="rp-role-card" data-role-choice="seller"><span class="rp-role-icon" aria-hidden="true">▤</span><strong>Saya Penjual / UMKM</strong><span>Kelola pesanan, gunakan AI Order Studio, katalog bahan, dan rencana produksi.</span><b>Buka workspace penjual <span aria-hidden="true">→</span></b></button>
+    <header class="rp-gate-top rp-global-header">
+      <div class="rp-wordmark"><span class="rp-logo">R</span><span>RANAKARA <strong>AI</strong><small>UPAKARA · ORDER · PRODUCTION</small></span></div>
+      <span class="rp-header-mark">BALI DIGIFEST 2026 <span class="rp-header-dot" aria-hidden="true"></span> WEB INNOVATION</span>
+    </header>
+    <main class="rp-gate-content">
+      <div class="rp-landing-hero">
+        <div class="rp-landing-story">
+          <p class="rp-kicker">DIGITAL UNTUK UPAKARA BALI</p>
+          <h1 id="rp-gate-title">Dari pesan sederhana,<br><em>menjadi rencana yang jelas.</em></h1>
+          <p class="rp-landing-desc">Satu tempat untuk memahami pesanan upakara dengan AI, mengonfirmasi detail, dan membantu UMKM merencanakan produksi.</p>
+          <div class="rp-trust-line"><span>✦ AI percakapan lokal</span><span>✦ Verifikasi manusia</span><span>✦ Konteks budaya Bali</span></div>
+          <div class="rp-landing-index"><span class="rp-landing-rule"></span> SELAMAT DATANG DI RANAKARA</div>
+        </div>
+        <div class="rp-landing-art" role="img" aria-label="Pemandangan gapura Bali dari aset visual RANAKARA"><span class="rp-art-caption">BALI · NUSA · BUDAYA</span></div>
       </div>
-      <p class="rp-gate-note">Pemilihan ini mengatur tampilan, bukan izin akses akun. Pembeli belum melakukan pembayaran atau mengirim pesanan otomatis.</p>
-    </div>
-    <footer class="rp-gate-footer">RANAKARA AI · Bali DigiFest 2026</footer>
+      <div class="rp-select-head"><div><p class="rp-kicker">MULAI DARI SINI</p><h2>Pilih cara Anda menggunakan RANAKARA</h2></div><p>Dua pengalaman dalam satu sistem.<br>Pilih yang paling sesuai untuk Anda.</p></div>
+      <div class="rp-roles">
+        <button type="button" class="rp-role-card rp-role-buyer" data-role-choice="buyer"><span class="rp-role-index">01 / PEMBELI</span><span class="rp-role-symbol" aria-hidden="true">✧</span><strong>Pesan upakara lebih mudah.</strong><span class="rp-role-desc">Ceritakan kebutuhan Anda lewat Chat AI. RANAKARA membantu menyusun item, jumlah, tanggal, dan pertanyaan yang belum jelas.</span><span class="rp-role-link">Mulai sebagai pembeli <span aria-hidden="true">↗</span></span></button>
+        <button type="button" class="rp-role-card rp-role-seller" data-role-choice="seller"><span class="rp-role-index">02 / PENJUAL & UMKM</span><span class="rp-role-symbol" aria-hidden="true">▦</span><strong>Kelola produksi lebih terarah.</strong><span class="rp-role-desc">Masuk ke workspace lengkap untuk verifikasi pesanan, katalog bahan, stok, dan rencana produksi.</span><span class="rp-role-link">Masuk workspace penjual <span aria-hidden="true">↗</span></span></button>
+      </div>
+      <p class="rp-gate-note">Pemilihan ini hanya mengatur tampilan, bukan izin akun. Permintaan pembeli belum otomatis dikirim, dibayar, atau menjadi transaksi.</p>
+    </main>
+    <footer class="rp-gate-footer"><span>RANAKARA AI · UNTUK UMKM DAN MASYARAKAT BALI</span><span>Prototype · Bali DigiFest 2026</span></footer>
   </section>
   <section id="buyer-portal" class="rp-buyer" aria-label="Tampilan pembeli">
-    <header class="rp-buyer-top"><div class="rp-wordmark"><span class="rp-logo">R</span><span>RANAKARA <strong>AI</strong></span></div><nav class="rp-buyer-actions"><span class="rp-label">Tampilan Pembeli</span><button id="buyer-switch-role" class="rp-text-btn" type="button" data-portal-action="choose-role">Ganti peran</button></nav></header>
+    <header class="rp-buyer-top rp-global-header"><div class="rp-wordmark"><span class="rp-logo">R</span><span>RANAKARA <strong>AI</strong><small>UPAKARA · ORDER · PRODUCTION</small></span></div><nav class="rp-buyer-actions"><span class="rp-buyer-tag">MODE PEMBELI</span><button id="buyer-switch-role" class="rp-text-btn" type="button" data-portal-action="choose-role">Ganti peran ↗</button></nav></header>
     <main class="rp-buyer-main">
-      <div class="rp-buyer-intro"><span class="rp-kicker">PESANAN UPAKARA BALI</span><h1>Butuh sarana upacara?</h1><p>Pilih produk dan jumlahnya. Kami bantu menyiapkan pesan yang jelas untuk penjual.</p></div>
+      <div class="rp-buyer-hero">
+        <div class="rp-buyer-hero-copy"><span class="rp-kicker">RANAKARA · UNTUK PEMBELI</span><h1>Tulis saja kebutuhan Anda.<br><em>AI bantu merapikannya.</em></h1><p>Tak perlu mengisi banyak kolom. Ceritakan pesanan seperti sedang mengirim chat; AI akan bertanya jika ada yang kurang jelas.</p><button type="button" class="rp-primary rp-hero-cta" data-portal-action="focus-chat">Mulai percakapan <span aria-hidden="true">↗</span></button></div>
+        <div class="rp-buyer-hero-art" role="img" aria-label="Ilustrasi gapura Bali dari aset website RANAKARA"><span>SESUAIKAN DENGAN KEBUTUHAN UPAKARA ANDA</span></div>
+      </div>
+      <div class="rp-journey" aria-label="Tahapan singkat"><div><b>01</b> Tulis kebutuhan</div><span aria-hidden="true">→</span><div><b>02</b> Periksa bersama AI</div><span aria-hidden="true">→</span><div><b>03</b> Salin untuk penjual</div></div>
       <div class="rp-buyer-layout">
-        <section class="rp-buyer-catalog" aria-labelledby="rp-catalog-title">
-          <div class="rp-section-head"><div><h2 id="rp-catalog-title">Pilih upakara</h2><p class="rp-muted">Cari nama produk, kemudian tekan Tambah.</p></div></div>
-          <label class="rp-search-label" for="rp-search">Cari produk</label><input id="rp-search" type="search" autocomplete="off" placeholder="Contoh: canang, pejati, segehan" />
-          <div id="rp-products" class="rp-products" aria-live="polite"><p>Memuat katalog…</p></div>
-          <button id="rp-more" class="rp-show-more" type="button" data-portal-action="show-more" hidden>Lihat semua produk</button>
-          <details class="rp-assistant" id="rp-ai-details"><summary><span><strong>Perlu bantuan memahami pesanan?</strong><small>Ketik seperti chat biasa, AI akan membalas dan meminta klarifikasi.</small></span><span aria-hidden="true">⌄</span></summary>
-            <div class="rp-ai-inside"><p class="rp-muted">Contoh: “Bu pesan 20 canang, eh 10 aja untuk Jumat”. Semua analisis berlangsung lokal di browser.</p>
-              <div id="rp-chat-log" class="rp-chat-log" role="log" aria-live="polite"></div>
-              <form id="rp-chat-form" class="rp-chat-form"><label class="rp-search-label" for="rp-chat-input">Tulis pesan</label><div class="rp-chat-compose"><input id="rp-chat-input" type="text" maxlength="1500" placeholder="Tulis pesan atau jawaban…" required /><button type="submit" class="rp-primary">Kirim</button></div></form>
-              <div id="rp-chat-results" class="rp-chat-results"></div>
-              <button type="button" class="rp-text-btn" data-portal-action="reset-chat">Mulai chat baru</button>
-            </div>
-          </details>
+        <section class="rp-buyer-chat-panel" aria-labelledby="rp-chat-title">
+          <div class="rp-chat-top"><div><p class="rp-kicker">ASISTEN UPAKARA · NLP LOKAL</p><h2 id="rp-chat-title">Chat dengan RANAKARA</h2><p>AI akan membalas setiap pesan, meminta klarifikasi tanggal atau jumlah bila perlu, dan menyiapkan draf untuk ditinjau.</p></div><span class="rp-online" aria-label="AI berjalan lokal di perangkat">● AI lokal</span></div>
+          <div id="rp-chat-log" class="rp-chat-log" role="log" aria-live="polite" aria-label="Percakapan dengan RANAKARA AI"></div>
+          <div id="rp-chat-results" class="rp-chat-results" aria-live="polite"></div>
+          <div class="rp-chat-prompts"><span>Coba mulai:</span><button type="button" data-portal-action="chat-example" data-example="Bu pesan 20 canang eh 10 untuk Jumat">10 canang untuk Jumat</button><button type="button" data-portal-action="chat-example" data-example="Saya butuh 5 pejati untuk besok">5 pejati besok</button></div>
+          <form id="rp-chat-form" class="rp-chat-form"><label class="rp-sr-only" for="rp-chat-input">Tulis pesan untuk RANAKARA AI</label><div class="rp-chat-compose"><input id="rp-chat-input" type="text" maxlength="1500" autocomplete="off" placeholder="Contoh: Pesan 20 canang, eh 10 aja untuk Jumat…" required /><button type="submit" class="rp-primary">Kirim ↗</button></div></form>
+          <div class="rp-chat-foot"><span>Data diproses secara lokal. AI tidak otomatis memesan atau memotong stok.</span><button type="button" class="rp-text-btn" data-portal-action="reset-chat">Mulai chat baru</button></div>
         </section>
         <aside class="rp-buyer-cart" aria-label="Ringkasan permintaan pesanan">
-          <div class="rp-cart-heading"><h2>Permintaan saya</h2><span id="rp-cart-count" class="rp-count">0 item</span></div>
-          <p class="rp-muted">Belum menjadi transaksi. Pastikan detail sebelum menghubungi penjual.</p>
+          <div class="rp-cart-heading"><div><p class="rp-kicker">LANGKAH TERAKHIR</p><h2>Permintaan saya</h2></div><span id="rp-cart-count" class="rp-count">0 unit</span></div>
+          <p class="rp-muted">Periksa draf hasil chat atau tambahkan produk dari katalog. Permintaan belum menjadi transaksi.</p>
           <div id="rp-cart-list" class="rp-cart-list"></div>
           <div class="rp-order-fields"><label>Tanggal diperlukan<input id="rp-date" type="date" /></label><label>Jam (opsional)<input id="rp-time" type="time" /></label><label>Catatan (opsional)<textarea id="rp-note" rows="2" maxlength="500" placeholder="Misalnya: untuk upacara keluarga"></textarea></label></div>
-          <button id="rp-copy" class="rp-primary rp-copy" type="button" data-portal-action="copy-order">Salin pesan untuk penjual</button>
-          <div id="rp-status" class="rp-status" role="status" aria-live="polite">Belum ada pesanan yang dikirim. Tidak ada pembayaran di website ini.</div>
-          <p class="rp-fineprint">Produk berasal dari katalog referensi. Harga, stok, dan ketersediaan perlu dikonfirmasi langsung kepada penjual.</p>
+          <button id="rp-copy" class="rp-primary rp-copy" type="button" data-portal-action="copy-order">Salin pesan untuk penjual ↗</button>
+          <div id="rp-status" class="rp-status" role="status" aria-live="polite">Belum ada permintaan yang dikirim. Tidak ada pembayaran di website ini.</div>
+          <p class="rp-fineprint">Harga, ketersediaan, dan konfirmasi pemesanan dilakukan langsung dengan penjual.</p>
         </aside>
       </div>
+      <details class="rp-catalog-disclosure" id="rp-catalog-details"><summary><div><span class="rp-kicker">ALTERNATIF TANPA CHAT</span><h2>Lebih suka memilih dari katalog?</h2><p>Jelajahi upakara dan tambahkan secara manual. Tidak wajib jika Anda sudah memakai chat.</p></div><span class="rp-catalog-open">Buka katalog <span aria-hidden="true">↗</span></span></summary>
+        <section class="rp-buyer-catalog" aria-labelledby="rp-catalog-title"><h3 id="rp-catalog-title">Katalog Upakara</h3><label class="rp-search-label" for="rp-search">Cari produk</label><input id="rp-search" type="search" autocomplete="off" placeholder="Contoh: canang, pejati, segehan" /><div id="rp-products" class="rp-products" aria-live="polite"><p>Memuat katalog…</p></div><button id="rp-more" class="rp-show-more" type="button" data-portal-action="show-more" hidden>Lihat semua produk</button></section>
+      </details>
     </main>
-    <footer class="rp-buyer-footer">RANAKARA AI · Pembeli hanya melihat katalog dan menyusun permintaan, bukan mengelola data UMKM.</footer>
+    <footer class="rp-buyer-footer"><span>RANAKARA AI · BALI DIGIFEST 2026</span><span>Permintaan hanya disalin untuk dikirim ke penjual · Belum tersedia checkout online</span></footer>
   </section>
   <div class="app-shell">
     <aside class="sidebar">

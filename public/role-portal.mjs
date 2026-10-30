@@ -1,6 +1,8 @@
 /** RANAKARA buyer/seller experience split. Role choice is NOT authentication. */
 import {ChatOrderAssistant} from './chat-order-assistant.mjs';
 import {cleanCatalog,normalizeCart,changeCart,fromAI,formatBuyerMessage} from './buyer-core.mjs';
+import {makeSeed} from './engine.mjs';
+import {applyGlobalReference} from './global-catalog.mjs';
 const ROLE_KEY='ranakara_role_view_v1';
 const CART_KEY='ranakara_buyer_request_v1';
 const $=s=>document.querySelector(s);
@@ -57,7 +59,7 @@ function showCart(){
 function render(){if(!loaded)return;showCatalog();showCart();}
 function startChat(){
   if(!catalog.length)return;
-  assistant=new ChatOrderAssistant({catalog});
+  assistant=new ChatOrderAssistant({catalog,mode:'buyer'});
   messages=[{role:'assistant',text:assistant.hello().messages.join('\n'),choices:[]}];
   renderChat();
 }
@@ -85,7 +87,9 @@ async function loadBuyer(){
   try{
     const res=await fetch('/global-catalog.json',{cache:'no-store'});
     if(!res.ok)throw Error('Katalog gagal diunduh');
-    catalog=cleanCatalog(await res.json());
+    // Use the SAME catalog/aliases as seller AI Studio; raw public JSON lacks common shorthand (e.g. 'canang').
+    const reference=await res.json();
+    catalog=cleanCatalog({products:applyGlobalReference(makeSeed(),reference).workspace.products});
     if(!catalog.length)throw Error('Katalog belum berisi produk');
     loaded=true;loadRequest();$('#rp-date').min=new Date(Date.now()+8*3600000).toISOString().slice(0,10);startChat();render();status('Permintaan masih berupa draf. Tidak ada pembayaran atau pengiriman otomatis.');
   }catch(err){
@@ -101,6 +105,8 @@ document.addEventListener('click',async e=>{
   if(action==='choose-role'){chooseRole('choose');return;}
   if(role()!=='buyer')return;
   if(action==='retry'){await loadBuyer();return;}
+  if(action==='focus-chat'){document.querySelector('#rp-chat-input')?.focus();document.querySelector('#rp-chat-title')?.scrollIntoView({behavior:'smooth',block:'start'});return;}
+  if(action==='chat-example'){sendChat(el.dataset.example);document.querySelector('#rp-chat-input')?.focus();return;}
   if(action==='show-more'){expanded=true;showCatalog();return;}
   if(action==='add'||action==='decrease'){
     cart=changeCart(cart,el.dataset.productId,action==='add'?1:-1,catalog);

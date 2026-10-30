@@ -1,84 +1,55 @@
-/* Focused buyer/seller views. No animations, gradients, or artificial product photos. */
-html:not([data-ranakara-role="seller"]) .app-shell { display:none!important; }
-#role-gate,#buyer-portal { display:none; }
-html[data-ranakara-role="choose"] #role-gate { display:flex; }
-html[data-ranakara-role="buyer"] #buyer-portal { display:block; }
-.rp-gate,.rp-buyer { font-family:Arial,Helvetica,sans-serif; color:#1d3b31; background:#f8f7f3; min-height:100vh; }
-.rp-gate { flex-direction:column; }
-.rp-gate-top,.rp-buyer-top { display:flex;justify-content:space-between;align-items:center;gap:18px;padding:22px max(24px,calc((100vw - 1160px)/2));background:#fff;border-bottom:1px solid #e6e9e1; }
-.rp-wordmark { display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700;letter-spacing:.025em;white-space:nowrap; }
-.rp-wordmark strong { color:#a77a34; }
-.rp-logo {display:grid;place-items:center;width:39px;height:39px;border:1.5px solid #bc9b57;color:#1c5241;border-radius:12px;font-family:Georgia,serif;font-size:26px; }
-.rp-label { color:#687d6e;font-size:11px;font-weight:700;letter-spacing:.11em; }
-.rp-gate-content {width:min(920px,calc(100% - 36px));margin:auto; padding:76px 0; }
-.rp-kicker {font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#947743;font-weight:700;margin:0 0 12px;}
-.rp-gate h1 {font-family:Georgia,serif; font-size:clamp(32px,5vw,54px);letter-spacing:-.035em;line-height:1.13;margin:0 0 14px;color:#173f32;}
-.rp-muted {color:#65776b;line-height:1.6;font-size:14px;}
-.rp-roles {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:37px 0 26px;}
-.rp-role-card {cursor:pointer;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:13px;padding:32px 30px;background:#fff;border:1px solid #dfe5db;border-radius:16px;color:#1d3d31;min-height:260px;box-shadow:0 3px 18px rgba(25,54,41,.035);}
-.rp-role-card:hover {border-color:#b89959;box-shadow:0 9px 25px rgba(25,54,41,.075);}
-.rp-role-card:focus-visible,.rp-add:focus-visible,.rp-primary:focus-visible,.rp-text-btn:focus-visible,.rp-stepper button:focus-visible {outline:3px solid #71b89c;outline-offset:3px;}
-.rp-role-icon {display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#ebf2ec;font-size:26px;color:#275f48;}
-.rp-role-card strong {font-size:21px;}
-.rp-role-card>span:nth-of-type(2) {font-size:14px;line-height:1.6;color:#61746a;}
-.rp-role-card b {margin-top:auto;font-size:13px;color:#17664a;}
-.rp-gate-note {font-size:12px;color:#758077;line-height:1.5;}
-.rp-gate-footer,.rp-buyer-footer {padding:20px 24px;border-top:1px solid #e5e9e1;text-align:center;font-size:12px;color:#748277;}
-.rp-buyer-actions {display:flex;align-items:center;gap:18px;}
-.rp-text-btn {background:transparent;border:0;color:#166447;font-weight:700;font-size:13px;cursor:pointer;padding:8px 0;text-decoration:underline;text-underline-offset:3px;}
-.rp-buyer-main {max-width:1190px;margin:0 auto;padding:46px 24px 70px;}
-.rp-buyer-intro {margin-bottom:31px;}
-.rp-buyer-intro h1 {font-family:Georgia,serif;font-size:clamp(32px,4vw,46px);line-height:1.16;letter-spacing:-.035em;margin:0 0 10px;color:#174535;}
-.rp-buyer-intro>p:last-child {font-size:15px;color:#63776a;margin:0;}
-.rp-buyer-layout {display:grid;grid-template-columns:minmax(0,1.45fr) minmax(290px,1fr);gap:24px;align-items:start;}
-.rp-buyer-catalog,.rp-buyer-cart {border:1px solid #e3e9df;background:#fff;border-radius:16px;padding:26px;box-shadow:0 4px 18px rgba(27,57,38,.025);min-width:0;}
-.rp-section-head h2,.rp-cart-heading h2 {font-family:Georgia,serif;font-size:24px;font-weight:700;margin:0 0 4px;color:#1b4739;}
-.rp-section-head p {margin:0 0 22px;}
-.rp-search-label {font-size:12px;font-weight:700;color:#34594a;display:block;margin-bottom:8px;}
-#rp-search,.rp-order-fields input,.rp-order-fields textarea,.rp-chat-compose input {font:inherit;font-size:14px;border:1px solid #d7e0d6;border-radius:10px;background:#fff;padding:13px;color:#173d31;width:100%;box-sizing:border-box;min-height:45px;}
-#rp-search:focus,.rp-order-fields input:focus,.rp-order-fields textarea:focus,.rp-chat-compose input:focus {border-color:#23865e;outline:2px solid #b2d6bf;}
-.rp-products {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:19px;}
-.rp-product {border:1px solid #e5ebe4;border-radius:11px;padding:17px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:17px;min-height:132px;}
-.rp-product strong,.rp-cart-item strong {display:block;color:#1b4435;font-size:14px;line-height:1.5;}
-.rp-product small,.rp-cart-item small {display:block;color:#788b7c;font-size:12px;margin-top:6px;line-height:1.45;}
-.rp-add,.rp-show-more {background:#eaf3eb;border:1px solid #cfe1d3;color:#175943;font-weight:700;font-size:12px;padding:10px 13px;border-radius:9px;cursor:pointer;}
-.rp-add:hover,.rp-show-more:hover {background:#dcefe2;}
-.rp-show-more {width:100%;margin-top:13px;}
-.rp-empty {padding:22px;color:#6f8275;background:#f6f8f5;border-radius:11px;font-size:13px;grid-column:1/-1;}
-.rp-cart-heading {display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;}
-.rp-count {font-size:11px;color:#226448;background:#eaf4ee;padding:7px 10px;border-radius:30px;white-space:nowrap;}
-.rp-cart-list {margin-top:20px;border-top:1px solid #e7ece6;}
-.rp-cart-empty {font-size:13px;color:#87978c;padding:27px 5px;line-height:1.6;}
-.rp-cart-item {border-bottom:1px solid #e7ece6;padding:14px 0;display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.rp-stepper {display:flex;align-items:center;border:1px solid #dbe6dd;border-radius:9px;overflow:hidden;white-space:nowrap;}
-.rp-stepper button {background:#f4f7f3;border:0;color:#20634a;min-width:31px;min-height:33px;font-size:18px;cursor:pointer;}
-.rp-stepper span {font-size:13px;min-width:28px;text-align:center;}
-.rp-order-fields {display:grid;gap:14px;margin-top:22px;}
-.rp-order-fields label {font-size:12px;font-weight:700;color:#385a4a;}
-.rp-order-fields input,.rp-order-fields textarea {display:block;margin-top:7px;resize:vertical;}
-.rp-primary {background:#146145;border:1px solid #146145;border-radius:10px;color:white;font-weight:700;cursor:pointer;padding:13px 17px;font-size:13px;}
-.rp-primary:hover {background:#0c5138;}
-.rp-primary:disabled {opacity:.45;cursor:not-allowed;}
-.rp-copy {width:100%;margin-top:19px;}
-.rp-status {font-size:12px;line-height:1.55;color:#285d48;background:#eff7f0;border-radius:8px;padding:12px;margin-top:13px;}
-.rp-status.rp-error {background:#fdf0e9;color:#9b4532;}
-.rp-fineprint {font-size:11px;color:#889689;line-height:1.55;}
-.rp-assistant {margin-top:24px;border:1px solid #dce8dd;border-radius:12px;overflow:hidden;}
-.rp-assistant>summary {display:flex;justify-content:space-between;align-items:center;list-style:none;padding:18px;cursor:pointer;color:#1e513d;}
-.rp-assistant>summary::-webkit-details-marker {display:none;}
-.rp-assistant>summary strong {font-size:14px;display:block;}
-.rp-assistant>summary small {font-size:12px;display:block;color:#799081;margin-top:6px;line-height:1.5;}
-.rp-ai-inside {padding:0 17px 17px;}
-.rp-chat-log {height:230px;overflow-y:auto;background:#fafbf8;border:1px solid #e6ede4;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:9px;}
-.rp-chat-bubble {background:#edf5ee;border-radius:12px 12px 12px 2px;padding:11px 14px;max-width:89%;align-self:flex-start;font-size:13px;line-height:1.55;}
-.rp-chat-bubble.rp-chat-user {background:#205e48;color:white;align-self:flex-end;border-radius:12px 12px 2px 12px;}
-.rp-chat-bubble>span {font-size:10px;opacity:.72;font-weight:700;}
-.rp-chat-bubble p {margin:6px 0 0;}
-.rp-chat-compose {display:flex;gap:8px;}
-.rp-chat-compose input {flex:1;min-width:0;}
-.rp-chat-results {margin-top:12px;}
-.rp-ready {background:#f1f8f3;border:1px solid #d7e7d9;border-radius:10px;padding:14px;font-size:13px;}
-.rp-ready p {color:#557565;}
-.rp-chat-form {margin:13px 0;}
-.rp-chip {border:1px solid #c7decf;border-radius:20px;padding:7px 9px;background:#fff;color:#206247;font-size:11px;margin:7px 5px 0 0;cursor:pointer;}
-@media(max-width:760px){.rp-gate-top,.rp-buyer-top{padding:16px}.rp-label{display:none}.rp-gate-content{padding:46px 0}.rp-roles{grid-template-columns:1fr;gap:13px;margin-top:25px}.rp-role-card{min-height:0;padding:23px}.rp-buyer-main{padding:30px 14px}.rp-buyer-layout{grid-template-columns:1fr;gap:13px}.rp-buyer-catalog,.rp-buyer-cart{padding:18px}.rp-products{grid-template-columns:1fr}.rp-product{min-height:0;flex-direction:row;align-items:center;gap:9px;padding:15px}.rp-product>div{min-width:0}.rp-buyer-actions{gap:0}.rp-wordmark{font-size:15px}.rp-logo{width:33px;height:33px;font-size:22px}.rp-cart-heading h2{font-size:23px}.rp-buyer-intro h1{font-size:35px}}
+/* RANAKARA v6.1 — branded, chat-first buyer experience. Reuse existing verified Bali artwork. */
+html:not([data-ranakara-role="seller"]) .app-shell{display:none!important}
+#role-gate,#buyer-portal{display:none}
+html[data-ranakara-role="choose"] #role-gate{display:flex}
+html[data-ranakara-role="buyer"] #buyer-portal{display:block}
+.rp-gate,.rp-buyer{--rp-green:#163e31;--rp-deep:#12372c;--rp-cream:#f7f3eb;--rp-paper:#fffcf7;--rp-gold:#d6af66;--rp-line:#e4dccd;--rp-muted:#667a6e;color:#223f33;background:#f5f1e9;min-height:100vh;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-synthesis:none}
+.rp-gate *,.rp-buyer *{box-sizing:border-box}
+.rp-gate{flex-direction:column}
+.rp-global-header{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:17px max(25px,calc((100vw - 1240px)/2));min-height:91px;background:#173b2f;color:#fdf7e9;border-bottom:1px solid rgba(221,193,131,.33)}
+.rp-wordmark{display:flex;align-items:center;gap:13px;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:22px;letter-spacing:.035em;line-height:1.0;color:#fdf7e9}
+.rp-wordmark strong{color:#e9c983;font-weight:700}.rp-wordmark small{display:block;font-size:9px;letter-spacing:.2em;color:#bac9b7;font-family:Inter,Arial,sans-serif;font-weight:550;margin-top:8px}
+.rp-logo{width:49px;height:53px;border:1px solid #c5a468;border-radius:15px;display:grid;place-items:center;color:#e9c983;font-family:Georgia,serif;font-size:34px;font-weight:600;box-shadow:inset 0 0 0 4px rgba(255,255,255,.045);flex:0 0 auto}
+.rp-header-mark{font-size:10px;letter-spacing:.16em;font-weight:800;color:#e0c994;white-space:nowrap}.rp-header-dot{display:inline-block;width:5px;height:5px;background:#ddc083;border-radius:50%;margin:0 7px 2px}
+.rp-gate-content{width:min(1240px,calc(100% - 48px));margin:auto;padding:30px 0 48px}
+.rp-kicker{font-size:10px;letter-spacing:.21em;font-weight:800;color:#946d31;margin:0 0 12px;text-transform:uppercase}
+.rp-landing-hero{display:grid;grid-template-columns:55% 45%;min-height:445px;border:1px solid #d3c29c;border-radius:27px;overflow:hidden;background:#173f32;box-shadow:0 22px 44px rgba(26,50,33,.13)}
+.rp-landing-story{padding:clamp(36px,4.8vw,76px) clamp(30px,4.8vw,73px);color:#f9f1e1;position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start}
+.rp-landing-story .rp-kicker{color:#efcf90}
+.rp-landing-story h1{font-family:Georgia,serif;font-size:clamp(35px,3.8vw,59px);font-weight:500;line-height:1.16;letter-spacing:-.042em;color:#fffaf0;margin:0 0 23px}
+.rp-landing-story h1 em{color:#e8c589;font-style:normal}
+.rp-landing-desc{font-size:14px;line-height:1.8;color:#d4e3d7;max-width:495px;margin:0 0 26px}
+.rp-trust-line{display:flex;gap:8px;flex-wrap:wrap}.rp-trust-line span{border:1px solid rgba(234,205,147,.35);padding:9px 12px;font-size:10px;font-weight:650;border-radius:99px;color:#f4e4c7}
+.rp-landing-index{display:flex;align-items:center;gap:10px;letter-spacing:.18em;font-size:9px;font-weight:750;margin-top:auto;padding-top:22px;color:#cfdfd2}.rp-landing-rule{width:29px;height:1px;background:#efc783}
+.rp-landing-art{background:#ddc6a1 url('/gapura-bali-hero.webp') center 50%/cover no-repeat;min-width:0;position:relative;box-shadow:inset 12px 0 24px rgba(20,54,42,.08)}
+.rp-art-caption{position:absolute;bottom:22px;right:22px;display:inline-block;border:1px solid #e0c999;background:rgba(22,55,41,.83);color:#fff2d5;padding:10px 14px;border-radius:50px;font-size:10px;letter-spacing:.17em;font-weight:750}
+.rp-select-head{display:flex;align-items:end;justify-content:space-between;gap:25px;margin:36px 0 19px}.rp-select-head h2{font-family:Georgia,serif;font-size:clamp(24px,2.6vw,34px);letter-spacing:-.025em;color:#1a4032;margin:0;font-weight:600}.rp-select-head>p{font-size:12px;line-height:1.7;color:#778273;text-align:right;margin:0 0 3px}
+.rp-roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.rp-role-card{min-width:0;position:relative;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto 1fr auto;text-align:left;gap:12px;background:#fffcf7;border:1px solid #e1d7c5;border-radius:19px;padding:29px 31px 27px;min-height:248px;box-shadow:0 9px 22px rgba(34,58,44,.045);color:#204637;cursor:pointer}.rp-role-card:hover{border-color:#c5a461;box-shadow:0 15px 30px rgba(29,54,40,.11);transform:translateY(-2px)}
+.rp-role-card:focus-visible,.rp-primary:focus-visible,.rp-text-btn:focus-visible,.rp-add:focus-visible,.rp-stepper button:focus-visible,.rp-chat-prompts button:focus-visible,.rp-catalog-disclosure summary:focus-visible{outline:3px solid #e5b65f;outline-offset:3px}
+.rp-role-index{grid-column:1/-1;font-size:10px;letter-spacing:.16em;color:#927341;font-weight:800}
+.rp-role-symbol{grid-column:2;grid-row:2;align-self:start;font-family:Georgia,serif;font-size:28px;color:#b99258;border:1px solid #eadbc0;background:#f7efdf;padding:12px;border-radius:14px;width:56px;text-align:center}
+.rp-role-card>strong{grid-column:1;grid-row:2;font-family:Georgia,serif;font-size:25px;font-weight:650;line-height:1.2;letter-spacing:-.025em;max-width:365px;align-self:center}
+.rp-role-desc{grid-column:1/-1;font-size:13px;line-height:1.65;color:#607569;max-width:430px}
+.rp-role-link{grid-column:1/-1;border-top:1px solid #ebe2d4;padding-top:14px;margin-top:5px;display:flex;justify-content:space-between;color:#195740;font-size:13px;font-weight:750}
+.rp-role-link span{font-size:21px;font-weight:500}.rp-gate-note{font-size:11px;line-height:1.55;color:#7b8379;margin:19px 2px 0}
+.rp-gate-footer,.rp-buyer-footer{display:flex;justify-content:space-between;gap:18px;font-size:10px;letter-spacing:.065em;color:#708175;padding:22px max(25px,calc((100vw - 1240px)/2));border-top:1px solid #e3dccd;background:#fbf8f2}
+/* Buyer application, visually matched to the same brand. */
+.rp-buyer-top{position:relative}.rp-buyer-actions{display:flex;align-items:center;gap:20px}.rp-buyer-tag{background:rgba(236,199,129,.13);border:1px solid rgba(242,218,169,.35);color:#f3d8a6;border-radius:30px;padding:8px 13px;font-size:10px;font-weight:800;letter-spacing:.12em}
+.rp-text-btn{border:0;background:transparent;color:#a07234;cursor:pointer;font-size:12px;font-weight:750;padding:9px 4px}.rp-buyer-actions .rp-text-btn{color:#f5e3bd}
+.rp-buyer-main{max-width:1240px;margin:0 auto;padding:28px 24px 70px}
+.rp-buyer-hero{display:grid;grid-template-columns:62% 38%;background:#fffaf2;border:1px solid #e0d2b5;border-radius:24px;overflow:hidden;min-height:274px;box-shadow:0 11px 25px rgba(34,53,39,.045)}
+.rp-buyer-hero-copy{padding:39px clamp(25px,4vw,57px);position:relative;z-index:1}.rp-buyer-hero-copy h1{font-family:Georgia,serif;font-size:clamp(29px,3.35vw,43px);font-weight:550;line-height:1.15;letter-spacing:-.034em;margin:0 0 12px;color:#184333}.rp-buyer-hero-copy h1 em{color:#a37b40;font-style:normal}.rp-buyer-hero-copy>p{font-size:13px;line-height:1.7;color:#61796c;max-width:600px;margin:0 0 17px}
+.rp-buyer-hero-art{position:relative;background:#d8c299 url('/gapura-bali-hero.webp') center/cover no-repeat;min-width:0}.rp-buyer-hero-art span{position:absolute;bottom:17px;right:16px;border-radius:50px;color:#f8efd9;background:rgba(21,59,44,.86);border:1px solid #d6b77a;padding:9px 13px;font-size:9px;font-weight:800;letter-spacing:.11em}
+.rp-primary{border:1px solid #174f3b;background:#18533d;color:#fff;border-radius:11px;padding:12px 16px;min-height:42px;font-weight:750;font-size:12px;cursor:pointer;white-space:nowrap}.rp-primary:hover{background:#0c3f2c}.rp-primary:disabled{opacity:.45;cursor:not-allowed}.rp-hero-cta{background:#183f32;padding:12px 21px;box-shadow:0 5px 16px rgba(29,78,54,.12)}
+.rp-journey{display:flex;align-items:center;justify-content:center;gap:29px;margin:21px 0 27px;font-size:11px;letter-spacing:.025em;color:#5b7464}.rp-journey>div{display:flex;align-items:center;gap:10px}.rp-journey b{display:grid;place-items:center;width:27px;height:27px;background:#eadcc1;color:#7e6035;border-radius:50%;font-size:10px}.rp-journey>span{color:#aa9977}
+.rp-buyer-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.84fr);gap:19px;align-items:start}.rp-buyer-chat-panel,.rp-buyer-cart,.rp-catalog-disclosure{background:#fffdfa;border:1px solid #e4dbcb;border-radius:19px;box-shadow:0 8px 20px rgba(40,61,46,.038);min-width:0}
+.rp-buyer-chat-panel{padding:25px}.rp-chat-top{display:flex;justify-content:space-between;align-items:start;gap:13px;margin-bottom:18px}.rp-chat-top h2,.rp-cart-heading h2,.rp-catalog-disclosure h2{font-family:Georgia,serif;font-size:25px;letter-spacing:-.018em;color:#184535;margin:0 0 9px}.rp-chat-top p:last-child{font-size:12px;line-height:1.65;color:#728276;margin:0;max-width:520px}.rp-online{white-space:nowrap;font-size:11px;font-weight:700;color:#2b7857;background:#eaf3ea;border:1px solid #d5e5d8;border-radius:40px;padding:8px 10px}
+.rp-chat-log{height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;border:1px solid #e4e7df;background:#f8f7f3;border-radius:15px;padding:17px;scrollbar-color:#c5d3ca transparent}.rp-chat-bubble{display:block;max-width:88%;align-self:flex-start;background:#fff;border:1px solid #e0e8dd;border-radius:15px 15px 15px 3px;padding:13px 16px;color:#294938;font-size:13px;line-height:1.62;box-shadow:0 3px 9px rgba(31,57,42,.027)}.rp-chat-bubble.rp-chat-user{align-self:flex-end;background:#1b5642;border:1px solid #1b5642;color:#fff;border-radius:15px 15px 3px 15px}.rp-chat-bubble>span{font-size:10px;font-weight:800;letter-spacing:.04em;opacity:.74}.rp-chat-bubble p{margin:6px 0 0;overflow-wrap:anywhere}.rp-chat-bubble strong{font-weight:750}.rp-chip,.rp-chat-prompts button{background:#fff9ef;color:#245e47;border:1px solid #e0d2b7;border-radius:40px;padding:8px 11px;font-size:11px;font-weight:700;cursor:pointer}.rp-chip{display:inline-block;margin:9px 5px 0 0}.rp-chip:hover,.rp-chat-prompts button:hover{background:#f3e7d0}
+.rp-chat-results:empty{display:none}.rp-chat-results{margin-top:12px}.rp-ready{border:1px solid #d7e6d8;background:#f0f6ef;border-radius:12px;padding:14px 17px;font-size:13px;line-height:1.6}.rp-ready strong{color:#184936}.rp-ready p{margin:8px 0 12px;color:#4e6e5c}.rp-chat-prompts{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:15px 0 10px}.rp-chat-prompts>span{font-size:11px;color:#8b826e;margin-right:4px}
+.rp-chat-form{margin:0}.rp-chat-compose{display:flex;gap:9px}.rp-chat-compose input,#rp-search,.rp-order-fields input,.rp-order-fields textarea{font:inherit;font-size:13px;min-width:0;width:100%;border:1px solid #dcded4;border-radius:10px;background:#fffcf7;padding:13px 14px;color:#203e31;outline:none}.rp-chat-compose input:focus,#rp-search:focus,.rp-order-fields input:focus,.rp-order-fields textarea:focus{border-color:#678c71;box-shadow:0 0 0 3px rgba(66,123,80,.12)}.rp-chat-compose input{flex:1;min-width:0}.rp-chat-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #eee7dc;margin-top:17px;padding-top:13px}.rp-chat-foot>span{font-size:10px;color:#839083;line-height:1.55}
+.rp-cart-heading{display:flex;justify-content:space-between;gap:9px;align-items:center;margin-bottom:4px}.rp-buyer-cart{padding:24px}.rp-buyer-cart>.rp-muted{font-size:12px;line-height:1.6;color:#708476;margin:0 0 14px}.rp-count{font-size:10px;white-space:nowrap;color:#245c46;background:#e9f1e8;border-radius:50px;padding:8px 10px}.rp-cart-list{border-top:1px solid #e6e6dd;min-height:70px}.rp-cart-empty{padding:17px 2px;font-size:12px;line-height:1.65;color:#819083}.rp-cart-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid #ebeae0}.rp-cart-item strong{display:block;font-size:13px;color:#244f3b}.rp-cart-item small{font-size:11px;color:#869184}.rp-stepper{display:flex;border:1px solid #dce2d7;border-radius:8px;overflow:hidden;align-items:center}.rp-stepper button{border:0;background:#f0f4ec;color:#205d43;font-weight:700;font-size:17px;padding:8px 10px;min-height:35px}.rp-stepper span{min-width:27px;text-align:center;font-size:12px}.rp-order-fields{display:grid;gap:12px;margin:15px 0}.rp-order-fields label{font-size:11px;color:#3f6450;font-weight:700}.rp-order-fields input,.rp-order-fields textarea{display:block;margin-top:5px;resize:vertical;min-height:42px}.rp-order-fields textarea{min-height:65px}.rp-copy{width:100%}.rp-status{background:#f1f6ed;border:1px solid #dce8d7;border-radius:9px;padding:10px 12px;font-size:11px;line-height:1.6;color:#3d654d;margin:13px 0}.rp-status.rp-error{background:#fff2ea;border-color:#f0dbd0;color:#a14832}.rp-fineprint{font-size:10px;line-height:1.65;color:#879184;margin:0}
+.rp-catalog-disclosure{margin-top:22px;overflow:hidden}.rp-catalog-disclosure>summary{display:flex;justify-content:space-between;align-items:center;gap:20px;cursor:pointer;list-style:none;padding:25px 28px}.rp-catalog-disclosure>summary::-webkit-details-marker{display:none}.rp-catalog-disclosure h2{margin:0 0 5px;font-size:24px}.rp-catalog-disclosure summary p:last-child{font-size:12px;color:#778578;margin:0;line-height:1.6}.rp-catalog-open{white-space:nowrap;display:inline-flex;align-items:center;gap:10px;color:#225b43;border:1px solid #c9d9c9;background:#eef4eb;padding:10px 15px;border-radius:10px;font-weight:750;font-size:12px}.rp-catalog-disclosure[open] .rp-catalog-open{background:#dceada}.rp-buyer-catalog{padding:0 28px 28px;border-top:1px solid #ece7da}.rp-buyer-catalog h3{font-family:Georgia,serif;font-size:20px;margin:20px 0 11px}.rp-search-label{display:block;margin-bottom:7px;font-size:11px;font-weight:750;color:#38664e}.rp-products{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:15px}.rp-product{min-width:0;display:flex;flex-direction:column;align-items:start;justify-content:space-between;gap:12px;border:1px solid #e5e5db;border-radius:12px;padding:15px;background:#fffcf7}.rp-product strong{font-size:13px;line-height:1.5;color:#244c3a}.rp-product small{display:block;font-size:10px;line-height:1.5;color:#869083;margin-top:6px}.rp-add,.rp-show-more{border:1px solid #d1dfcd;border-radius:9px;background:#edf4e9;color:#235b43;font-size:11px;font-weight:750;padding:10px 13px;cursor:pointer}.rp-add:hover,.rp-show-more:hover{background:#dfeedd}.rp-show-more{width:100%;margin-top:13px}.rp-empty{grid-column:1/-1;padding:24px;background:#f9f7f2;color:#768478;font-size:12px;border-radius:12px}.rp-sr-only{position:absolute!important;clip:rect(0,0,0,0);clip-path:inset(50%);width:1px!important;height:1px!important;overflow:hidden;white-space:nowrap}
+@media(max-width:1040px){.rp-buyer-layout{grid-template-columns:minmax(0,1.35fr) minmax(270px,.9fr)}.rp-landing-story{padding:45px 37px}.rp-landing-story h1{font-size:44px}.rp-role-card{padding:24px}.rp-products{grid-template-columns:repeat(3,1fr)}.rp-buyer-hero{grid-template-columns:65% 35%}}
+@media(max-width:760px){.rp-global-header{padding:14px 16px;min-height:70px}.rp-wordmark{font-size:17px}.rp-wordmark small{font-size:7px;letter-spacing:.15em}.rp-logo{width:40px;height:43px;font-size:28px;border-radius:12px}.rp-header-mark{display:none}.rp-gate-content{width:calc(100% - 25px);padding:14px 0 35px}.rp-landing-hero{grid-template-columns:1fr;min-height:0;border-radius:19px}.rp-landing-story{padding:31px 26px 28px}.rp-landing-story h1{font-size:37px;line-height:1.15}.rp-landing-desc{font-size:13px;margin-bottom:16px}.rp-trust-line{gap:5px}.rp-trust-line span{font-size:9px;padding:7px 9px}.rp-landing-index{padding-top:22px}.rp-landing-art{height:170px;background-position:center 57%}.rp-art-caption{bottom:12px;right:13px}.rp-select-head{display:block;margin:28px 5px 16px}.rp-select-head h2{font-size:27px}.rp-select-head>p{display:none}.rp-roles{grid-template-columns:1fr;gap:12px}.rp-role-card{min-height:0;padding:19px 20px 18px;gap:9px}.rp-role-card>strong{font-size:21px}.rp-role-symbol{width:45px;font-size:21px;padding:9px}.rp-gate-note{font-size:10px}.rp-gate-footer,.rp-buyer-footer{padding:17px;font-size:9px;display:block;line-height:1.8}.rp-gate-footer span,.rp-buyer-footer span{display:block}.rp-buyer-actions{gap:9px}.rp-buyer-tag{display:none}.rp-buyer-main{padding:16px 12px 44px}.rp-buyer-hero{grid-template-columns:1fr;min-height:0;border-radius:18px}.rp-buyer-hero-copy{padding:24px 24px 19px}.rp-buyer-hero-copy h1{font-size:32px}.rp-buyer-hero-copy>p{font-size:12px}.rp-buyer-hero-art{height:120px;background-position:center 58%}.rp-buyer-hero-art span{font-size:8px}.rp-journey{gap:5px;margin:15px 0 18px;justify-content:space-between;font-size:9px}.rp-journey>div{gap:4px}.rp-journey b{width:20px;height:20px;font-size:8px}.rp-buyer-layout{grid-template-columns:1fr;gap:13px}.rp-buyer-chat-panel,.rp-buyer-cart{padding:17px}.rp-chat-top{gap:9px}.rp-chat-top h2{font-size:24px}.rp-chat-top p:last-child{font-size:11px}.rp-online{font-size:9px;padding:6px}.rp-chat-log{height:320px;padding:10px}.rp-chat-bubble{max-width:94%;font-size:12px;padding:10px 12px}.rp-chat-prompts{gap:5px}.rp-chat-prompts button{font-size:10px}.rp-chat-compose .rp-primary{padding:10px 12px}.rp-chat-compose input{font-size:12px}.rp-chat-foot{flex-wrap:wrap}.rp-catalog-disclosure>summary{padding:19px 17px;gap:10px}.rp-catalog-disclosure h2{font-size:20px}.rp-catalog-disclosure summary p:last-child{font-size:11px}.rp-catalog-open{font-size:10px;padding:9px}.rp-buyer-catalog{padding:0 15px 17px}.rp-products{grid-template-columns:repeat(2,minmax(0,1fr))}.rp-product{padding:12px}.rp-product strong{font-size:12px}}
+@media(max-width:390px){.rp-journey>span{display:none}.rp-journey b{width:17px;height:17px}.rp-role-card>strong{font-size:19px}.rp-products{grid-template-columns:1fr}.rp-chat-top{flex-wrap:wrap}.rp-catalog-disclosure>summary{display:block}.rp-catalog-open{margin-top:14px}}
+@media(prefers-reduced-motion:reduce){.rp-role-card{transition:none!important;transform:none!important}}

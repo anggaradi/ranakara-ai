@@ -32,10 +32,11 @@ function isBareChoice(input){return /^(?:1|2|pertama|kedua|yang pertama|yang ked
 function parseChoice(input){const s=normalized(input);if(/(?:pertama|(?:nomor|pilihan|yang)\s*1|^1$)/.test(s))return 0;if(/(?:kedua|(?:nomor|pilihan|yang)\s*2|^2$)/.test(s))return 1;return null;}
 function safeCandidateProduct(raw,catalog){const s=normalized(raw);return catalog.find(p=>[p.name,...(p.aliases||[])].some(a=>normalized(a)===s))||null;}
 export class ChatOrderAssistant {
-  constructor({catalog,now=new Date()}={}){
+  constructor({catalog,now=new Date(),mode='seller'}={}){
     if(!Array.isArray(catalog)||!catalog.length)throw new Error('catalog cannot be empty');
     this.catalog=catalog.map(x=>({id:String(x.id??x.name),name:String(x.name),aliases:x.aliases||[]}));
     this.now=now;
+    this.mode=mode==='buyer'?'buyer':'seller';
     this.reset();
   }
   reset(){this.state={items:new Map(),date:null,time:null,pending:null,lastProductId:null,unassignedQuantity:null,confirmed:false};}
@@ -47,7 +48,7 @@ export class ChatOrderAssistant {
     if(!input)return output(st,['Pesan masih kosong. Tulis nama produk dan jumlah, misalnya: “10 pejati untuk 6 November”. Pesanan belum berubah.']);
     if(input.length>1500)return output(st,['Pesan terlalu panjang (maksimal 1.500 karakter). Ringkas pesan menjadi daftar produk, jumlah, dan tanggal. Pesanan belum berubah.']);
     if(RESET.test(input)){this.reset();return output(this.state,['Draf baru dimulai. Pesanan sebelumnya tidak dipakai. Silakan tulis produk, jumlah, dan tanggal yang diperlukan.']);}
-    if(st.confirmed)return output(st,['Draf sudah dikonfirmasi dalam chat. Periksa formulir verifikasi lalu klik “Konfirmasi & simpan pesanan” untuk menyimpan. Untuk membuat pesanan lain, pilih “Mulai pesanan baru”. Pesan ini tidak mengubah draf lama.']);
+    if(st.confirmed)return output(st,[this.mode==='buyer'?'Draf sudah dikonfirmasi. Klik “Masukkan ke permintaan saya”, periksa detailnya, lalu gunakan “Salin pesan untuk penjual”. Belum ada pesanan yang dikirim.': 'Draf sudah dikonfirmasi dalam chat. Periksa formulir verifikasi lalu klik “Konfirmasi & simpan pesanan” untuk menyimpan. Untuk membuat pesanan lain, pilih “Mulai pesanan baru”. Pesan ini tidak mengubah draf lama.']);
     const preDate=extractDateIntent(input,{now:this.now});
     if(preDate.type==='invalid'||preDate.type==='past')return output(st,[`${preDate.message} Pesanan sebelumnya tetap. Tolong sebutkan tanggal yang valid di masa depan.`]);
     const preTime=parseTime(input);
@@ -159,7 +160,7 @@ export class ChatOrderAssistant {
       if(!st.items.size)return output(st,['Belum ada produk dengan jumlah yang jelas. Tulis misalnya “10 pejati untuk besok”. Saya belum menyimpan pesanan apa pun.']);
       if(!st.date){st.pending={kind:'ask_date'};return output(st,['Produk sudah dicatat, tetapi tanggal belum ada. Kapan pesanan diperlukan? Jawab misalnya “Jumat”, “6 November”, atau “besok”.']);}
       st.confirmed=true;
-      return output(st,[`Draf sudah **dikonfirmasi di prototipe lokal**: ${itemList([...st.items.values()])}, untuk ${formatDate(st.date)}${st.time?` pukul ${st.time} WITA`:''}. Belum disimpan ke database atau memotong stok.`]);
+      return output(st,[this.mode==='buyer'?`Draf telah **dikonfirmasi**: ${itemList([...st.items.values()])}, untuk ${formatDate(st.date)}${st.time?` pukul ${st.time} WITA`:''}. Klik **Masukkan ke permintaan saya** lalu **Salin pesan untuk penjual**. Permintaan belum terkirim.`:`Draf sudah **dikonfirmasi di prototipe lokal**: ${itemList([...st.items.values()])}, untuk ${formatDate(st.date)}${st.time?` pukul ${st.time} WITA`:''}. Belum disimpan ke database atau memotong stok.`]);
     }
     const dateIntent=extractDateIntent(input,{now:this.now});
     const time=parseTime(input);
@@ -250,6 +251,6 @@ export class ChatOrderAssistant {
       return output(st,[`${prefix} Produk dan jumlahnya belum jelas. Apa yang ingin dipesan?`]);
     }
     if(!st.date){st.pending={kind:'ask_date'};return output(st,[`${prefix} Jumlah sudah saya catat. Tanggal berapa pesanan diperlukan? Sebutkan tanggal atau nama hari.`]);}
-    return output(st,[`${prefix} Ringkasan sementara: **${itemList([...st.items.values()])}** untuk **${formatDate(st.date)}**${st.time?`, pukul ${st.time} WITA`:''}. Jika benar, ketik **konfirmasi** untuk menyiapkan formulir simpan. Jika ada yang salah, tuliskan koreksi; belum ada yang otomatis disimpan.`],[{label:'Konfirmasi draf',value:'konfirmasi'}]);
+    return output(st,[`${prefix} Ringkasan sementara: **${itemList([...st.items.values()])}** untuk **${formatDate(st.date)}**${st.time?`, pukul ${st.time} WITA`:''}. Jika benar, ${this.mode==='buyer'?'klik **Masukkan ke permintaan saya** atau ketik **konfirmasi**':'ketik **konfirmasi** untuk menyiapkan formulir simpan'}. Jika ada yang salah, tuliskan koreksi; belum ada yang otomatis disimpan.`],[{label:'Konfirmasi draf',value:'konfirmasi'}]);
   }
 }
