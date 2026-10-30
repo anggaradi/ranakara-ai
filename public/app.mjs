@@ -1,5 +1,6 @@
 import { makeId, makeSeed, computePlan, rounded, isPositive, isISODate, validateOrder, normalizeAIOutput } from './engine.mjs';
 import { extractLocalOrder, LOCAL_MODEL_NAME } from './ranakara-nlp.mjs';
+import { ChatOrderAssistant } from './chat-order-assistant.mjs';
 import { mergeCatalogReference } from './catalog-import.mjs';
 import { createCleanWorkspace, applyGlobalReference } from './global-catalog.mjs';
 import { previewApprovedRecipeCSV,applyApprovedRecipePreview,invalidateRecipeApproval,auditActiveRecipeCoverage } from './recipe-bom-import.mjs';
@@ -14,6 +15,80 @@ let recipeReference=null, recipeReferenceError='';
 let publicRecipeLibrary=null, publicCatalogReference=null, publicRecipeError='';
 let data, session=null, draft=null, currentPage='dashboard', working=false, booting=false, cloudReady=false, cloudError='', globalCatalogError='';
 const uiState={plannerQuery:'',plannerStatus:'all',catalogQuery:'',catalogFilter:'all',materialQuery:'',orderText:'',recipeHubQuery:'',recipeHubFilter:'all'};
+// Chat history is intentionally in memory only (no localStorage or Supabase writes).
+let orderChat=null;
+let chatHistory=[];
+let chatDraftActive=false;
+function chatCatalog(){return data.products.map(p=>({id:p.id,name:p.name,aliases:p.aliases||[]}));}
+function ensureOrderChat(){
+  if(!orderChat && data.products.length){
+    orderChat=new ChatOrderAssistant({catalog:chatCatalog()});
+    chatHistory=[{role:'assistant',text:orderChat.hello().messages.join(' '),choices:[]}];
+  } else if(orderChat){orderChat.catalog=chatCatalog();}
+  return orderChat;
+}
+function chatReply(input){
+  const assistant=ensureOrderChat();
+  const text=String(input??'').trim().slice(0,1500);
+  if(!assistant){
+    if(text)chatHistory.push({role:'user',text});
+    chatHistory.push({role:'assistant',text:'Katalog produk belum tersedia, sehingga AI belum bisa mengenali pesanan. Tambahkan atau muat katalog terlebih dahulu di Katalog & Bahan, lalu coba lagi. Pesanan belum berubah.',choices:[]});
+    return {messages:['Katalog produk belum tersedia.'],choices:[],summary:null};
+  }
+  if(text)chatHistory.push({role:'user',text});
+  let result;
+  try{result=assistant.send(text);}
+  catch(error){
+    console.error('Chat parser error:',error);
+    result={messages:['Maaf, pesan belum dapat diproses karena kesalahan analisis lokal. Pesanan tidak disimpan. Coba tulis nama produk dan jumlah lebih jelas, atau gunakan draf manual.'],choices:[],summary:assistant.getSummary()};
+  }
+  const replies=result.messages?.filter(Boolean)||[];
+  chatHistory.push({role:'assistant',text:replies.join('\n\n')||'Pesan diterima, tetapi saya belum yakin dengan isinya. Tuliskan nama produk, jumlah, dan tanggal yang Anda maksud.',choices:result.choices||[]});
+  // Keep bounded conversation in memory while preserving the latest context within the assistant.
+  if(chatHistory.length>100)chatHistory=chatHistory.slice(-100);
+  // Chat completion is a draft confirmation, NOT storage. Saving uses existing mutate() and validateOrder().
+  if(result.summary?.confirmed && !chatDraftActive){
+    const items=result.summary.items.filter(item=>item.quantity>0&&Number.isInteger(item.quantity))
+      .map(item=>({productId:item.id,quantity:item.quantity,rawName:item.name,confidence:'chat · diverifikasi'}));
+    chatDraftActive=true;
+    draft={items,delivery:{date_iso:result.summary.date||'',time_text:result.summary.time||'',raw_text:''},
+      notes:'Disusun melalui AI Order Chat; diperiksa operator sebelum simpan.',questions:[],customer:'',
+      requires_clarification:false,critical_questions:[],clarificationVerified:false,clarificationNote:''};
+    // Reset the single-input legacy text for the next order, not the live chat transcript.
+    uiState.orderText='';
+  }
+  return result;
+}
+function resetOrderChat(){orderChat=null;chatHistory=[];chatDraftActive=false;ensureOrderChat();draft=null;}
+function chatBubble(item){
+  const message=esc(item.text).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br/>');
+  const chips=item.role==='assistant' && item.choices?.length?
+    `<div class="ran-chat-choices">${item.choices.map(c=>`<button type="button" class="button secondary small" data-chat-choice="${esc(c.value)}">${esc(c.label)}</button>`).join('')}</div>`:'';
+  return `<div class="ran-chat-bubble ${item.role==='user'?'ran-chat-from-user':'ran-chat-from-ai'}"><span class="ran-chat-who">${item.role==='user'?'Pesan Anda':'RANAKARA · Balasan otomatis'}</span><div>${message}</div>${chips}</div>`;
+}
+function chatPanel(){
+  ensureOrderChat();
+  const summary=orderChat?.getSummary();
+  const items=summary?.items||[];
+  const status=summary?.confirmed?'Sudah dikonfirmasi · belum disimpan':summary?.pending?'Menunggu klarifikasi':summary?.canConfirm?'Siap dikonfirmasi':'Draf percakapan';
+  return `<section class="ran-chat-layout" aria-label="AI Order Chat">
+    <div class="card ran-chat-main">
+      <div class="flex-between"><h3>AI Order Chat · balasan dua arah</h3><span class="badge">NLP lokal · tanpa API LLM</span></div>
+      <p class="hint">Setiap pesan dibalas otomatis: pesanan terbaca, koreksi, atau alasan mengapa masih perlu klarifikasi. Ini asisten untuk operator, <strong>bukan chat WhatsApp pelanggan</strong>. Jangan masukkan nomor telepon atau alamat pribadi.</p>
+      <div class="ran-chat-log" id="ran-chat-log" role="log" aria-live="polite" aria-label="Riwayat percakapan">${chatHistory.map((m,i)=>chatBubble(i===chatHistory.length-1?m:{...m,choices:[]})).join('')}</div>
+      <form id="ran-chat-form" class="ran-chat-compose"><label class="sr-only" for="ran-chat-input">Ketik pesan atau jawaban</label><textarea id="ran-chat-input" rows="2" maxlength="1500" placeholder="Misalnya: Bu pesan 20 canang eh 10 untuk Jumat"></textarea><button type="submit" class="button primary">Kirim pesan</button></form>
+      <div class="button-row"><button type="button" class="button secondary small" data-action="chat-new">Mulai pesanan baru</button><button type="button" class="button secondary small" data-action="chat-example">Isi contoh chat</button></div>
+    </div>
+    <aside class="card ran-chat-side">
+      <h3>Ringkasan percakapan</h3><span class="badge">${esc(status)}</span>
+      <div class="ran-chat-summary"><strong>Produk dan jumlah</strong><p>${items.length?items.map(i=>`${esc(i.name)} × ${i.quantity===null?'belum pasti':esc(i.quantity)}`).join('<br/>'):'Belum ada produk'}</p>
+      <strong>Tanggal diperlukan</strong><p>${esc(summary?.dateLabel||'Belum ditentukan')}</p>
+      <strong>Waktu pengambilan (opsional)</strong><p>${esc(summary?.time?summary.time+' WITA':'Belum ditentukan')}</p></div>
+      <div class="notice info"><strong>Belum ada transaksi otomatis.</strong> Ketik <b>konfirmasi</b> setelah detail lengkap. Draf kemudian muncul di formulir verifikasi di bawah dan hanya disimpan saat Anda menekan <b>Konfirmasi & simpan pesanan</b>.</div>
+    </aside>
+  </section>`;
+}
+
 try { data=JSON.parse(localStorage.getItem(KEY))||makeSeed(); } catch {data=makeSeed();}
 if(!data || !Array.isArray(data.products)||!Array.isArray(data.orders)||!Array.isArray(data.materials))data=makeSeed();
 const $=sel=>document.querySelector(sel);
@@ -285,8 +360,13 @@ function catalogView(){
  <div class="section-header"><h2>Daftar bahan</h2><span class="badge">${data.materials.length} bahan</span></div><div class="card"><label class="search-field">Cari bahan<input type="search" id="material-search" value="${esc(uiState.materialQuery)}" placeholder="Cari janur, beras, bunga..." autocomplete="off" /></label><p id="material-result-count" class="hint" role="status"></p>${data.materials.length?`<div class="table-wrap"><table><thead><tr><th>Bahan</th><th>Satuan</th><th>Stok tersedia</th><th>Aksi</th></tr></thead><tbody>${data.materials.map(m=>`<tr data-material-row data-search="${esc([m.name,m.unit].join(' ').toLocaleLowerCase('id-ID'))}"><td><strong>${esc(m.name)}</strong></td><td>${esc(m.unit)}</td><td><input class="small-input stock-input" data-material="${esc(m.id)}" type="number" min="0" step="0.001" value="${m.stock}" aria-label="Stok ${esc(m.name)}" /></td><td><button class="button secondary small" data-action="save-stock" data-id="${esc(m.id)}">Update</button> <button class="button danger small" data-action="delete-material" data-id="${esc(m.id)}">Hapus</button></td></tr>`).join('')}</tbody></table></div><div id="material-empty-filter" class="empty" hidden>Tidak ada bahan yang cocok.</div>`:tableEmpty('Belum ada bahan.')}</div>`;
 }
 function draftItem(row,i){return `<div class="draft-item" data-index="${i}"><label>Produk<select class="draft-product"><option value="">Pilih produk...</option>${data.products.map(p=>`<option value="${esc(p.id)}" ${p.id===row.productId?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label><label>Jumlah<input class="draft-qty" type="number" min="1" max="100000" step="1" value="${esc(row.quantity)}" /></label><div><div class="label-caption">Kepercayaan AI</div><span class="badge">${esc(row.confidence||'manual')}</span></div><button class="button danger small" data-action="remove-draft" data-index="${i}">Hapus</button>${row.rawName?`<div class="hint" style="grid-column:1/-1">Teks produk dari AI: <strong>${esc(row.rawName)}</strong>${row.sourceText?' · '+esc(row.sourceText):''}</div>`:''}</div>`;}
-function studio(){return `<div class="two-col"><div class="card"><div class="flex-between"><h3>01 / Pesan pelanggan</h3><span class="badge">${esc(LOCAL_MODEL_NAME)} · lokal</span></div><p class="hint">Tempel pesan tanpa nomor telepon, alamat, atau identitas pribadi. Untuk chat pelanggan nyata, minta izin dan minimalkan data.</p><label>Isi pesan<textarea id="order-text" maxlength="2500" placeholder="Bu, pesan 30 canang sama 12 pejati untuk Jumat pagi. Tolong konfirmasi jam pengambilan.">${esc(uiState.orderText)}</textarea></label><div class="button-row" style="margin-top:14px"><button class="button primary" id="ai-button" data-action="extract">✦ Analisis NLP Lokal</button><button class="button secondary" data-action="manual-draft">+ Buat draf manual</button><button class="button secondary" data-action="sample-message">Isi contoh pesan</button></div>${!(session&&cloudReady)?`<div class="notice" style="margin-top:15px"><b>AI lokal tersedia tanpa internet.</b> Analisis pesanan berjalan di browser tanpa OpenAI. ${session?'Sinkronisasi Supabase sedang bermasalah, jadi penyimpanan cloud belum tersedia.':'Tanpa login, pesanan yang dikonfirmasi hanya tersimpan pada browser ini (mode demo).'} </div>`:''}<div class="test-box"><b>Kenapa harus verifikasi?</b><p class="hint">AI tidak otomatis menyimpan pesanan, mengubah stok, atau menentukan tanggal yang tidak pasti. Setiap hasil diperiksa oleh pengguna.</p></div></div>
+function classicStudio(){return `<div class="two-col"><div class="card"><div class="flex-between"><h3>01 / Pesan pelanggan</h3><span class="badge">${esc(LOCAL_MODEL_NAME)} · lokal</span></div><p class="hint">Tempel pesan tanpa nomor telepon, alamat, atau identitas pribadi. Untuk chat pelanggan nyata, minta izin dan minimalkan data.</p><label>Isi pesan<textarea id="order-text" maxlength="2500" placeholder="Bu, pesan 30 canang sama 12 pejati untuk Jumat pagi. Tolong konfirmasi jam pengambilan.">${esc(uiState.orderText)}</textarea></label><div class="button-row" style="margin-top:14px"><button class="button primary" id="ai-button" data-action="extract">✦ Analisis NLP Lokal</button><button class="button secondary" data-action="manual-draft">+ Buat draf manual</button><button class="button secondary" data-action="sample-message">Isi contoh pesan</button></div>${!(session&&cloudReady)?`<div class="notice" style="margin-top:15px"><b>AI lokal tersedia tanpa internet.</b> Analisis pesanan berjalan di browser tanpa OpenAI. ${session?'Sinkronisasi Supabase sedang bermasalah, jadi penyimpanan cloud belum tersedia.':'Tanpa login, pesanan yang dikonfirmasi hanya tersimpan pada browser ini (mode demo).'} </div>`:''}<div class="test-box"><b>Kenapa harus verifikasi?</b><p class="hint">AI tidak otomatis menyimpan pesanan, mengubah stok, atau menentukan tanggal yang tidak pasti. Setiap hasil diperiksa oleh pengguna.</p></div></div>
  <div class="card"><div class="flex-between"><h3>02 / Hasil ekstraksi & konfirmasi</h3><span class="badge">Human-in-the-loop</span></div>${draft?`${draft.questions.length?`<div class="notice"><strong>Perlu klarifikasi</strong><div style="margin-top:8px">${draft.questions.map(q=>`<p class="question">• ${esc(q)}</p>`).join('')}</div></div>`:''}${draft.requires_clarification?`<div class="notice error" style="margin-top:12px"><strong>⚠ Klarifikasi wajib sebelum simpan</strong><p class="hint">AI menemukan ketidakpastian jumlah atau produk. Hubungi pelanggan, perbaiki pilihan produk dan jumlah di bawah, lalu dokumentasikan hasilnya.</p><label>Catatan hasil klarifikasi pelanggan (wajib)<textarea id="clarification-note" maxlength="280" placeholder="Contoh: pelanggan menegaskan Kwangen 8 unit">${esc(draft.clarificationNote||'')}</textarea></label><label style="display:flex;gap:8px;align-items:start;margin-top:10px"><input type="checkbox" id="clarification-checked" ${draft.clarificationVerified?'checked':''} /> <span>Saya telah mengonfirmasi produk dan jumlah kepada pelanggan, serta memeriksa draf di bawah.</span></label></div>`:''}<div id="draft-list" class="draft-list">${draft.items.map(draftItem).join('')}</div><div style="margin-top:10px"><button class="button secondary small" data-action="add-draft-item">+ Tambah produk</button></div><div class="field-row" style="margin-top:16px"><label>Nama pesanan (opsional)<input id="draft-customer" maxlength="90" placeholder="Contoh: Pesanan pelanggan A" /></label><label>Tanggal selesai<input id="draft-date" type="date" value="${esc(draft.delivery.date_iso)}" required /></label></div><div class="field-row" style="margin-top:13px"><label>Waktu / catatan jam<input id="draft-time" maxlength="80" value="${esc(draft.delivery.time_text)}" placeholder="Misalnya pagi; belum dikonfirmasi" /></label><label>Catatan produksi<input id="draft-notes" maxlength="500" value="${esc(draft.notes)}" placeholder="Catatan produksi" /></label></div><div class="button-row" style="margin-top:18px"><button class="button primary" data-action="confirm-order">✓ Konfirmasi & simpan pesanan</button><button class="button secondary" data-action="clear-draft">Batal</button></div><p class="hint">Tanggal wajib dipastikan oleh pengguna sebelum pesanan disimpan. Jika pilihan produk belum ditemukan, pilih produk katalog secara manual.</p>`:tableEmpty('Belum ada draf. Masukkan chat dan jalankan AI, atau buat draf manual untuk pengujian.')} </div></div>`;}
+
+function studio(){
+  return `${chatPanel()}${chatDraftActive&&draft?`<section class="ran-chat-verification"><h3>Verifikasi hasil chat sebelum disimpan</h3><p class="hint">Periksa nama produk, jumlah, tanggal, serta catatan. Pesanan belum tersimpan sampai tombol hijau pada formulir ditekan.</p>${classicStudio()}</section>`:`<details class="ran-classic-studio"><summary>Opsi alternatif: analisis sekali jalan / draf manual (versi lama)</summary>${classicStudio()}</details>`}`;
+}
+
 function planner(){
  const p=plan();const coverage=auditActiveRecipeCoverage(data);const orderList=[...data.orders].sort((a,b)=>(a.dueDate||'9999-12-31').localeCompare(b.dueDate||'9999-12-31'));
  return `${banner()}<div class="stats stats-compact"><div class="stat"><small>Pesanan aktif</small><strong>${p.activeCount}</strong><em>Baru & diproses</em></div><div class="stat"><small>Material tercatat</small><strong>${p.rows.length}</strong><em>Jenis bahan</em></div><div class="stat"><small>Perlu pembelian</small><strong>${p.rows.filter(x=>x.shortage>0).length}</strong><em>Kekurangan stok</em></div><div class="stat"><small>Resep belum lengkap</small><strong>${p.missingRecipes.length}</strong><em>Perlu diverifikasi</em></div></div>
@@ -364,12 +444,14 @@ async function clickAction(button){
  if(a==='import-approved-recipe'){const el=$('#approved-recipe-csv');if(el)el.click();return;}
  if(a==='open-recipe-reference')return openRecipeReference(id);
  if(a==='close-recipe-reference'){uiState.recipePanel=false;render();return;}
- if(a==='extract')return extract();
+ if(a==='chat-new'){resetOrderChat();render();return;}
+ if(a==='chat-example'){const field=$('#ran-chat-input');if(field){field.value='Bu pesan 20 canang, eh 10 aja untuk Jumat';field.focus();}return;}
+ if(a==='extract'){chatDraftActive=false;return extract();}
  if(a==='sample-message'){uiState.orderText='Pesan 10 pejati, eh tambah 5 lagi. Untuk besok pagi.';const field=$('#order-text');if(field){field.value=uiState.orderText;field.focus();}return;}
- if(a==='manual-draft'){draft={items:[{productId:'',quantity:1,rawName:'',confidence:'manual'}],delivery:{date_iso:'',time_text:'',raw_text:''},notes:'',questions:[],customer:''};render();toast('Draf manual dibuat; ini bukan keluaran AI.');return;}
+ if(a==='manual-draft'){chatDraftActive=false;draft={items:[{productId:'',quantity:1,rawName:'',confidence:'manual'}],delivery:{date_iso:'',time_text:'',raw_text:''},notes:'',questions:[],customer:''};render();toast('Draf manual dibuat; ini bukan keluaran AI.');return;}
  if(a==='add-draft-item'){readDraftFromUI();draft.items.push({productId:'',quantity:1,rawName:'',confidence:'manual'});render();return;}
  if(a==='remove-draft'){readDraftFromUI();draft.items.splice(Number(button.dataset.index),1);render();return;}
- if(a==='clear-draft'){draft=null;render();return;}
+ if(a==='clear-draft'){if(chatDraftActive)resetOrderChat();else {draft=null;chatDraftActive=false;}render();return;}
  if(a==='confirm-order'){
    readDraftFromUI();
    if(draft.requires_clarification&&(!draft.clarificationVerified||(draft.clarificationNote||'').length<8)){
@@ -380,7 +462,7 @@ async function clickAction(button){
    if(dueDate && dueDate<localToday())problems.push('Tanggal selesai sudah lewat. Pilih tanggal hari ini atau setelahnya.');
    if(problems.length){toast(problems.join(' '),true);return;}
    const saved=await mutate(()=>{data.orders.push({id:makeId('order'),customer:draft.customer||'Pesanan tanpa nama',items,dueDate,dueTime:draft.delivery.time_text,notes:[draft.notes,draft.clarificationNote?`Klarifikasi pelanggan: ${draft.clarificationNote}`:''].filter(Boolean).join(' | ').slice(0,500),status:'new',createdAt:new Date().toISOString()});});
-   if(saved){draft=null;uiState.orderText='';uiState.plannerStatus='all';uiState.plannerQuery='';currentPage='planner';render();}return;
+   if(saved){resetOrderChat();uiState.orderText='';uiState.plannerStatus='all';uiState.plannerQuery='';currentPage='planner';render();}return;
  }
  if(a==='save-stock'){
    const input=document.querySelector(`.stock-input[data-material="${CSS.escape(id)}"]`);const value=Number(input?.value);
@@ -445,7 +527,7 @@ async function signIn(email,password){
  booting=true;cloudReady=false;cloudError='';safeRender();
  try{
    await loadCloud();cloudReady=true;
-   $('#auth-dialog').close();draft=null;currentPage='dashboard';toast('Berhasil masuk. Workspace tersimpan di Supabase.');
+   $('#auth-dialog').close();draft=null;orderChat=null;chatHistory=[];chatDraftActive=false;currentPage='dashboard';toast('Berhasil masuk. Workspace tersimpan di Supabase.');
  }catch(err){cloudError=err.message||'Sinkronisasi gagal';console.error('Cloud sync:',err);toast('Login berhasil, tetapi data cloud belum terhubung: '+cloudError,true);}
  finally{booting=false;safeRender();}
 }
@@ -454,18 +536,31 @@ async function signUp(email,password){
  $('#auth-message').textContent=response.session?'Pendaftaran berhasil. Silakan masuk.':'Pendaftaran dikirim. Jika konfirmasi email diaktifkan, periksa inbox sebelum login.';
 }
 $('#auth-button').addEventListener('click',async()=>{
- if(session){if(!confirm('Keluar dari workspace cloud?'))return;try{await authFetch('/auth/v1/logout',{method:'POST'});}catch{}session=null;cloudReady=false;booting=false;sessionStorage.removeItem(SESSION_KEY);data=JSON.parse(localStorage.getItem(KEY)||'null')||makeSeed();draft=null;safeRender();await mergeGlobalCatalog();await loadPublicRecipeLibrary();persistLocal();safeRender();toast('Keluar dari akun cloud.');return;}
+ if(session){if(!confirm('Keluar dari workspace cloud?'))return;try{await authFetch('/auth/v1/logout',{method:'POST'});}catch{}session=null;cloudReady=false;booting=false;sessionStorage.removeItem(SESSION_KEY);data=JSON.parse(localStorage.getItem(KEY)||'null')||makeSeed();draft=null;orderChat=null;chatHistory=[];chatDraftActive=false;safeRender();await mergeGlobalCatalog();await loadPublicRecipeLibrary();persistLocal();safeRender();toast('Keluar dari akun cloud.');return;}
  if(!CLOUD){toast('Isi public/config.js terlebih dahulu dengan Supabase URL dan anon key.',true);return;}
  $('#auth-message').textContent='';$('#auth-dialog').showModal();
 });
 $('#login-form').addEventListener('submit',async ev=>{ev.preventDefault();const email=$('#auth-email').value.trim(),password=$('#auth-password').value;const msg=$('#auth-message');msg.textContent='Memproses login…';try{await signIn(email,password);}catch(err){msg.textContent=`Gagal masuk: ${err.message}`;}});
 $('#register-button').addEventListener('click',async()=>{const msg=$('#auth-message');msg.textContent='Memproses pendaftaran…';try{await signUp($('#auth-email').value.trim(),$('#auth-password').value);}catch(err){msg.textContent=`Gagal mendaftar: ${err.message}`;}});
 document.addEventListener('click',async ev=>{
+ const chip=ev.target.closest('[data-chat-choice]');
+ if(chip){ev.preventDefault();chatReply(chip.dataset.chatChoice);render();const log=$('#ran-chat-log');if(log)log.scrollTop=log.scrollHeight;return;}
  const filter=ev.target.closest('[data-order-filter]');if(filter){uiState.plannerStatus=filter.dataset.orderFilter;uiState.plannerQuery='';currentPage='planner';render();return;}
  const nav=ev.target.closest('[data-nav]');if(nav){currentPage=nav.dataset.nav;render();return;}
  const action=ev.target.closest('[data-action]');if(action){ev.preventDefault();await clickAction(action);}
 });
-document.addEventListener('submit',async ev=>{const form=ev.target;if(form.matches('#material-form,#product-form,.recipe-form,#bulk-recipe-form')){ev.preventDefault();await handleForm(form);}});
+document.addEventListener('submit',async ev=>{
+ const form=ev.target;
+ if(form.id==='ran-chat-form'){
+   ev.preventDefault();
+   const text=$('#ran-chat-input')?.value||'';
+   chatReply(text);render();
+   const field=$('#ran-chat-input');if(field)field.focus({preventScroll:true});
+   const log=$('#ran-chat-log');if(log)log.scrollTop=log.scrollHeight;
+   return;
+ }
+ if(form.matches('#material-form,#product-form,.recipe-form,#bulk-recipe-form')){ev.preventDefault();await handleForm(form);}
+});
 document.addEventListener('input',ev=>{
  if(ev.target.id==='order-text'){uiState.orderText=ev.target.value;return;}
  if(ev.target.id==='planner-search'){uiState.plannerQuery=ev.target.value;applyPlannerFilters();return;}

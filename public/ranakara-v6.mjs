@@ -106,6 +106,8 @@ function enhanceDashboard(){
   hero.querySelector('h2')?.setAttribute('data-v6-hero','');
 }
 function enhanceStudio(){
+  // Chat mode owns its own staged interface; legacy form is nested in a details panel.
+  if(main?.querySelector('.ran-chat-layout'))return;
   const txt=main?.querySelector('#order-text');if(!txt||main.querySelector('.rv6-studio-flow'))return;
   const draftList=main.querySelector('#draft-list');
   const hasDraft=!!draftList;
